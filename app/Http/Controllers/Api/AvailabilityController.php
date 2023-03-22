@@ -34,6 +34,7 @@ class AvailabilityController extends Controller
         $this->authorize('create', [Availability::class, $office]);
         $doctor = auth()->user()->doctor;
         foreach ($request->availabilities as $av) {
+            $av['office_id'] = $fields['office_id'];
             $availability = $doctor->availabilities()->create($av);
         }
         $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
