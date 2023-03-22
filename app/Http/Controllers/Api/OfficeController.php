@@ -8,6 +8,7 @@ use App\Http\Requests\AddDoctorToOfficeRequest;
 use App\Http\Requests\StoreOfficeRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
+use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
@@ -20,7 +21,13 @@ class OfficeController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        $offices = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\Office', 'sub_role' => SubRole::OfficeOwner])->get();
+        if ($offices != []) {
+            return OfficeThroughHasRoleResource::collection($offices);
+        } else {
+            return response()->noContent();
+        }
     }
 
     /**
