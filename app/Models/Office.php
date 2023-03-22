@@ -13,7 +13,7 @@ class Office extends Model
 
     protected $fillable = [
         'first_consultation_fee', 'followup_consultation_fee',
-        'time_per_client', 'address', 'city'
+        'time_per_client', 'address', 'city', 'office_image', 'office_name',
     ];
 
 

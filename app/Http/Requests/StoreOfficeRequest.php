@@ -27,6 +27,8 @@ class StoreOfficeRequest extends FormRequest
             'time_per_client' => 'required|integer',
             'city' => 'required|string',
             'address' => 'required|string',
+            'office_image' => 'nullable|text',
+            'office_name' => 'required|string',
         ];
     }
 }
