@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('city');
             $table->string('office_name');
-            $table->link('office_image');
+            $table->longText('office_image');
             $table->string('address');
             $table->integer('time_per_client');
             $table->integer('first_consultation_fee');
