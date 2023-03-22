@@ -24,7 +24,7 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|string|max:255|unique:users',
+            'phone' => 'required|string|string|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::default()],
             'role' => ['nullable', Rule::in(['Patient', 'Doctor'])],
         ];

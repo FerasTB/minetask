@@ -18,11 +18,11 @@ class AuthController extends Controller
     {
         $request->validated();
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone', $request->phone)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'phone' => ['The provided credentials are incorrect.'],
             ]);
         }
 
@@ -39,13 +39,13 @@ class AuthController extends Controller
 
         if ($request->role) {
             $user = User::create([
-                'email' => $request->email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
                 'role' => Role::getValue($request->role),
             ]);
         } else {
             $user = User::create([
-                'email' => $request->email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]);
         }
@@ -59,7 +59,7 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone', $request->phone)->first();
         if ($user) {
             $user->tokens()->delete();
         }
