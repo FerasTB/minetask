@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\SubRole;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,6 +26,7 @@ class OfficeThroughHasRoleResource extends JsonResource
             'address' => $office->address,
             'office_image' => $office->office_image,
             'office_name' => $office->office_name,
+            'role_in_office' => SubRole::getKey($this->sub_role),
         ];
     }
 }

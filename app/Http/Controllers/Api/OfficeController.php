@@ -89,4 +89,15 @@ class OfficeController extends Controller
     {
         return DoctorInOfficeResource::collection($office->roles);
     }
+
+    public function MyOffices()
+    {
+        $user = auth()->user();
+        $offices = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\Office'])->get();
+        if ($offices != []) {
+            return OfficeThroughHasRoleResource::collection($offices);
+        } else {
+            return response()->noContent();
+        }
+    }
 }
