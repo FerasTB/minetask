@@ -29,49 +29,59 @@ class AvailabilityController extends Controller
      */
     public function store(StoreAvailabilityRequest $request)
     {
-
         $fields = $request->validated();
         $office = Office::findOrFail($fields['office_id']);
         $this->authorize('create', [Availability::class, $office]);
         $doctor = auth()->user()->doctor;
-        $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
-        if ($availabilities != []) {
-            $status = AvailabilityCompare::OutSide;
-            foreach ($availabilities as $av) {
-                $status = $this->compareTowTime($request, $av);
-                if ($status == AvailabilityCompare::HalfOutFromRight) {
-                    $fields['start_time'] = $av->start_time;
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-                if ($status == AvailabilityCompare::HalfOutFromLeft) {
-                    $fields['end_time'] = $av->end_time;
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-                if ($status == AvailabilityCompare::OutFromTowSide) {
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-                if ($status == AvailabilityCompare::EqualFromLeft) {
-                    $fields['end_time'] = $av->end_time;
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-                if ($status == AvailabilityCompare::EqualFromRight) {
-                    $fields['start_time'] = $av->start_time;
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-                if ($status == AvailabilityCompare::Same || $status == AvailabilityCompare::InSide) {
-                    $av->delete();
-                    $status = AvailabilityCompare::OutSide;
-                }
-            }
+        foreach ($request->availabilities as $av) {
+            $availability = $doctor->availabilities()->create($av);
         }
-        $availability = $doctor->availabilities()->create($fields);
-        $availability = Availability::find($availability->id);
-        return new AvailabilityResource($availability);
+        $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
+        return AvailabilityResource::collection($availabilities);
+
+        // $fields = $request->validated();
+        // $office = Office::findOrFail($fields['office_id']);
+        // $this->authorize('create', [Availability::class, $office]);
+        // $doctor = auth()->user()->doctor;
+        // $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
+        // if ($availabilities != []) {
+        //     $status = AvailabilityCompare::OutSide;
+        //     foreach ($availabilities as $av) {
+        //         $status = $this->compareTowTime($request, $av);
+        //         if ($status == AvailabilityCompare::HalfOutFromRight) {
+        //             $fields['start_time'] = $av->start_time;
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //         if ($status == AvailabilityCompare::HalfOutFromLeft) {
+        //             $fields['end_time'] = $av->end_time;
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //         if ($status == AvailabilityCompare::OutFromTowSide) {
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //         if ($status == AvailabilityCompare::EqualFromLeft) {
+        //             $fields['end_time'] = $av->end_time;
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //         if ($status == AvailabilityCompare::EqualFromRight) {
+        //             $fields['start_time'] = $av->start_time;
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //         if ($status == AvailabilityCompare::Same || $status == AvailabilityCompare::InSide) {
+        //             $av->delete();
+        //             $status = AvailabilityCompare::OutSide;
+        //         }
+        //     }
+        // }
+        // $availability = $doctor->availabilities()->create($fields);
+        // $availability = Availability::find($availability->id);
+        // return new AvailabilityResource($availability);
+
     }
 
     public function compareTowTime(Request $request, Availability $availability)
