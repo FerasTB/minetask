@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('offices', function (Blueprint $table) {
             $table->id();
             $table->string('city');
-            $table->string('test');
             $table->string('office_name');
             $table->link('office_image');
             $table->string('address');
