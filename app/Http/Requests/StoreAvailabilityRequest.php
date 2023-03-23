@@ -24,11 +24,11 @@ class StoreAvailabilityRequest extends FormRequest
         return [
             'office_id' => 'integer|required',
             'availabilities' => 'array|required',
-            'availabilities.reason_unavailability'  => 'string|nullable',
-            'availabilities.is_available' => 'boolean|nullable',
-            'availabilities.start_time' => 'required|date_format:H:i:s',
-            'availabilities.end_time' => 'after:start_time|date_format:H:i:s|required',
-            'availabilities.day_name' => 'string|required',
+            'availabilities.*.reason_unavailability'  => 'string|nullable',
+            'availabilities.*.is_available' => 'boolean|nullable',
+            'availabilities.*.start_time' => 'required|date_format:H:i:s',
+            'availabilities.*.end_time' => 'after:start_time|date_format:H:i:s|required',
+            'availabilities.*.day_name' => 'string|required',
         ];
     }
 }
