@@ -33,12 +33,23 @@ class AvailabilityController extends Controller
         $office = Office::findOrFail($fields['office_id']);
         $this->authorize('create', [Availability::class, $office]);
         $doctor = auth()->user()->doctor;
-        foreach ($request->availabilities as $av) {
-            $av['office_id'] = $fields['office_id'];
-            $availability = $doctor->availabilities()->create($av);
+        if ($doctor) {
+            $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
+            if ($availabilities != []) {
+                foreach ($availabilities as $av) {
+                    $this->authorize('update', $av);
+                    $av->delete();
+                }
+            }
+            foreach ($request->availabilities as $av) {
+                $av['office_id'] = $fields['office_id'];
+                $availability = $doctor->availabilities()->create($av);
+            }
+            $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
+            return AvailabilityResource::collection($availabilities);
+        } else {
+            return response('you have to add your info as doctor first', 403);
         }
-        $availabilities = Availability::where(['doctor_id' => $doctor->id, 'office_id' => $office->id])->get();
-        return AvailabilityResource::collection($availabilities);
 
         // $fields = $request->validated();
         // $office = Office::findOrFail($fields['office_id']);

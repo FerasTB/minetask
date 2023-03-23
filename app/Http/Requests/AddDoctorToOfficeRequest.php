@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 
 class AddDoctorToOfficeRequest extends FormRequest
@@ -23,8 +24,10 @@ class AddDoctorToOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|integer',
-            'sub_role' => ['nullable', Rule::in(['DoctorInOffice', 'OfficeSecretary'])],
+            'phone' => 'required|integer',
+            'password' => ['nullable', 'confirmed', Password::default()],
+            'isNew' => 'required|boolean',
+            'role' => ['nullable', Rule::in(['Patient', 'Doctor'])],
         ];
     }
 }

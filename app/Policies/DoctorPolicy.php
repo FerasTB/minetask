@@ -30,7 +30,7 @@ class DoctorPolicy
      */
     public function create(User $user): bool
     {
-        return ($user->role === Role::Doctor);
+        return ($user->role === Role::Doctor && !$user->doctor);
     }
 
     /**

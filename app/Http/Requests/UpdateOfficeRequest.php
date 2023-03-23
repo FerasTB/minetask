@@ -27,6 +27,8 @@ class UpdateOfficeRequest extends FormRequest
             'time_per_client' => 'nullable|integer',
             'city' => 'nullable|string',
             'address' => 'nullable|string',
+            'office_image' => 'nullable|text',
+            'office_name' => 'required|string',
         ];
     }
 }

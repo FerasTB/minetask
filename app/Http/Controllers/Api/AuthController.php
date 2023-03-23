@@ -36,7 +36,6 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $request->validated();
-
         if ($request->role) {
             $user = User::create([
                 'phone' => $request->phone,

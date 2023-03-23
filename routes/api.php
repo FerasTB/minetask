@@ -24,6 +24,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
     Route::get('my_offices', [App\Http\Controllers\Api\OfficeController::class, 'MyOffices']);
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
-    Route::post('office/{office}/add/doctor', [App\Http\Controllers\Api\OfficeController::class, 'AddDoctor']);
-    Route::get('office/{office}/show/doctor', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOffice']);
+    Route::post('office/{office}/add_employee', [App\Http\Controllers\Api\OfficeController::class, 'AddDoctor']);
+    Route::get('office/{office}/show_employee', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOffice']);
 });

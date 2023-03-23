@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\Role;
 use App\Enums\SubRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddDoctorToOfficeRequest;
@@ -12,7 +13,9 @@ use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class OfficeController extends Controller
 {
@@ -77,12 +80,32 @@ class OfficeController extends Controller
     {
         $this->authorize('officeOwner', $office);
         $fields = $request->validated();
-        $user = User::findOrFail($fields['user_id']);
+        $user = 0;
+        if ($fields['isNew']) {
+            if ($fields['role']) {
+                $user = User::create([
+                    'phone' => $request->phone,
+                    'password' => Hash::make($request->password),
+                    'role' => Role::getValue($request->role),
+                ]);
+            } else {
+                $user = User::create([
+                    'phone' => $request->phone,
+                    'password' => Hash::make($request->password),
+                ]);
+            }
+            $fields['sub_role'] = $request->role == 'Doctor' ? SubRole::DoctorInOffice : SubRole::OfficeSecretary;
+            $fields['roleable_id'] = $office->id;
+            $fields['roleable_type'] = 'App\Models\Office';
+            $relation = $user->roles()->create($fields);
+            return DoctorInOfficeResource::collection($office->roles);
+        }
+        $user = User::where('phone', $fields['user_id'])->first()->get();
         $fields['sub_role'] = SubRole::getValue($request->sub_role);
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
-        return response()->json($relation);
+        return new DoctorInOfficeResource($relation);
     }
 
     public function AllDoctorInOffice(Office $office)

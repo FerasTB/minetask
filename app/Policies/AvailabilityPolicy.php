@@ -33,9 +33,11 @@ class AvailabilityPolicy
      */
     public function create(User $user, Office $office): bool
     {
-        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->get()->first();
-        if ($role != null) {
-            return ($user->role === Role::Doctor);
+        if ($user->doctor) {
+            $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->get()->first();
+            if ($role != null) {
+                return ($user->role === Role::Doctor);
+            }
         }
         return false;
     }

@@ -27,7 +27,7 @@ class StoreAvailabilityRequest extends FormRequest
             'availabilities.*.reason_unavailability'  => 'string|nullable',
             'availabilities.*.is_available' => 'boolean|nullable',
             'availabilities.*.start_time' => 'required|date_format:H:i:s',
-            'availabilities.*.end_time' => 'after:availabilities.*.start_time|date_format:H:i:s|required',
+            'availabilities.*.end_time' => 'after_or_equal:availabilities.*.start_time|date_format:H:i:s|required',
             'availabilities.*.day_name' => 'string|required',
         ];
     }

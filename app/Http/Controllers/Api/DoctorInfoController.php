@@ -33,9 +33,13 @@ class DoctorInfoController extends Controller
     public function store(StoreDoctorRequest $request)
     {
         $this->authorize('create', Doctor::class);
-        $fields = $request->validated();
-        $doctorInfo = auth()->user()->doctor()->create($fields);
-        return response()->json($doctorInfo);
+        if (!auth()->user()->doctor) {
+            $fields = $request->validated();
+            $doctorInfo = auth()->user()->doctor()->create($fields);
+            return new DoctorInfoResource($doctorInfo);
+        } else {
+            return response('you have doctor info', 403);
+        }
     }
 
     /**
@@ -64,7 +68,7 @@ class DoctorInfoController extends Controller
             return response('', Response::HTTP_NO_CONTENT);
         } else {
             $info->update($fields);
-            return response()->json($info);
+            return new DoctorInfoResource($info);
         }
     }
 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DoctorInfoResource extends JsonResource
+class UserToDisplayResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +17,8 @@ class DoctorInfoResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'practicing_from' => $this->practicing_from,
-            'user' => new UserToDisplayResource($this->user),
+            'role' => Role::getKey($this->role),
+            'created_at' => $this->created_at,
         ];
     }
 }
