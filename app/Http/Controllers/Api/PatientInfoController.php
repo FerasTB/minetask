@@ -28,7 +28,10 @@ class PatientInfoController extends Controller
     {
         $fields = $request->validated();
         if (auth()->user()->role == Role::Patient) {
-            // $this->authorize('create', Patient::class);
+            $patient = Patient::where('phone', $request->phone)->first();
+            if ($patient || auth()->user()->patient) {
+                return response()->noContent();
+            }
             $patientInfo = auth()->user()->patient()->create($fields);
             return response()->json($patientInfo);
         } elseif (auth()->user()->role == Role::Doctor) {

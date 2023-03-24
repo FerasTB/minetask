@@ -50,11 +50,22 @@ class DoctorInfoController extends Controller
         return new DoctorInfoResource($info);
     }
 
-    public function showMyPatient(Doctor $doctor)
+    public function showMyInfo()
     {
-        $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
-        // return response()->json($roles);
-        return MyPatientsResource::collection($roles);
+        if (auth()->user()->doctor) {
+            return new DoctorInfoResource(auth()->user()->doctor);
+        }
+        return response('you have to complete your info', 404);
+    }
+
+    public function showMyPatient()
+    {
+        $doctor = auth()->user()->doctor;
+        if ($doctor) {
+            $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
+            return MyPatientsResource::collection($roles);
+        }
+        return response('you have to complete your info', 404);
     }
 
     /**
