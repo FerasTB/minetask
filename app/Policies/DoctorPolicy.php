@@ -14,7 +14,7 @@ class DoctorPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return ($user->role === Role::Doctor && $user->doctor);
     }
 
     /**

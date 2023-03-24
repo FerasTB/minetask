@@ -19,9 +19,13 @@ class AvailabilityController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Doctor::class);
         $doctor = auth()->user()->doctor;
-        $availabilities = Availability::where('doctor_id', $doctor->id)->get();
-        return AvailabilityResource::collection($availabilities);
+        if ($doctor) {
+            $availabilities = Availability::where('doctor_id', $doctor->id)->get();
+            return AvailabilityResource::collection($availabilities);
+        }
+        return response('you have to add your info as doctor first', 403);
     }
 
     /**
