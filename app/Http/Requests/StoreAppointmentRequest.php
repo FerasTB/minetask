@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateOfficeRequest extends FormRequest
+class StoreAppointmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +23,13 @@ class UpdateOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => 'nullable|integer',
-            'time_per_client' => 'nullable|integer',
-            'address' => 'nullable|string',
-            'office_image' => 'nullable|text',
-            'office_name' => 'required|string',
+            'start_time' => 'required|date_format:H:i:s',
+            'end_time' => 'after:start_time|date_format:H:i:s|required',
+            'taken_date' => 'date|required',
+            'status_id' => ['required', 'integer', Rule::in([1, 2, 3])],
+            'patient_id' => 'required|integer',
+            'doctor_id' => 'nullable|integer',
+            'office_id' => 'required|integer',
         ];
     }
 }

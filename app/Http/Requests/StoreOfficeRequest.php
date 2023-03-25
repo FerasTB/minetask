@@ -22,10 +22,8 @@ class StoreOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_consultation_fee' => 'required|integer',
-            'followup_consultation_fee' => 'required|integer',
-            'time_per_client' => 'required|integer',
-            'city' => 'required|string',
+            'time_per_client' => 'nullable|integer',
+            'number' => 'nullable|integer',
             'address' => 'required|string',
             'office_image' => 'nullable|text',
             'office_name' => 'required|string',

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->nullable()->constrained('doctors');
             $table->string('first_name');
             $table->string('last_name');
-            $table->integer('phone');
+            $table->integer('phone')->unique();
             $table->string('email')->nullable();
             $table->date('birth_date');
             $table->timestamps();

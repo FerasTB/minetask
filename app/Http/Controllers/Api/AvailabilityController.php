@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\AvailabilityCompare;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GetOfficeAvailabilityRequest;
 use App\Http\Requests\StoreAvailabilityRequest;
 use App\Http\Requests\UpdateAvailabilityRequest;
 use App\Http\Resources\AvailabilityResource;
+use App\Http\Resources\OfficeAvailabilityResource;
 use App\Models\Availability;
+use App\Models\Doctor;
 use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -160,5 +163,17 @@ class AvailabilityController extends Controller
     public function destroy(Availability $availability)
     {
         //
+    }
+
+    public function officeAvailability(Office $office)
+    {
+        $availabilities = Availability::where('office_id', $office->id)->get();
+        return OfficeAvailabilityResource::collection($availabilities);
+    }
+
+    public function doctorAvailability(Doctor $doctor)
+    {
+        $availabilities = Availability::where('doctor_id', $doctor->id)->get();
+        return AvailabilityResource::collection($availabilities);
     }
 }

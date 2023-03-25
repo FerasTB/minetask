@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOfficeRequest extends FormRequest
+class StoreMedicalServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class UpdateOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => 'nullable|integer',
-            'time_per_client' => 'nullable|integer',
-            'address' => 'nullable|string',
-            'office_image' => 'nullable|text',
-            'office_name' => 'required|string',
+            'cost' => 'nullable|integer',
+            'description' => 'nullable|string',
+            'name' => 'required|string',
         ];
     }
 }

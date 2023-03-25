@@ -12,14 +12,19 @@ class Office extends Model
     use HasFactory;
 
     protected $fillable = [
-        'first_consultation_fee', 'followup_consultation_fee',
-        'time_per_client', 'address', 'city', 'office_image', 'office_name',
+        'first_consultation_fee', 'address',
+        'office_image', 'office_name', 'number',
     ];
 
 
     public function availabilities()
     {
         return $this->hasMany(availability::class, 'office_id');
+    }
+
+    public function services()
+    {
+        return $this->hasMany(MedicalService::class, 'office_id');
     }
 
     public function roles(): MorphMany

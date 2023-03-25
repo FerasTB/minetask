@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AvailabilityResource extends JsonResource
+class OfficeAvailabilityResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +15,7 @@ class AvailabilityResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $doctor = Doctor::find($this->doctor_id);
         return [
             'id' => $this->id,
             'start_time' => $this->start_time,
@@ -22,6 +24,7 @@ class AvailabilityResource extends JsonResource
             'is_available' => (bool)$this->is_available,
             'reason_unavailability' => $this->reason_unavailability,
             'created_at' => $this->created_at,
+            'doctor' => new DoctorResource($doctor),
         ];
     }
 }

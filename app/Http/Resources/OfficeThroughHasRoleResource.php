@@ -19,10 +19,8 @@ class OfficeThroughHasRoleResource extends JsonResource
         $office = Office::find($this->roleable_id);
         return [
             'id' => $office->id,
-            'first_consultation_fee' => $office->first_consultation_fee,
-            'followup_consultation_fee' => $office->followup_consultation_fee,
+            'number' => $office->number,
             'time_per_client' => $office->time_per_client,
-            'city' => $office->city,
             'address' => $office->address,
             'office_image' => $office->office_image,
             'office_name' => $office->office_name,

@@ -9,6 +9,7 @@ use App\Http\Requests\AddDoctorToOfficeRequest;
 use App\Http\Requests\StoreOfficeRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
+use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -46,7 +47,7 @@ class OfficeController extends Controller
             'roleable_type' => 'App\Models\Office',
             'sub_role' => SubRole::OfficeOwner,
         ]);
-        return response()->json($office);
+        return new OfficeResource($office);
     }
 
     /**
