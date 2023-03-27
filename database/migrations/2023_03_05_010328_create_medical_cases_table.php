@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->string('case_name')->nullable();
             $table->boolean('is_closed')->default(False);
+            $table->string('payment_fee');
             $table->timestamps();
         });
     }

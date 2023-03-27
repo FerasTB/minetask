@@ -9,17 +9,17 @@ class Record extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['payment_fee'];
+    protected $fillable = ['description', 'appointment_id', 'case_id'];
 
-    public function patient()
-    {
-        return $this->belongsTo(Patients::class, 'patient_id');
-    }
+    // public function patient()
+    // {
+    //     return $this->belongsTo(Patients::class, 'patient_id');
+    // }
 
-    public function doctor()
-    {
-        return $this->belongsTo(Doctor::class, 'doctor_id');
-    }
+    // public function doctor()
+    // {
+    //     return $this->belongsTo(Doctor::class, 'doctor_id');
+    // }
 
     public function appointment()
     {

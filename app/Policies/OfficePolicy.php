@@ -69,7 +69,7 @@ class OfficePolicy
 
     public function officeOwner(User $user, Office $office): bool
     {
-        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->get()->first();
+        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
         if ($role != null) {
             return ($role->sub_role == SubRole::OfficeOwner);
         }

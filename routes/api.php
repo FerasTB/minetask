@@ -27,6 +27,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
     Route::apiResource('appointment', App\Http\Controllers\Api\AppointmentController::class);
     Route::apiResource('service', App\Http\Controllers\Api\MedicalServiceController::class);
+    Route::apiResource('case', App\Http\Controllers\Api\CaseController::class);
+    Route::get('case/patient/{patient}', [App\Http\Controllers\Api\CaseController::class, 'patientCases']);
+    Route::apiResource('record', App\Http\Controllers\Api\RecordController::class);
+    Route::get('record/case/{case}', [App\Http\Controllers\Api\RecordController::class, 'CaseRecords']);
+    Route::apiResource('operation', App\Http\Controllers\Api\OperationController::class);
+    Route::get('operation/record/{record}', [App\Http\Controllers\Api\OperationController::class, 'RecordOperation']);
+    Route::apiResource('diagnosis', App\Http\Controllers\Api\DiagnosisController::class);
+    Route::get('diagnosis/record/{record}', [App\Http\Controllers\Api\DiagnosisController::class, 'RecordDiagnosis']);
+    Route::apiResource('drug', App\Http\Controllers\Api\DrugController::class);
     Route::get('service/office/{office}', [App\Http\Controllers\Api\MedicalServiceController::class, 'officeService']);
     Route::get('availability/office/{office}', [App\Http\Controllers\Api\AvailabilityController::class, 'officeAvailability']);
     Route::get('availability/doctor/{doctor}', [App\Http\Controllers\Api\AvailabilityController::class, 'doctorAvailability']);
