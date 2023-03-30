@@ -16,7 +16,8 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        //
+        $appointments = Appointment::where('doctor_id', auth()->user()->doctor->id)->get();
+        return AppointmentResource::collection($appointments);
     }
 
     /**
