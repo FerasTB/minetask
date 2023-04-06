@@ -31,7 +31,7 @@ class DrugPolicy
     public function create(User $user, Diagnosis $diagnosis): bool
     {
         if ($user->doctor) {
-            return $diagnosis->record->case->doctor->id == $user->doctor->id;
+            return $diagnosis->record->PatientCase->case->doctor->id == $user->doctor->id;
         }
         return false;
     }
