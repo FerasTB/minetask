@@ -22,6 +22,8 @@ class PatientCaseResource extends JsonResource
         return [
             'patient' => new PatientInfoForDoctorResource($patient),
             'case' => new MedicalCaseResource($case),
+            'time_per_session' => $this->time_per_session,
+            'number_of_sessions' => $this->number_of_sessions,
             'status' => PatientCaseStatus::getKey($this->status),
             'note' => $this->note,
         ];

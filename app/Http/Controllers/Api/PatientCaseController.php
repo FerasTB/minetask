@@ -61,9 +61,6 @@ class PatientCaseController extends Controller
     public function patientCases(Patient $patient)
     {
         // $this->authorize('viewAny', [MedicalCase::class, $patient]);
-        // $doctor = auth()->user()->doctor;
-        // $cases = MedicalCase::where(['patient_id' => $patient->id, 'doctor_id' => $doctor->id])->get();
-        // return MedicalCaseResource::collection($cases);
         return PatientCaseResource::collection(auth()->user()->doctor->PatientCases->where('patient_id', $patient->id));
     }
 }

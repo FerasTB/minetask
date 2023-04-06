@@ -27,6 +27,9 @@ class TeethRecordResource extends JsonResource
             'id' => $this->id,
             'description' => $this->description,
             'patientCase' => new PatientCaseResource($case),
+            'number_of_teeth' => $this->number_of_teeth,
+            'after_treatment_instruction' => $this->after_treatment_instruction,
+            'anesthesia_type' => $this->anesthesia_type,
             'appointment' => $appointment ? new AppointmentResource($appointment) : "no appointment",
         ];
     }

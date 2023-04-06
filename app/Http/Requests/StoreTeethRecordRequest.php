@@ -26,6 +26,9 @@ class StoreTeethRecordRequest extends FormRequest
             'patientCase_id' => 'required|integer',
             'appointment_id' => 'nullable|integer',
             'description' => 'nullable|string',
+            'number_of_teeth' => 'nullable|integer',
+            'after_treatment_instruction' => 'nullable|string',
+            'anesthesia_type' => 'nullable|integer',
         ];
     }
 }
