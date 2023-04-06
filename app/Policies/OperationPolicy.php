@@ -49,7 +49,7 @@ class OperationPolicy
     public function update(User $user, Operation $operation): bool
     {
         if ($user->doctor) {
-            return $record->PatientCase->case->doctor->id == $user->doctor->id;
+            return $operation->record->PatientCase->case->doctor->id == $user->doctor->id;
         }
         return false;
     }
