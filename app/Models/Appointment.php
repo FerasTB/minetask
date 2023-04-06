@@ -28,6 +28,6 @@ class Appointment extends Model
 
     public function record()
     {
-        return $this->hasOne(Record::class, 'appointment_id');
+        return $this->hasOne(TeethRecord::class, 'appointment_id');
     }
 }
