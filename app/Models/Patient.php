@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ReportType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,13 +32,18 @@ class Patient extends Model
         return $this->hasMany(Appointment::class, 'patient_id');
     }
 
-    public function record()
+    public function teethReport()
     {
-        return $this->hasMany(Record::class, 'patient_id');
+        return $this->hasOne(Report::class, 'patient_id')->where('report_type', ReportType::TeethReport);
     }
 
     public function temporaries()
     {
         return $this->hasMany(TemporaryInformation::class, 'patient_id');
+    }
+
+    public function cases()
+    {
+        return $this->hasMany(PatientCase::class, 'patient_id');
     }
 }

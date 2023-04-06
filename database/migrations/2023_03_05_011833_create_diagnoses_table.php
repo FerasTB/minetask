@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('diagnoses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('record_id')->constrained('records')->onDelete('cascade');
+            $table->foreignId('record_id')->constrained('teeth_records')->onDelete('cascade');
             $table->longText('description');
             $table->timestamps();
         });

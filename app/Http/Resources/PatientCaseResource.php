@@ -2,12 +2,13 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Appointment;
+use App\Enums\PatientCaseStatus;
 use App\Models\MedicalCase;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RecordResource extends JsonResource
+class PatientCaseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +17,13 @@ class RecordResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $patient = Patient::find($this->patient_id);
         $case = MedicalCase::find($this->case_id);
-        $appointment = Appointment::find($this->appointment_id);
         return [
-            'id' => $this->id,
-            'description' => $this->description,
+            'patient' => new PatientInfoForDoctorResource($patient),
             'case' => new MedicalCaseResource($case),
-            'appointment' => new AppointmentResource($appointment),
+            'status' => PatientCaseStatus::getKey($this->status),
+            'note' => $this->note,
         ];
     }
 }

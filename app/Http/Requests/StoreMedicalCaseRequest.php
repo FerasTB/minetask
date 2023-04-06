@@ -24,9 +24,6 @@ class StoreMedicalCaseRequest extends FormRequest
     {
         return [
             'case_name' => 'required|string',
-            'is_closed' => 'nullable|boolean',
-            'patient_id' => 'required|integer',
-            'payment_fee' => 'required|integer',
         ];
     }
 }

@@ -25,12 +25,10 @@ class CaseController extends Controller
      */
     public function store(StoreMedicalCaseRequest $request)
     {
-        $patient = Patient::find($request->patient_id);
-        $this->authorize('create', [MedicalCase::class, $patient]);
+        $this->authorize('create', MedicalCase::class);
         $fields = $request->validated();
         $doctor = auth()->user()->doctor;
         $case = $doctor->cases()->create($fields);
-        $case = MedicalCase::find($case->id);
         return new MedicalCaseResource($case);
     }
 

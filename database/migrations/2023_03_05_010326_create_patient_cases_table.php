@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PatientCaseStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,11 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('records', function (Blueprint $table) {
+        Schema::create('patient_cases', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('case_id')->constrained('medical_cases')->onDelete('cascade');
-            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
-            $table->longText('description')->nullable();
+            $table->boolean('status')->default(PatientCaseStatus::Open);
+            $table->integer('number_of_sessions');
+            $table->integer('time_per_session')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('records');
+        Schema::dropIfExists('patient_cases');
     }
 };

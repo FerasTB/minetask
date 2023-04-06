@@ -14,10 +14,7 @@ return new class extends Migration
         Schema::create('medical_cases', function (Blueprint $table) {
             $table->id();
             $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
-            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
-            $table->string('case_name')->nullable();
-            $table->boolean('is_closed')->default(False);
-            $table->string('payment_fee');
+            $table->string('case_name');
             $table->timestamps();
         });
     }

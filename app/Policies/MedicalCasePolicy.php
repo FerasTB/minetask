@@ -37,10 +37,9 @@ class MedicalCasePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Patient $patient): bool
+    public function create(User $user): bool
     {
-        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
-        return ($user->doctor && $user->role == Role::Doctor && $role);
+        return ($user->doctor && $user->role == Role::Doctor);
     }
 
     /**

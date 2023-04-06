@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateMedicalCaseRequest extends FormRequest
+class StorePatientCaseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,10 @@ class UpdateMedicalCaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'case_name' => 'required|string',
+            'patient_id' => 'required|integer',
+            'case_id' => 'required|integer',
+            'status' => 'nullable|integer',
+            'note' => 'nullable|string',
         ];
     }
 }

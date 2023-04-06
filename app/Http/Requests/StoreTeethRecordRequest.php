@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRecordRequest extends FormRequest
+class StoreTeethRecordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,8 @@ class StoreRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'case_id' => 'required|integer',
-            'appointment_id' => 'required|integer',
+            'patientCase_id' => 'required|integer',
+            'appointment_id' => 'nullable|integer',
             'description' => 'nullable|string',
         ];
     }

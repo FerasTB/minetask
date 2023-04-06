@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->integer('payment_amount');
-            $table->foreignId('case_id')->constrained('medical_cases')->onDelete('cascade');
             $table->timestamps();
         });
     }

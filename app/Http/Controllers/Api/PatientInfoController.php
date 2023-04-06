@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
@@ -33,6 +34,9 @@ class PatientInfoController extends Controller
                 return response()->noContent();
             }
             $patientInfo = auth()->user()->patient()->create($fields);
+            $patientTeethReport = $patientInfo->report()->create([
+                'report_type' => ReportType::TeethReport,
+            ]);
             return response()->json($patientInfo);
         } elseif (auth()->user()->role == Role::Doctor) {
             $patient = Patient::where('phone', $request->phone)->first();
@@ -54,6 +58,9 @@ class PatientInfoController extends Controller
                     'roleable_type' => 'App\Models\Patient',
                     'roleable_id' => $patientInfo->id,
                     'sub_role' => DoctorRoleForPatient::DoctorWithApprove
+                ]);
+                $patientTeethReport = $patientInfo->report()->create([
+                    'report_type' => ReportType::TeethReport,
                 ]);
                 return response()->json($patientInfo);
             }
