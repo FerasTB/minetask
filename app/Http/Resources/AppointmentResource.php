@@ -34,7 +34,6 @@ class AppointmentResource extends JsonResource
             'patient' => new PatientInfoForDoctorResource($patient),
             'doctor' => new DoctorResource($doctor),
             'office' => new OfficeResource($office),
-            'case' => $this->record ? new MedicalCaseResource($this->record->case) : "No Case Yet",
         ];
     }
 }

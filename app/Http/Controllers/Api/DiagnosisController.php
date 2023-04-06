@@ -7,6 +7,7 @@ use App\Http\Requests\StoreDiagnosisRequest;
 use App\Http\Resources\DiagnosisResource;
 use App\Models\Diagnosis;
 use App\Models\Record;
+use App\Models\TeethRecord;
 use Illuminate\Http\Request;
 
 class DiagnosisController extends Controller
@@ -25,13 +26,13 @@ class DiagnosisController extends Controller
     public function store(StoreDiagnosisRequest $request)
     {
         $fields = $request->validated();
-        $record = Record::find($request->record_id);
+        $record = TeethRecord::find($request->record_id);
         if ($record) {
             $this->authorize('create', [Diagnosis::class, $record]);
             $diagnosis = $record->diagnosis()->create($fields);
             return new DiagnosisResource($diagnosis);
         }
-        return response('the is no record', 404);
+        return response('there is no record', 404);
     }
 
     /**
@@ -58,7 +59,7 @@ class DiagnosisController extends Controller
         //
     }
 
-    public function RecordDiagnosis(Record $record)
+    public function RecordDiagnosis(TeethRecord $record)
     {
         $diagnosis = $record->diagnosis;
         return new DiagnosisResource($diagnosis);
