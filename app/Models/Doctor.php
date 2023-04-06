@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Doctor extends Model
 {
     use HasFactory;
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
+
 
     protected   $fillable = ['first_name', 'last_name', 'practicing_from'];
 
@@ -50,5 +52,14 @@ class Doctor extends Model
     public function PatientCases(): HasManyThrough
     {
         return $this->hasManyThrough(PatientCase::class, MedicalCase::class, 'doctor_id', 'case_id');
+    }
+
+    public function teethRecords()
+    {
+        return $this->hasManyDeep(TeethRecord::class, [MedicalCase::class, PatientCase::class], [
+            'doctor_id', // Foreign key on the "case" table.
+            'case_id',    // Foreign key on the "patient case" table.
+            'patientCase_id'     // Foreign key on the "teeth record" table.
+        ]);
     }
 }

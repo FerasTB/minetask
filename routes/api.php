@@ -20,6 +20,7 @@ Route::post('/auth/register', [\App\Http\Controllers\Api\AuthController::class, 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('doctor/info', App\Http\Controllers\Api\DoctorInfoController::class);
     Route::get('doctor/profile', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyInfo']);
+    Route::get('doctor/{doctor}/docs', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecords']);
     Route::get('doctor/my_patient', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatient']);
     Route::apiResource('patient/info', App\Http\Controllers\Api\PatientInfoController::class);
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);

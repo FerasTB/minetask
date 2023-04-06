@@ -8,8 +8,10 @@ use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
 use App\Http\Resources\DoctorInfoResource;
 use App\Http\Resources\MyPatientsResource;
+use App\Http\Resources\TeethRecordResource;
 use App\Models\Doctor;
 use App\Models\HasRole;
+use App\Models\TeethRecord;
 use App\Policies\DoctorInfoPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -89,5 +91,10 @@ class DoctorInfoController extends Controller
     public function destroy(Doctor $doctor)
     {
         //
+    }
+
+    public function myRecords(Doctor $doctor)
+    {
+        return TeethRecordResource::collection($doctor->teethRecords);
     }
 }
