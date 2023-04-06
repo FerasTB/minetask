@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AppointmentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
@@ -58,5 +59,14 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         //
+    }
+
+    public function appointmentOnProcessing(Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+        $appointment->update([
+            'status_id' => AppointmentStatus::OnProcessing,
+        ]);
+        return response('Status Updated', 200);
     }
 }

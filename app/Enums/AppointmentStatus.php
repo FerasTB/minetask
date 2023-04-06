@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Enums;
 
@@ -11,7 +13,7 @@ use BenSampo\Enum\Enum;
  */
 final class AppointmentStatus extends Enum
 {
-    const OptionOne = 0;
-    const OptionTwo = 1;
-    const OptionThree = 2;
+    const New = 1;
+    const OnProcessing = 2;
+    const Done = 3;
 }
