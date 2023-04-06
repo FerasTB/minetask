@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('teeth_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patientCase_id')->constrained('medical_cases')->onDelete('cascade');
+            $table->foreignId('patientCase_id')->constrained('patient_cases')->onDelete('cascade');
             $table->foreignId('report_id')->constrained('reports')->onDelete('cascade');
             $table->foreignId('appointment_id')->nullable()->constrained('appointments');
             $table->longText('description')->nullable();
