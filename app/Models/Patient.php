@@ -37,6 +37,11 @@ class Patient extends Model
         return $this->hasOne(Report::class, 'patient_id')->where('report_type', ReportType::TeethReport);
     }
 
+    public function report()
+    {
+        return $this->hasMany(Report::class, 'patient_id');
+    }
+
     public function temporaries()
     {
         return $this->hasMany(TemporaryInformation::class, 'patient_id');
