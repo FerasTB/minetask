@@ -17,7 +17,7 @@ class CaseController extends Controller
      */
     public function index()
     {
-        //
+        return MedicalCaseResource::collection(auth()->user()->doctor->cases);
     }
 
     /**
