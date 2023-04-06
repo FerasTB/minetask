@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateOperationRequest;
 use App\Http\Resources\OperationResource;
 use App\Models\Operation;
 use App\Models\Record;
+use App\Models\TeethRecord;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\Constraint\Operator;
 
@@ -27,7 +28,7 @@ class OperationController extends Controller
     public function store(StoreOperationRequest $request)
     {
         $fields = $request->validated();
-        $record = Record::find($request->record_id);
+        $record = TeethRecord::find($request->record_id);
         if ($record) {
             $this->authorize('create', [Operation::class, $record]);
             $operation = $record->operations()->create($fields);
@@ -64,7 +65,7 @@ class OperationController extends Controller
         //
     }
 
-    public function RecordOperation(Record $record)
+    public function RecordOperation(TeethRecord $record)
     {
         $this->authorize('viewAny', [Operation::class, $record]);
         return OperationResource::collection($record->operations);

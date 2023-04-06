@@ -55,4 +55,10 @@ class TeethRecordController extends Controller
     {
         //
     }
+
+    public function CaseRecords(PatientCase $case)
+    {
+        // $this->authorize('viewAny', [Record::class, $case]);
+        return TeethRecordResource::collection($case->teethRecords);
+    }
 }

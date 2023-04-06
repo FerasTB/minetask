@@ -13,6 +13,6 @@ class Operation extends Model
 
     public function record()
     {
-        return $this->belongsTo(Record::class, 'record_id');
+        return $this->belongsTo(TeethRecord::class, 'record_id');
     }
 }
