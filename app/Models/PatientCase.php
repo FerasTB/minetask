@@ -9,7 +9,7 @@ class PatientCase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['patient_id', 'status', 'note'];
+    protected $fillable = ['patient_id', 'status', 'note', 'number_of_sessions', 'time_per_session'];
 
     public function patient()
     {
