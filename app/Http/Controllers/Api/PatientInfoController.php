@@ -7,6 +7,7 @@ use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
+use App\Http\Resources\MedicalInformationResource;
 use App\Models\HasRole;
 use App\Models\Patient;
 use App\Models\TemporaryInformation;
@@ -89,5 +90,16 @@ class PatientInfoController extends Controller
     public function destroy(Patient $patient)
     {
         //
+    }
+
+    public function showMedicalInformation(Patient $patient)
+    {
+        $role = HasRole::where(['roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
+        if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
+            return new MedicalInformationResource($patient->medicalInformation);
+        }
+        if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
+            return new MedicalInformationResource($patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id));
+        }
     }
 }

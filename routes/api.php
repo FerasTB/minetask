@@ -23,6 +23,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('doctor/{doctor}/docs', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecords']);
     Route::get('doctor/my_patient', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatient']);
     Route::apiResource('patient/info', App\Http\Controllers\Api\PatientInfoController::class);
+    Route::get('patient/{patient}/medical_info', [App\Http\Controllers\Api\PatientInfoController::class, 'showMedicalInformation']);
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
     Route::get('my_offices', [App\Http\Controllers\Api\OfficeController::class, 'MyOffices']);
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
@@ -44,4 +45,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('availability/doctor/{doctor}', [App\Http\Controllers\Api\AvailabilityController::class, 'doctorAvailability']);
     Route::post('office/{office}/add_employee', [App\Http\Controllers\Api\OfficeController::class, 'AddDoctor']);
     Route::get('office/{office}/show_employee', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOffice']);
+    Route::apiResource('medical/info', App\Http\Controllers\Api\MedicalInformationController::class);
 });

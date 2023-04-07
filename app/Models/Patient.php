@@ -51,4 +51,14 @@ class Patient extends Model
     {
         return $this->hasMany(PatientCase::class, 'patient_id');
     }
+
+    public function medicalInformation()
+    {
+        return $this->hasOne(MedicalInformation::class, 'patient_id')->where('is_temporary', false);
+    }
+
+    public function allMedicalInformation()
+    {
+        return $this->hasMany(MedicalInformation::class, 'patient_id');
+    }
 }
