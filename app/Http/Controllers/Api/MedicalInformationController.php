@@ -30,7 +30,7 @@ class MedicalInformationController extends Controller
     {
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
-        $doctor = Doctor::findOrFail($request->doctor_id);
+        $fields['doctor_id'] = auth()->user()->doctor->id;
         $role = HasRole::where(['roleable_id' => $request->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
         if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove && !$patient->medicalInformation) {
             $fields['is_temporary'] = false;

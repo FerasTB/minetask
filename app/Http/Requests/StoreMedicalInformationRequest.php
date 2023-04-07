@@ -28,7 +28,6 @@ class StoreMedicalInformationRequest extends FormRequest
             'used_medicines' => 'nullable|string',
             'is_temporary' => 'nullable|boolean',
             'allergy' => 'nullable|string',
-            'doctor_id' => 'required|integer',
             'patient_id' => 'required|integer',
         ];
     }
