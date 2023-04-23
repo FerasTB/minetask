@@ -97,4 +97,9 @@ class DoctorInfoController extends Controller
     {
         return TeethRecordResource::collection($doctor->teethRecords);
     }
+
+    public function patientRecords(Doctor $doctor, $patient)
+    {
+        return $doctor->teethRecords;
+    }
 }
