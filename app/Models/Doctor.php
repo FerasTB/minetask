@@ -62,4 +62,9 @@ class Doctor extends Model
             'patientCase_id'     // Foreign key on the "teeth record" table.
         ]);
     }
+
+    public function accountingProfiles()
+    {
+        return $this->hasMany(AccountingProfile::class, 'doctor_id');
+    }
 }

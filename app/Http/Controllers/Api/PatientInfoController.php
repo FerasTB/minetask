@@ -51,6 +51,9 @@ class PatientInfoController extends Controller
                     'roleable_id' => $patient->id,
                     'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
                 ]);
+                $patientAccountingProfile = $patient->accountingProfile()->create([
+                    'doctor_id' => auth()->id,
+                ]);
                 return response()->json($temporary);
             } else {
                 $doctor = auth()->user()->doctor;
@@ -62,6 +65,9 @@ class PatientInfoController extends Controller
                 ]);
                 $patientTeethReport = $patientInfo->report()->create([
                     'report_type' => ReportType::TeethReport,
+                ]);
+                $patientAccountingProfile = $patientInfo->accountingProfile()->create([
+                    'doctor_id' => auth()->id,
                 ]);
                 return response()->json($patientInfo);
             }
@@ -95,11 +101,15 @@ class PatientInfoController extends Controller
     public function showMedicalInformation(Patient $patient)
     {
         $role = HasRole::where(['roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
-        if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
-            return new MedicalInformationResource($patient->medicalInformation);
-        }
-        if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-            return new MedicalInformationResource($patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id));
+        if ($role) {
+            if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
+                return new MedicalInformationResource($patient->medicalInformation);
+            }
+            if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
+                return new MedicalInformationResource($patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id));
+            }
+        } else {
+            return response('medical info not found', 404);
         }
     }
 }
