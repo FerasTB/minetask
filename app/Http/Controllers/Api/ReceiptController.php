@@ -26,7 +26,7 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $accountingProfile = AccountingProfile::where(['patient_id' => $request->patient_id, 'doctor_id' => auth()->user()->doctor->id])->first();
-        $receipt = $accountingProfile->debts()->create($fields);
+        $receipt = $accountingProfile->receipts()->create($fields);
         return new ReceiptResource($receipt);
     }
 

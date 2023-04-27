@@ -10,7 +10,7 @@ class Receipt extends Model
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['note', 'amount'];
+    protected $fillable = ['note', 'amount', 'debt_id'];
 
     public function patient()
     {
