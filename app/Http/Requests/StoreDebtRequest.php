@@ -2,17 +2,17 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreAppointmentRequest extends FormRequest
+class StoreDebtRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->role == Role::Doctor;
     }
 
     /**
@@ -23,13 +23,9 @@ class StoreAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'after:start_time|date_format:H:i:s|required',
-            'taken_date' => 'date|required',
-            'status_id' => ['required', 'integer', Rule::in([1, 2, 3])],
             'patient_id' => 'required|integer',
-            'doctor_id' => 'nullable|integer',
-            'office_id' => 'required|integer',
+            'name' => 'required|string',
+            'amount' => 'required|integer',
             'note' => 'nullable|string',
         ];
     }

@@ -62,8 +62,8 @@ class Patient extends Model
         return $this->hasMany(MedicalInformation::class, 'patient_id');
     }
 
-    public function accountingProfile()
+    public function accountingProfiles()
     {
-        return $this->hasOne(AccountingProfile::class, 'patient_id');
+        return $this->hasMany(AccountingProfile::class, 'patient_id');
     }
 }

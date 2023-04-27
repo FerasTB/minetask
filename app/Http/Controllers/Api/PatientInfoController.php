@@ -51,7 +51,7 @@ class PatientInfoController extends Controller
                     'roleable_id' => $patient->id,
                     'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
                 ]);
-                $patientAccountingProfile = $patient->accountingProfile()->create([
+                $patientAccountingProfile = $patient->accountingProfiles()->create([
                     'doctor_id' => auth()->id,
                 ]);
                 return response()->json($temporary);
@@ -66,7 +66,7 @@ class PatientInfoController extends Controller
                 $patientTeethReport = $patientInfo->report()->create([
                     'report_type' => ReportType::TeethReport,
                 ]);
-                $patientAccountingProfile = $patientInfo->accountingProfile()->create([
+                $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
                     'doctor_id' => auth()->id,
                 ]);
                 return response()->json($patientInfo);
