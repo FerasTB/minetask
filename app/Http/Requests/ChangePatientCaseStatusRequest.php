@@ -24,7 +24,7 @@ class ChangePatientCaseStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(['Closed', 'Open'])],
+            'status' => ['required', Rule::in(['Open', 'Closed'])],
         ];
     }
 }
