@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PatientCaseStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangePatientCaseStatusRequest;
 use App\Http\Requests\StorePatientCaseRequest;
 use App\Http\Resources\PatientCaseResource;
 use App\Models\MedicalCase;
@@ -62,5 +64,15 @@ class PatientCaseController extends Controller
     {
         // $this->authorize('viewAny', [MedicalCase::class, $patient]);
         return PatientCaseResource::collection(auth()->user()->doctor->PatientCases->where('patient_id', $patient->id));
+    }
+
+    public function ChangeStatus(ChangePatientCaseStatusRequest $request, PatientCase $case)
+    {
+        $fields = $request->validated();
+        $status = PatientCaseStatus::getKey($request->status);
+        $case->update([
+            'status' => $status,
+        ]);
+        return new PatientCaseResource($case);
     }
 }
