@@ -108,7 +108,7 @@ class DoctorInfoController extends Controller
     public function myRecordsForCase($case)
     {
         $doctor = auth()->user()->doctor;
-        return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.case.case_name', $case);
+        return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.case.id', $case);
     }
 
     // public function patientRecords(Doctor $doctor, $patient)
