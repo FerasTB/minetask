@@ -93,9 +93,14 @@ class DoctorInfoController extends Controller
         //
     }
 
-    public function myRecords(Doctor $doctor)
+    public function myRecords(Doctor $doctor, $patient)
     {
-        return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.patient.id', 2);
+        return TeethRecordResource::collection($doctor->teethRecords);
+    }
+
+    public function myRecordsForPatient(Doctor $doctor, $patient)
+    {
+        return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.patient.id', $patient);
     }
 
     // public function patientRecords(Doctor $doctor, $patient)

@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('doctor/info', App\Http\Controllers\Api\DoctorInfoController::class);
     Route::get('doctor/profile', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyInfo']);
     Route::get('doctor/{doctor}/docs', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecords']);
+    Route::get('doctor/{doctor}/docs/{patient}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecordsForPatient']);
     Route::get('doctor/{doctor}/docs/{patient}', [App\Http\Controllers\Api\DoctorInfoController::class, 'patientRecords']);
     Route::get('doctor/my_patient', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatient']);
     Route::apiResource('patient/info', App\Http\Controllers\Api\PatientInfoController::class);
