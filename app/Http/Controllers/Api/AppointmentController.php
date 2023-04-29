@@ -35,6 +35,7 @@ class AppointmentController extends Controller
             $doctor = Doctor::find($request->doctor_id);
         }
         $appointment = $doctor->appointments()->create($fields);
+        $appointment = Appointment::find($appointment->id);
         return new AppointmentResource($appointment);
     }
 
