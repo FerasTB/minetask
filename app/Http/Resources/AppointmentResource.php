@@ -30,7 +30,7 @@ class AppointmentResource extends JsonResource
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'taken_date' => $this->taken_date,
-            'status' => EnumsAppointmentStatus::getValue($this->status),
+            'status' => EnumsAppointmentStatus::getKey($this->status),
             'patient' => new PatientInfoForDoctorResource($patient),
             'doctor' => new DoctorResource($doctor),
             'office' => new OfficeResource($office),
