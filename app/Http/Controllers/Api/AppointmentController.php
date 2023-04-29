@@ -67,6 +67,7 @@ class AppointmentController extends Controller
     {
         $this->authorize('update', $appointment);
         $fields = $request->validated();
+        $fields['status'] = AppointmentStatus::getValue($request->status);
         $appointment->update($fields);
         return response('Status Updated', 200);
     }
