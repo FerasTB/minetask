@@ -35,9 +35,9 @@ class TeethRecordController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TeethRecord $teethRecord)
+    public function show(TeethRecord $record)
     {
-        //
+        return new TeethRecordResource($record);
     }
 
     /**
