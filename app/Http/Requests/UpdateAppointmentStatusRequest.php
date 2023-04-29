@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AppointmentStatus;
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAppointmentStatusRequest extends FormRequest
 {
@@ -23,7 +25,7 @@ class UpdateAppointmentStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status_id' => 'required|integer',
+            'status' => ['required', 'integer', Rule::in(AppointmentStatus::getKeys())],
         ];
     }
 }

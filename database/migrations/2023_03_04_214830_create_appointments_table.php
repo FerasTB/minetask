@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AppointmentStatus;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('office_id')->constrained('offices')->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
-            $table->foreignId('status_id')->constrained('appointment_statuses')->onDelete('cascade');
+            $table->smallInteger('status')->default(AppointmentStatus::New);
             $table->time('start_time');
             $table->time('end_time');
             $table->date('taken_date');

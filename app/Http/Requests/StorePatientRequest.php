@@ -27,6 +27,7 @@ class StorePatientRequest extends FormRequest
             'phone' => 'integer|required',
             'email' => 'email|nullable',
             'birth_date' => 'date|nullable',
+            'note' => 'nullable|string',
         ];
     }
 }

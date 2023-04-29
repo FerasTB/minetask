@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AppointmentStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +27,6 @@ class StoreAppointmentRequest extends FormRequest
             'start_time' => 'required|date_format:H:i:s',
             'end_time' => 'after:start_time|date_format:H:i:s|required',
             'taken_date' => 'date|required',
-            'status_id' => ['required', 'integer', Rule::in([1, 2, 3])],
             'patient_id' => 'required|integer',
             'doctor_id' => 'nullable|integer',
             'office_id' => 'required|integer',
