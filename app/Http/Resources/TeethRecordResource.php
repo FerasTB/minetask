@@ -31,6 +31,8 @@ class TeethRecordResource extends JsonResource
             'after_treatment_instruction' => $this->after_treatment_instruction,
             'anesthesia_type' => $this->anesthesia_type,
             'appointment' => $appointment ? new AppointmentResource($appointment) : "no appointment",
+            'diagnosis' => new DiagnosisResource($this->diagnosis),
+            'operations' => OperationResource::collection($this->operations),
         ];
     }
 }
