@@ -57,6 +57,6 @@ class DebtController extends Controller
 
     public function patientDebt(Patient $patient)
     {
-        return DebtResource::collection($patient->debts);
+        return DebtResource::collection($patient->debts)->where('doctor.id', auth()->user()->doctor->id);
     }
 }
