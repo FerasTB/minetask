@@ -9,7 +9,7 @@ class TemporaryInformation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['birth_date', 'email', 'last_name', 'first_name', 'doctor_id'];
+    protected $fillable = ['note', 'birth_date', 'email', 'last_name', 'first_name', 'doctor_id'];
 
     public function patient()
     {
