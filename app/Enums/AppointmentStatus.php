@@ -15,5 +15,6 @@ final class AppointmentStatus extends Enum
 {
     const New = 1;
     const OnProcessing = 2;
-    const Done = 3;
+    const Canceled = 3;
+    const Done = 4;
 }
