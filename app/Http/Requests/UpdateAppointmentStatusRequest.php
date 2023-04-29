@@ -25,7 +25,7 @@ class UpdateAppointmentStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'integer', Rule::in(AppointmentStatus::getKeys())],
+            'status' => ['required', 'string', Rule::in(AppointmentStatus::getKeys())],
         ];
     }
 }
