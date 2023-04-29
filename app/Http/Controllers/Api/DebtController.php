@@ -7,6 +7,7 @@ use App\Http\Requests\StoreDebtRequest;
 use App\Http\Resources\DebtResource;
 use App\Models\AccountingProfile;
 use App\Models\Debt;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class DebtController extends Controller
@@ -52,5 +53,10 @@ class DebtController extends Controller
     public function destroy(Debt $debt)
     {
         //
+    }
+
+    public function patientDebt(Patient $patient)
+    {
+        return DebtResource::collection($patient->debts);
     }
 }

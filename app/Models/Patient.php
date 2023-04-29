@@ -66,4 +66,9 @@ class Patient extends Model
     {
         return $this->hasMany(AccountingProfile::class, 'patient_id');
     }
+
+    public function debts()
+    {
+        return $this->hasManyThrough(Debt::class, AccountingProfile::class, 'accounting_profile_id', 'patient_id');
+    }
 }
