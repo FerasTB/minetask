@@ -20,6 +20,7 @@ class DebtResource extends JsonResource
             'amount' => $this->amount,
             'note' => $this->note,
             'doctor' => new DoctorInfoResource($this->doctor),
+            'created_at' => $this->created_at,
         ];
     }
 }

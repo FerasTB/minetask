@@ -25,6 +25,7 @@ class ReceiptResource extends JsonResource
             'amount' => $this->amount,
             'note' => $this->note,
             'debt' => $bool ? new DebtResource($debt) : 'not connected to debt',
+            'created_at' => $this->created_at,
         ];
     }
 }
