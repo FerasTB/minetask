@@ -14,6 +14,7 @@ class Office extends Model
     protected $fillable = [
         'first_consultation_fee', 'address',
         'office_image', 'office_name', 'number',
+        'start_time', 'end_time',
     ];
 
 
