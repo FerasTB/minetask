@@ -30,7 +30,7 @@ class StorePatientRequest extends FormRequest
             'email' => 'email|nullable',
             'birth_date' => 'date|nullable',
             'note' => 'nullable|string',
-            'gender' => ['required', Rule::in(Gender::getKeys())],
+            'gender' => ['required', Rule::in(Gender::getValues())],
         ];
     }
 }
