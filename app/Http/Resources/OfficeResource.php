@@ -21,6 +21,8 @@ class OfficeResource extends JsonResource
             'address' => $this->address,
             'office_image' => $this->office_image,
             'office_name' => $this->office_name,
+            'start_time' => $this->start_time,
+            'end_time' => $this->end_time,
         ];
     }
 }

@@ -27,6 +27,8 @@ class StoreOfficeRequest extends FormRequest
             'address' => 'required|string',
             'office_image' => 'nullable|text',
             'office_name' => 'required|string',
+            'start_time' => 'nullable|date_format:H:i:s',
+            'end_time' => 'date_format:H:i:s|nullable',
         ];
     }
 }

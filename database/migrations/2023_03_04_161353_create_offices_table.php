@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('address');
             $table->integer('time_per_client')->default(5);
             $table->integer('number')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->timestamps();
         });
     }

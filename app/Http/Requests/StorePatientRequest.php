@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Gender;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePatientRequest extends FormRequest
 {
@@ -28,6 +30,7 @@ class StorePatientRequest extends FormRequest
             'email' => 'email|nullable',
             'birth_date' => 'date|nullable',
             'note' => 'nullable|string',
+            'gender' => ['required', Rule::in(Gender::getKeys())],
         ];
     }
 }

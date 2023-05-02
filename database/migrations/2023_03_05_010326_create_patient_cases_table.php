@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('case_id')->constrained('medical_cases')->onDelete('cascade');
             $table->boolean('status')->default(PatientCaseStatus::Open);
-            $table->integer('number_of_sessions');
+            $table->integer('number_of_sessions')->nullable();
             $table->integer('time_per_session')->nullable();
             $table->string('note')->nullable();
             $table->timestamps();

@@ -8,7 +8,9 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Resources\MedicalInformationResource;
+use App\Models\Doctor;
 use App\Models\HasRole;
+use App\Models\MedicalCase;
 use App\Models\Patient;
 use App\Models\TemporaryInformation;
 use Illuminate\Http\Request;
@@ -54,6 +56,10 @@ class PatientInfoController extends Controller
                 $patientAccountingProfile = $patient->accountingProfiles()->create([
                     'doctor_id' => auth()->user()->doctor->id,
                 ]);
+                $case = MedicalCase::where(['name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                $defaultCase = $patient->cases()->create([
+                    'case_id' => $case->id,
+                ]);
                 return response()->json($temporary);
             } else {
                 $doctor = auth()->user()->doctor;
@@ -68,6 +74,10 @@ class PatientInfoController extends Controller
                 ]);
                 $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
                     'doctor_id' => auth()->user()->doctor->id,
+                ]);
+                $case = MedicalCase::where(['name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                $defaultCase = $patientInfo->cases()->create([
+                    'case_id' => $case->id,
                 ]);
                 return response()->json($patientInfo);
             }

@@ -26,7 +26,7 @@ class StorePatientCaseRequest extends FormRequest
             'patient_id' => 'required|integer',
             'case_id' => 'required|integer',
             'status' => 'nullable|integer',
-            'number_of_sessions' => 'required|integer',
+            'number_of_sessions' => 'nullable|integer',
             'time_per_session' => 'nullable|integer',
             'note' => 'nullable|string',
         ];

@@ -14,6 +14,8 @@ class Doctor extends Model
 
     protected   $fillable = ['first_name', 'last_name', 'practicing_from'];
 
+    const DefaultCase = 'خدمات عامة';
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
