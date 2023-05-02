@@ -39,7 +39,7 @@ class DoctorInfoController extends Controller
             $fields = $request->validated();
             $doctorInfo = auth()->user()->doctor()->create($fields);
             $doctorInfo->cases()->create([
-                'name' => Doctor::DefaultCase,
+                'case_name' => Doctor::DefaultCase,
             ]);
             return new DoctorInfoResource($doctorInfo);
         } else {
