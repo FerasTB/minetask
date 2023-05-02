@@ -56,7 +56,7 @@ class PatientInfoController extends Controller
                 $patientAccountingProfile = $patient->accountingProfiles()->create([
                     'doctor_id' => auth()->user()->doctor->id,
                 ]);
-                $case = MedicalCase::where(['name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
                 $defaultCase = $patient->cases()->create([
                     'case_id' => $case->id,
                 ]);
@@ -75,7 +75,7 @@ class PatientInfoController extends Controller
                 $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
                     'doctor_id' => auth()->user()->doctor->id,
                 ]);
-                $case = MedicalCase::where(['name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
                 $defaultCase = $patientInfo->cases()->create([
                     'case_id' => $case->id,
                 ]);
