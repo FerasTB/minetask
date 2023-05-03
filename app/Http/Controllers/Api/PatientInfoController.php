@@ -8,6 +8,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Resources\MedicalInformationResource;
+use App\Http\Resources\MyPatientsResource;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
@@ -60,7 +61,7 @@ class PatientInfoController extends Controller
                 $defaultCase = $patient->cases()->create([
                     'case_id' => $case->id,
                 ]);
-                return response()->json($temporary);
+                return new MyPatientsResource($role);
             } else {
                 $doctor = auth()->user()->doctor;
                 $patientInfo = $doctor->patients()->create($fields);
@@ -79,7 +80,7 @@ class PatientInfoController extends Controller
                 $defaultCase = $patientInfo->cases()->create([
                     'case_id' => $case->id,
                 ]);
-                return response()->json($patientInfo);
+                return new MyPatientsResource($role);
             }
         }
     }
