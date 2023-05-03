@@ -45,6 +45,7 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
+        $this->authorize('view', $appointment);
         return new AppointmentResource($appointment);
     }
 
@@ -53,6 +54,7 @@ class AppointmentController extends Controller
      */
     public function update(UpdateAppointmentRequest $request, Appointment $appointment)
     {
+        $this->authorize('update', $appointment);
         $fields = $request->validated();
         $appointment->update($fields);
         return new AppointmentResource($appointment);
