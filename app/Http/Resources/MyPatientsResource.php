@@ -26,8 +26,8 @@ class MyPatientsResource extends JsonResource
                 'phone' => 0 . $patient->phone,
                 'email' => $patient->email,
                 'birth_date' => $patient->birth_date,
-                'note' => $this->note,
-                'gender' => $this->gender,
+                'note' => $patient->note,
+                'gender' => $patient->gender,
                 'status' => 'Approve'
             ];
         }
@@ -42,7 +42,7 @@ class MyPatientsResource extends JsonResource
                 'email' => $patient->email,
                 'birth_date' => $patient->birth_date,
                 'gender' => $originalPatient->gender,
-                'note' => $this->note,
+                'note' => $patient->note,
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
             ];

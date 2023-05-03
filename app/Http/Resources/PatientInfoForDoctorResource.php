@@ -42,7 +42,7 @@ class PatientInfoForDoctorResource extends JsonResource
                     'phone' => 0 . $this->phone,
                     'email' => $patient->email,
                     'birth_date' => $patient->birth_date,
-                    'note' => $this->note,
+                    'note' => $patient->note,
                     'gender' => $this->gender,
                     'status' => 'WithoutApprove',
                     'TemporaryId' => $patient->id,
