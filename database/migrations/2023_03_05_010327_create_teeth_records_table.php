@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('patientCase_id')->constrained('patient_cases')->onDelete('cascade');
             $table->foreignId('report_id')->constrained('reports')->onDelete('cascade');
-            $table->foreignId('appointment_id')->nullable()->constrained('appointments');
+            $table->foreignId('appointment_id')->nullable()->constrained('appointments')->nullOnDelete();
             $table->longText('description')->nullable();
             $table->smallInteger('anesthesia_type')->default(AnesthesiaType::None);
             $table->text('after_treatment_instruction')->nullable();
