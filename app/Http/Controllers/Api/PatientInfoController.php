@@ -69,6 +69,7 @@ class PatientInfoController extends Controller
                     return new MyPatientsResource($role);
                 } else {
                     $doctor = $office->owner->doctor;
+                    return $office->owner;
                     $patientInfo = $doctor->patients()->create($fields);
                     $role = auth()->user()->roles()->create([
                         'roleable_type' => 'App\Models\Patient',
