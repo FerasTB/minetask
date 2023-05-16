@@ -3,7 +3,10 @@
 namespace App\Policies;
 
 use App\Enums\Role;
+use App\Enums\SubRole;
 use App\Models\Doctor;
+use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -63,5 +66,11 @@ class DoctorPolicy
     public function forceDelete(User $user, Doctor $doctor): bool
     {
         //
+    }
+
+    public function inOffice(User $user, Doctor $doctor, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $doctor->user->id])->first();
+        return $role->sub_role == SubRole::DoctorInOffice;
     }
 }
