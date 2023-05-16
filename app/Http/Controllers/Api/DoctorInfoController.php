@@ -70,7 +70,7 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         if ($doctor) {
             if ($office->type == OfficeType::Combined) {
-                $this->authorize('inOffice', [$doctor, $office]);
+                $this->authorize('inOffice', [Doctor::class, $office]);
                 $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 return MyPatientsResource::collection($roles);
             } else {

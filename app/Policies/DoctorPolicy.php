@@ -68,9 +68,9 @@ class DoctorPolicy
         //
     }
 
-    public function inOffice(User $user, Doctor $doctor, Office $office): bool
+    public function inOffice(User $user, Office $office): bool
     {
-        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $doctor->user->id])->first();
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
         return $role->sub_role == SubRole::DoctorInOffice;
     }
 }
