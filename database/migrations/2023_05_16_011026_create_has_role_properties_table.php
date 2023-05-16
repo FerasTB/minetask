@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointment_statuses', function (Blueprint $table) {
+        Schema::create('has_role_properties', function (Blueprint $table) {
             $table->id();
-            $table->string('status_name');
+            $table->foreignId('has_role_id')->constrained('has_roles')->onDelete('cascade');
+            $table->integer("type");
+            $table->boolean("read")->default(false);
+            $table->boolean("write")->default(false);
+            $table->boolean("edit")->default(false);
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('appointment_statuses');
+        Schema::dropIfExists('has_role_properties');
     }
 };

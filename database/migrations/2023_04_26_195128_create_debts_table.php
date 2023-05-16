@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('debts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('accounting_profile_id')->constrained('accounting_profiles')->onDelete('cascade');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->integer('amount');
             $table->string('note')->nullable();
             $table->timestamps();

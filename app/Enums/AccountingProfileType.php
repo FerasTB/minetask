@@ -11,10 +11,8 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class DoctorRoleForPatient extends Enum
+final class AccountingProfileType extends Enum
 {
-    const DoctorWithoutApprove = 1;
-    const DoctorWithApprove = 2;
-    const OfficePatientWithoutApprove = 3;
-    const OfficePatientWithApprove = 4;
+    const PatientAccount = 1;
+    const SupplierAccount = 2;
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('accounting_profile_id')->constrained('accounting_profiles')->onDelete('cascade');
             $table->foreignId('debt_id')->nullable()->constrained('debts')->onDelete('cascade');
             $table->integer('amount');
-            $table->smallInteger('type')->default(1);
+            $table->date('dateOfPay')->default(now());
             $table->string('note')->nullable();
             $table->timestamps();
         });

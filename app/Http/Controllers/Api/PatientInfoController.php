@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\OfficeType;
 use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
@@ -12,6 +14,7 @@ use App\Http\Resources\MyPatientsResource;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
+use App\Models\Office;
 use App\Models\Patient;
 use App\Models\TemporaryInformation;
 use Illuminate\Http\Request;
@@ -44,43 +47,89 @@ class PatientInfoController extends Controller
             return response()->json($patientInfo);
         } elseif (auth()->user()->role == Role::Doctor) {
             $patient = Patient::where('phone', $request->phone)->first();
-            if ($patient) {
-                // $fields['patient_id'] = $patient->id;
-                $fields['doctor_id'] = auth()->user()->doctor->id;
-                $temporary = $patient->temporaries()->create($fields);
-                $role = HasRole::create([
-                    'user_id' => auth()->id(),
-                    'roleable_type' => 'App\Models\Patient',
-                    'roleable_id' => $patient->id,
-                    'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
-                ]);
-                $patientAccountingProfile = $patient->accountingProfiles()->create([
-                    'doctor_id' => auth()->user()->doctor->id,
-                ]);
-                $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
-                $defaultCase = $patient->cases()->create([
-                    'case_id' => $case->id,
-                ]);
-                return new MyPatientsResource($role);
-            } else {
-                $doctor = auth()->user()->doctor;
-                $patientInfo = $doctor->patients()->create($fields);
-                $role = auth()->user()->roles()->create([
-                    'roleable_type' => 'App\Models\Patient',
-                    'roleable_id' => $patientInfo->id,
-                    'sub_role' => DoctorRoleForPatient::DoctorWithApprove
-                ]);
-                $patientTeethReport = $patientInfo->report()->create([
-                    'report_type' => ReportType::TeethReport,
-                ]);
-                $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
-                    'doctor_id' => auth()->user()->doctor->id,
-                ]);
-                $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
-                $defaultCase = $patientInfo->cases()->create([
-                    'case_id' => $case->id,
-                ]);
-                return new MyPatientsResource($role);
+            $office = Office::findOrFail($request->office_id);
+            if ($office->type == OfficeType::Combined) {
+                if ($patient) {
+                    $fields['doctor_id'] = $office->owner->doctor->id;
+                    $temporary = $patient->temporaries()->create($fields);
+                    $role = HasRole::create([
+                        'user_id' => $office->owner->id,
+                        'roleable_type' => 'App\Models\Patient',
+                        'roleable_id' => $patient->id,
+                        'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
+                    ]);
+                    $patientAccountingProfile = $patient->accountingProfiles()->create([
+                        'office_id' => $office->id,
+                        'type' => AccountingProfileType::PatientAccount,
+                    ]);
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $office->owner->doctor->id])->first();
+                    $defaultCase = $patient->cases()->create([
+                        'case_id' => $case->id,
+                    ]);
+                    return new MyPatientsResource($role);
+                } else {
+                    $doctor = $office->owner->doctor;
+                    $patientInfo = $doctor->patients()->create($fields);
+                    $role = auth()->user()->roles()->create([
+                        'roleable_type' => 'App\Models\Patient',
+                        'roleable_id' => $patientInfo->id,
+                        'sub_role' => DoctorRoleForPatient::DoctorWithApprove
+                    ]);
+                    $patientTeethReport = $patientInfo->report()->create([
+                        'report_type' => ReportType::TeethReport,
+                    ]);
+                    $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
+                        'office_id' => $office->id,
+                        'type' => AccountingProfileType::PatientAccount,
+                    ]);
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $office->owner->doctor->id])->first();
+                    $defaultCase = $patientInfo->cases()->create([
+                        'case_id' => $case->id,
+                    ]);
+                    return new MyPatientsResource($role);
+                }
+            } elseif ($office->type == OfficeType::Separate) {
+                if ($patient) {
+                    $fields['doctor_id'] = auth()->user()->doctor->id;
+                    $temporary = $patient->temporaries()->create($fields);
+                    $role = HasRole::create([
+                        'user_id' => auth()->user()->id,
+                        'roleable_type' => 'App\Models\Patient',
+                        'roleable_id' => $patient->id,
+                        'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
+                    ]);
+                    $patientAccountingProfile = $patient->accountingProfiles()->create([
+                        'office_id' => $office->id,
+                        'doctor_id' => auth()->user()->doctor->id,
+                        'type' => AccountingProfileType::PatientAccount,
+                    ]);
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                    $defaultCase = $patient->cases()->create([
+                        'case_id' => $case->id,
+                    ]);
+                    return new MyPatientsResource($role);
+                } else {
+                    $doctor = auth()->user()->doctor;
+                    $patientInfo = $doctor->patients()->create($fields);
+                    $role = auth()->user()->roles()->create([
+                        'roleable_type' => 'App\Models\Patient',
+                        'roleable_id' => $patientInfo->id,
+                        'sub_role' => DoctorRoleForPatient::DoctorWithApprove
+                    ]);
+                    $patientTeethReport = $patientInfo->report()->create([
+                        'report_type' => ReportType::TeethReport,
+                    ]);
+                    $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
+                        'doctor_id' => auth()->user()->doctor->id,
+                        'office_id' => $office->id,
+                        'type' => AccountingProfileType::PatientAccount,
+                    ]);
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                    $defaultCase = $patientInfo->cases()->create([
+                        'case_id' => $case->id,
+                    ]);
+                    return new MyPatientsResource($role);
+                }
             }
         }
     }

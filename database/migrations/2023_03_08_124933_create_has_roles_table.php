@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('roleable_id')->nullable();
             $table->string('roleable_type')->nullable(); // App\Models\Office , App\Models\Pharm
             $table->integer('sub_role')->nullable();
+            $table->integer('isActive')->default(true);
             $table->timestamps();
         });
     }
