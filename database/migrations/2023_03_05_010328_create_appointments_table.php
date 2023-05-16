@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('office_id')->constrained('offices')->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
-            $table->foreignId('patientCase_id')->nullable()->constrained('patient_cases')->onDelete('set null');
+            $table->foreignId('patientCase_id')->nullable()->constrained('patient_cases')->nullOnDelete();
             $table->smallInteger('status')->default(AppointmentStatus::New);
             $table->time('start_time');
             $table->time('end_time');
