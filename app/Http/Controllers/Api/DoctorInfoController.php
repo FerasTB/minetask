@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDoctorRequest;
@@ -11,6 +12,7 @@ use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\Doctor;
 use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\TeethRecord;
 use App\Policies\DoctorInfoPolicy;
 use Illuminate\Http\Request;
@@ -63,12 +65,17 @@ class DoctorInfoController extends Controller
         return response('you have to complete your info', 404);
     }
 
-    public function showMyPatient()
+    public function showMyPatient(Office $office)
     {
         $doctor = auth()->user()->doctor;
         if ($doctor) {
-            $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
-            return MyPatientsResource::collection($roles);
+            if ($office->type == OfficeType::Combined) {
+                $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
+                return MyPatientsResource::collection($roles);
+            } else {
+                $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
+                return MyPatientsResource::collection($roles);
+            }
         }
         return response('you have to complete your info', 404);
     }
