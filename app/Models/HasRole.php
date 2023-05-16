@@ -21,4 +21,9 @@ class HasRole extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function setting()
+    {
+        return $this->hasOne(EmployeeSetting::class, 'has_role_id');
+    }
 }

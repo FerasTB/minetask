@@ -83,31 +83,32 @@ class OfficeController extends Controller
     {
         $this->authorize('officeOwner', $office);
         $fields = $request->validated();
-        $user = 0;
-        if ($fields['isNew']) {
-            if ($fields['role']) {
-                $user = User::create([
-                    'phone' => $request->phone,
-                    'password' => Hash::make($request->password),
-                    'role' => Role::getValue($request->role),
-                ]);
-            } else {
-                $user = User::create([
-                    'phone' => $request->phone,
-                    'password' => Hash::make($request->password),
-                ]);
-            }
-            $fields['sub_role'] = $request->role == 'Doctor' ? SubRole::DoctorInOffice : SubRole::OfficeSecretary;
-            $fields['roleable_id'] = $office->id;
-            $fields['roleable_type'] = 'App\Models\Office';
-            $relation = $user->roles()->create($fields);
-            return DoctorInOfficeResource::collection($office->roles);
-        }
-        $user = User::where('phone', $fields['user_id'])->first()->get();
+        // $user = 0;
+        // if ($fields['isNew']) {
+        //     if ($fields['role']) {
+        //         $user = User::create([
+        //             'phone' => $request->phone,
+        //             'password' => Hash::make($request->password),
+        //             'role' => Role::getValue($request->role),
+        //         ]);
+        //     } else {
+        //         $user = User::create([
+        //             'phone' => $request->phone,
+        //             'password' => Hash::make($request->password),
+        //         ]);
+        //     }
+        //     $fields['sub_role'] = $request->role == 'Doctor' ? SubRole::DoctorInOffice : SubRole::OfficeSecretary;
+        //     $fields['roleable_id'] = $office->id;
+        //     $fields['roleable_type'] = 'App\Models\Office';
+        //     $relation = $user->roles()->create($fields);
+        //     return DoctorInOfficeResource::collection($office->roles);
+        // }
+        $user = User::find($fields['user_id']);
         $fields['sub_role'] = SubRole::getValue($request->sub_role);
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
+        $relation->setting()->create($fields);
         return new DoctorInOfficeResource($relation);
     }
 

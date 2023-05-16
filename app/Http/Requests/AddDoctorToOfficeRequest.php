@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\SubRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
@@ -24,10 +25,13 @@ class AddDoctorToOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|integer',
-            'password' => ['nullable', 'confirmed', Password::default()],
-            'isNew' => 'required|boolean',
-            'role' => ['nullable', Rule::in(['Patient', 'Doctor'])],
+            'user_id' => 'required|integer',
+            'sub_role' => ['nullable', Rule::in(SubRole::getKeys())],
+            'note' => 'string|nullable',
+            'doctor_id' => 'integer|nullable',
+            'rate_type' => 'integer|nullable',
+            'rate' => 'integer|nullable',
+            'salary' => 'integer|nullable',
         ];
     }
 }
