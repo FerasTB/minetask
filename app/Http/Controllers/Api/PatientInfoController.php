@@ -17,6 +17,7 @@ use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\TemporaryInformation;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PatientInfoController extends Controller
@@ -48,12 +49,14 @@ class PatientInfoController extends Controller
         } elseif (auth()->user()->role == Role::Doctor) {
             $patient = Patient::where('phone', $request->phone)->first();
             $office = Office::findOrFail($request->office_id);
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
             if ($office->type == OfficeType::Combined) {
                 if ($patient) {
-                    $fields['doctor_id'] = $office->owner->doctor->id;
+                    $fields['doctor_id'] = $ownerDoctor->id;
                     $temporary = $patient->temporaries()->create($fields);
                     $role = HasRole::create([
-                        'user_id' => $office->owner->id,
+                        'user_id' => $ownerUser->id,
                         'roleable_type' => 'App\Models\Patient',
                         'roleable_id' => $patient->id,
                         'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
@@ -62,14 +65,13 @@ class PatientInfoController extends Controller
                         'office_id' => $office->id,
                         'type' => AccountingProfileType::PatientAccount,
                     ]);
-                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $office->owner->doctor->id])->first();
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $ownerDoctor->id])->first();
                     $defaultCase = $patient->cases()->create([
                         'case_id' => $case->id,
                     ]);
                     return new MyPatientsResource($role);
                 } else {
-                    $doctor = $office->owner->doctor;
-                    return $office->owner;
+                    $doctor = $ownerDoctor;
                     $patientInfo = $doctor->patients()->create($fields);
                     $role = auth()->user()->roles()->create([
                         'roleable_type' => 'App\Models\Patient',
@@ -83,7 +85,7 @@ class PatientInfoController extends Controller
                         'office_id' => $office->id,
                         'type' => AccountingProfileType::PatientAccount,
                     ]);
-                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $office->owner->doctor->id])->first();
+                    $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $doctor->id])->first();
                     $defaultCase = $patientInfo->cases()->create([
                         'case_id' => $case->id,
                     ]);
