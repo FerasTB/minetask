@@ -26,6 +26,7 @@ class PatientCaseResource extends JsonResource
             'status' => PatientCaseStatus::getKey($this->status),
             'time_per_session' => $this->time_per_session,
             'number_of_sessions' => $this->number_of_sessions,
+            'sessions_taken' => $this->teethRecords->count,
             'status' => PatientCaseStatus::getKey($this->status),
             'note' => $this->note,
         ];

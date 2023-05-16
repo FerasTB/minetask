@@ -30,6 +30,7 @@ class StoreAppointmentRequest extends FormRequest
             'patient_id' => 'required|integer',
             'doctor_id' => 'nullable|integer',
             'office_id' => 'required|integer',
+            'patientCase_id' => 'nullable|integer',
             'note' => 'nullable|string',
         ];
     }
