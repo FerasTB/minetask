@@ -31,7 +31,7 @@ class StoreOfficeRequest extends FormRequest
             'office_name' => 'required|string',
             'start_time' => 'nullable|date_format:H:i:s',
             'end_time' => 'date_format:H:i:s|nullable',
-            'type' => ['required', Rule::in(OfficeType::getValues())],
+            'type' => ['required', Rule::in(OfficeType::getKeys())],
         ];
     }
 }
