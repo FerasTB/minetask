@@ -24,6 +24,7 @@ class StoreMedicalCaseRequest extends FormRequest
     {
         return [
             'case_name' => 'required|string',
+            'office_id' => 'required|integer',
         ];
     }
 }

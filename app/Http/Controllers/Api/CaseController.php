@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMedicalCaseRequest;
 use App\Http\Requests\UpdateMedicalCaseRequest;
 use App\Http\Resources\MedicalCaseResource;
 use App\Models\MedicalCase;
+use App\Models\Office;
 use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CaseController extends Controller
@@ -15,9 +18,17 @@ class CaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return MedicalCaseResource::collection(auth()->user()->doctor->cases);
+        $office = Office::findOrFail($request->office_id);
+        $this->authorize('viewAny', [MedicalCase::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            return MedicalCaseResource::collection(auth()->user()->doctor->cases);
+        } else {
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
+            return MedicalCaseResource::collection($ownerDoctor->cases);
+        }
     }
 
     /**
@@ -25,11 +36,19 @@ class CaseController extends Controller
      */
     public function store(StoreMedicalCaseRequest $request)
     {
-        $this->authorize('create', MedicalCase::class);
         $fields = $request->validated();
-        $doctor = auth()->user()->doctor;
-        $case = $doctor->cases()->create($fields);
-        return new MedicalCaseResource($case);
+        $office = Office::findOrFail($request->office_id);
+        $this->authorize('create', [MedicalCase::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            $case = $doctor->cases()->create($fields);
+            return new MedicalCaseResource($case);
+        } else {
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
+            $case = $ownerDoctor->cases()->create($fields);
+            return new MedicalCaseResource($case);
+        }
     }
 
     /**
