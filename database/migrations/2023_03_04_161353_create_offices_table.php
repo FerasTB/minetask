@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('number')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
+            $table->integer('type')->nullable();
             $table->timestamps();
         });
     }
