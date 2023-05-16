@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\OfficeType;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,6 +25,7 @@ class OfficeResource extends JsonResource
             'office_name' => $this->office_name,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
+            'type' => OfficeType::getKey($this->type),
         ];
     }
 }
