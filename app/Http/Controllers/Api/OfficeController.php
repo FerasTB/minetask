@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Enums\SubRole;
 use App\Http\Controllers\Controller;
@@ -41,6 +42,7 @@ class OfficeController extends Controller
     {
         $this->authorize('create', Office::class);
         $fields = $request->validated();
+        $fields['type'] = OfficeType::getValue($request->type);
         $office = Office::create($fields);
         auth()->user()->roles()->create([
             'roleable_id' => $office->id,
