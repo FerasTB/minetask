@@ -73,7 +73,7 @@ class PatientInfoController extends Controller
                 } else {
                     $doctor = $ownerDoctor;
                     $patientInfo = $doctor->patients()->create($fields);
-                    $role = auth()->user()->roles()->create([
+                    $role = $ownerUser->roles()->create([
                         'roleable_type' => 'App\Models\Patient',
                         'roleable_id' => $patientInfo->id,
                         'sub_role' => DoctorRoleForPatient::DoctorWithApprove
