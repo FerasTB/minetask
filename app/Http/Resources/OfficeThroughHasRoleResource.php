@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\OfficeType;
 use App\Enums\SubRole;
 use App\Models\Office;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class OfficeThroughHasRoleResource extends JsonResource
             'start_time' => $office->start_time,
             'end_time' => $office->end_time,
             'role_in_office' => SubRole::getKey($this->sub_role),
+            'type' => OfficeType::getKey($this->type),
         ];
     }
 }
