@@ -97,9 +97,9 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             // return $doctor->accountingProfiles;
-            return AccountingProfileResource::collection($doctor->accountingProfiles);
+            return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['patient_id' != null]);
         } else {
-            return AccountingProfileResource::collection($office->accountingProfiles)->where(['patient' != null]);
+            return AccountingProfileResource::collection($office->accountingProfiles)->where(['doctor' => null, 'patient' != null]);
         }
     }
 
@@ -109,9 +109,9 @@ class AccountingProfileController extends Controller
         $this->authorize('inOffice', [AccountingProfile::class, $office]);
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
-            return AccountingProfileResource::collection($doctor->supplierAccountingProfiles);
+            return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['patient' => null]);
         } else {
-            return AccountingProfileResource::collection($office->supplierAccountingProfiles);
+            return AccountingProfileResource::collection($office->accountingProfiles)->where(['doctor' => null, 'patient' => null]);
         }
     }
 }
