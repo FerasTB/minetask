@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
+use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoaAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
@@ -87,4 +88,28 @@ class AccountingProfileController extends Controller
     //     $profile = $office->accountingProfiles()->create($fields);
     //     return $profile;
     // }
+
+    public function patientProfile(Request $request)
+    {
+        $office = Office::findOrFail($request->office);
+        $this->authorize('inOffice', [AccountingProfile::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            return AccountingProfileResource::collection($doctor->patientAccountingProfiles);
+        } else {
+            return AccountingProfileResource::collection($office->patientAccountingProfiles);
+        }
+    }
+
+    public function supplierProfile(Request $request)
+    {
+        $office = Office::findOrFail($request->office);
+        $this->authorize('inOffice', [AccountingProfile::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            return AccountingProfileResource::collection($doctor->supplierAccountingProfiles);
+        } else {
+            return AccountingProfileResource::collection($office->supplierAccountingProfiles);
+        }
+    }
 }

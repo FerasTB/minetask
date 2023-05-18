@@ -53,4 +53,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('accounting/patient/debt/{patient}', [App\Http\Controllers\Api\DebtController::class, 'patientDebt']);
     Route::apiResource('accounting/receipt', App\Http\Controllers\Api\ReceiptController::class);
     Route::apiResource('accounting', App\Http\Controllers\Api\AccountingProfileController::class);
+    Route::get('accounting/patient/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'patientProfile']);
+    Route::get('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'supplierProfile']);
 });
