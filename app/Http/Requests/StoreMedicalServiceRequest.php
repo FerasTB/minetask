@@ -27,6 +27,7 @@ class StoreMedicalServiceRequest extends FormRequest
             'cost' => 'nullable|integer',
             'description' => 'nullable|string',
             'name' => 'required|string',
+            'COA_id' => 'required|integer',
         ];
     }
 }
