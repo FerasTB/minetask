@@ -40,9 +40,6 @@ class DoctorInfoController extends Controller
         if (!auth()->user()->doctor) {
             $fields = $request->validated();
             $doctorInfo = auth()->user()->doctor()->create($fields);
-            $doctorInfo->cases()->create([
-                'case_name' => Doctor::DefaultCase,
-            ]);
             return new DoctorInfoResource($doctorInfo);
         } else {
             return response('you have doctor info', 403);

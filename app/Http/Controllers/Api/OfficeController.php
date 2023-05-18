@@ -14,6 +14,7 @@ use App\Http\Resources\DoctorInOfficeResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\COA;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
@@ -122,6 +123,10 @@ class OfficeController extends Controller
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
+        $office->cases()->create([
+            'case_name' => Doctor::DefaultCase,
+            'doctor_id' => auth()->user()->doctor->id,
+        ]);
         if ($office->type == OfficeType::Separate) {
             $doctor = $user->doctor;
             $doctor->COAS()->create([
@@ -137,6 +142,10 @@ class OfficeController extends Controller
             $doctor->COAS()->create([
                 'name' => COA::Payable,
                 'type' => COAType::Liability,
+                'office_id' => $office->id,
+            ]);
+            $doctor->cases()->create([
+                'case_name' => Doctor::DefaultCase,
                 'office_id' => $office->id,
             ]);
         }

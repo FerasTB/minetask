@@ -38,6 +38,11 @@ class Office extends Model
         return $this->morphOne(HasRole::class, 'roleable')->oldestOfMany();
     }
 
+    public function cases()
+    {
+        return $this->hasMany(MedicalCase::class, 'office_id');
+    }
+
     public function accountingProfiles()
     {
         return $this->hasMany(AccountingProfile::class, 'office_id');
