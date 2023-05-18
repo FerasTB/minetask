@@ -19,12 +19,17 @@ class AccountingProfileController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (auth()->user()->doctor) {
-            return AccountingProfileResource::collection(auth()->user()->doctor->accountingProfiles);
+        $office = Office::findOrFail($request->office);
+        $this->authorize('inOffice', [AccountingProfile::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            // return $doctor->accountingProfiles;
+            return AccountingProfileResource::collection($doctor->accountingProfiles);
+        } else {
+            return AccountingProfileResource::collection($office->accountingProfiles);
         }
-        return new AccountingProfileResource(auth()->user()->patient->accountingProfiles);
     }
 
     /**

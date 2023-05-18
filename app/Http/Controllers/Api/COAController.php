@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCOARequest;
+use App\Http\Resources\COAResource;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\Office;
@@ -14,9 +16,15 @@ class COAController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $office = Office::findOrFail($request->office);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            return COAResource::collection($doctor->COAS);
+        } else {
+            return COAResource::collection($office->COAS);
+        }
     }
 
     /**
