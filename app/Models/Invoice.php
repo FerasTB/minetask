@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Debt extends Model
+class Invoice extends Model
 {
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['note', 'amount', 'name'];
+    protected $fillable = ['note', 'date_of_invoice', 'total_price', 'doctor_id', 'accounting_profile_id'];
 
     public function patient()
     {
@@ -38,5 +38,10 @@ class Debt extends Model
                 Doctor::class => 'doctor_id'
             ]
         );
+    }
+
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class, 'invoice_id');
     }
 }

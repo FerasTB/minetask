@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COAType;
 use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Enums\SubRole;
@@ -12,6 +13,7 @@ use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
+use App\Models\COA;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
@@ -48,6 +50,18 @@ class OfficeController extends Controller
             'roleable_id' => $office->id,
             'roleable_type' => 'App\Models\Office',
             'sub_role' => SubRole::OfficeOwner,
+        ]);
+        $office->COAS()->create([
+            'name' => COA::Receivable,
+            'type' => COAType::Asset,
+        ]);
+        $office->COAS()->create([
+            'name' => COA::Cash,
+            'type' => COAType::Asset,
+        ]);
+        $office->COAS()->create([
+            'name' => COA::Payable,
+            'type' => COAType::Liability,
         ]);
         return new OfficeResource($office);
     }
@@ -108,6 +122,24 @@ class OfficeController extends Controller
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = $user->doctor;
+            $doctor->COAS()->create([
+                'name' => COA::Receivable,
+                'type' => COAType::Asset,
+                'office_id' => $office->id,
+            ]);
+            $doctor->COAS()->create([
+                'name' => COA::Cash,
+                'type' => COAType::Asset,
+                'office_id' => $office->id,
+            ]);
+            $doctor->COAS()->create([
+                'name' => COA::Payable,
+                'type' => COAType::Liability,
+                'office_id' => $office->id,
+            ]);
+        }
         $relation->setting()->create($fields);
         return new DoctorInOfficeResource($relation);
     }

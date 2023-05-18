@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateAppointmentStatusRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\Office;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -17,9 +18,17 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::where('doctor_id', auth()->user()->doctor->id)->get();
+        if ($request->doctor) {
+            $office = Office::find($request->office);
+            $this->authorize('view', [Appointment::class, $office]);
+            $appointments = Appointment::where('doctor_id', $request->doctor)->get();
+            return AppointmentResource::collection($appointments);
+        }
+        $office = Office::find($request->office_id);
+        $this->authorize('view', [Appointment::class, $office]);
+        $appointments = Appointment::where('office_id', $request->office)->get();
         return AppointmentResource::collection($appointments);
     }
 

@@ -9,7 +9,7 @@ class AccountingProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['doctor_id', 'type', 'office_id', 'supplier_name', 'note'];
+    protected $fillable = ['doctor_id', 'type', 'office_id', 'supplier_name', 'note', 'initial_balance', 'COA_id', 'patient_id'];
 
     public function doctor()
     {
@@ -21,13 +21,18 @@ class AccountingProfile extends Model
         return $this->belongsTo(Patient::class, 'patient_id');
     }
 
-    public function debts()
+    public function invoices()
     {
-        return $this->hasMany(Debt::class, 'accounting_profile_id');
+        return $this->hasMany(Invoice::class, 'accounting_profile_id');
     }
 
     public function receipts()
     {
         return $this->hasMany(Receipt::class, 'accounting_profile_id');
+    }
+
+    public function labels()
+    {
+        return $this->hasMany(Label::class, 'accounting_profile_id');
     }
 }

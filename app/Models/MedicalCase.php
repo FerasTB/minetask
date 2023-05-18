@@ -16,6 +16,11 @@ class MedicalCase extends Model
         return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
+
     public function patientCases()
     {
         return $this->hasMany(PatientCase::class, 'case_id');

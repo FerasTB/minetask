@@ -25,9 +25,7 @@ class CaseController extends Controller
         if ($office->type == OfficeType::Separate) {
             return MedicalCaseResource::collection(auth()->user()->doctor->cases);
         } else {
-            $ownerUser = User::find($office->owner->user_id);
-            $ownerDoctor = $ownerUser->doctor;
-            return MedicalCaseResource::collection($ownerDoctor->cases);
+            return MedicalCaseResource::collection($office->cases);
         }
     }
 
@@ -39,16 +37,9 @@ class CaseController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
         $this->authorize('create', [MedicalCase::class, $office]);
-        if ($office->type == OfficeType::Separate) {
-            $doctor = auth()->user()->doctor;
-            $case = $doctor->cases()->create($fields);
-            return new MedicalCaseResource($case);
-        } else {
-            $ownerUser = User::find($office->owner->user_id);
-            $ownerDoctor = $ownerUser->doctor;
-            $case = $ownerDoctor->cases()->create($fields);
-            return new MedicalCaseResource($case);
-        }
+        $doctor = auth()->user()->doctor;
+        $case = $doctor->cases()->create($fields);
+        return new MedicalCaseResource($case);
     }
 
     /**

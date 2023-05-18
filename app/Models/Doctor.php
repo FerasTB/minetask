@@ -69,4 +69,39 @@ class Doctor extends Model
     {
         return $this->hasMany(AccountingProfile::class, 'doctor_id');
     }
+
+    public function patientAccountingProfiles()
+    {
+        return $this->hasMany(AccountingProfile::class, 'doctor')->where(['patient_id' != null]);
+    }
+
+    public function supplierAccountingProfiles()
+    {
+        return $this->hasMany(AccountingProfile::class, 'doctor_id')->where(['patient_id' => null]);
+    }
+
+    public function services()
+    {
+        return $this->hasMany(MedicalService::class, 'doctor_id');
+    }
+
+    public function COAS()
+    {
+        return $this->hasMany(COA::class, 'doctor_id');
+    }
+
+    public function cash()
+    {
+        return $this->hasOne(COA::class, 'doctor_id')->where('name', COA::Cash)->get();
+    }
+
+    public function receivable()
+    {
+        return $this->hasOne(COA::class, 'doctor_id')->where('name', COA::Receivable)->get();
+    }
+
+    public function payable()
+    {
+        return $this->hasMany(COA::class, 'doctor_id')->where('name', COA::Payable)->get();
+    }
 }

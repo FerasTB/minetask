@@ -110,6 +110,12 @@ class DoctorInfoController extends Controller
         return TeethRecordResource::collection($doctor->teethRecords);
     }
 
+    public function officeRecords(Office $office)
+    {
+        $this->authorize('inOffice', [Doctor::class, $office]);
+        return TeethRecordResource::collection($office->teethRecords);
+    }
+
     public function myRecordsForPatient($patient)
     {
         $doctor = auth()->user()->doctor;
@@ -121,9 +127,4 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.case.id', $case);
     }
-
-    // public function patientRecords(Doctor $doctor, $patient)
-    // {
-    //     return $doctor->teethRecords->where();
-    // }
 }

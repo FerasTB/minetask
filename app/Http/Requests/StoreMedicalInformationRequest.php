@@ -29,6 +29,7 @@ class StoreMedicalInformationRequest extends FormRequest
             'is_temporary' => 'nullable|boolean',
             'allergy' => 'nullable|string',
             'patient_id' => 'required|integer',
+            'office_id' => 'required|integer',
         ];
     }
 }

@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AccountingProfileType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCoaAccountingProfileRequest;
+use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Models\AccountingProfile;
+use App\Models\Doctor;
+use App\Models\Office;
 use Illuminate\Http\Request;
 
 class AccountingProfileController extends Controller
@@ -51,4 +56,35 @@ class AccountingProfileController extends Controller
     {
         //
     }
+
+    public function storeSupplier(StoreSupplierAccountingProfileRequest $request)
+    {
+        $fields = $request->validated();
+        $fields['type'] = AccountingProfileType::SupplierAccount;
+        if ($request->doctor_id) {
+            $doctor = Doctor::find($request->doctor_id);
+            $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
+            $profile = $doctor->accountingProfiles()->create($fields);
+            return $profile;
+        }
+        $office = Office::find($request->office_id);
+        $this->authorize('createForOffice', [AccountingProfile::class, $office]);
+        $profile = $office->accountingProfiles()->create($fields);
+        return $profile;
+    }
+
+    // public function storeCoa(StoreCoaAccountingProfileRequest $request)
+    // {
+    //     $fields = $request->validated();
+    //     if ($request->doctor_id) {
+    //         $doctor = Doctor::find($request->doctor_id);
+    //         $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
+    //         $profile = $doctor->accountingProfiles()->create($fields);
+    //         return $profile;
+    //     }
+    //     $office = Office::find($request->office_id);
+    //     $this->authorize('createForOffice', [AccountingProfile::class, $office]);
+    //     $profile = $office->accountingProfiles()->create($fields);
+    //     return $profile;
+    // }
 }

@@ -2,29 +2,29 @@
 
 namespace App\Policies;
 
-use App\Models\Appointment;
+use App\Models\COA;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class AppointmentPolicy
+class COAPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user, Office $office): bool
+    public function viewAny(User $user): bool
     {
-        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return $role != null;
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Appointment $appointment): bool
+    public function view(User $user, COA $cOA): bool
     {
-        return ($user->doctor && $user->doctor->id == $appointment->doctor->id);
+        //
     }
 
     /**
@@ -38,15 +38,15 @@ class AppointmentPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Appointment $appointment): bool
+    public function update(User $user, COA $cOA): bool
     {
-        return ($user->doctor && $user->doctor->id == $appointment->doctor->id);
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Appointment $appointment): bool
+    public function delete(User $user, COA $cOA): bool
     {
         //
     }
@@ -54,7 +54,7 @@ class AppointmentPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Appointment $appointment): bool
+    public function restore(User $user, COA $cOA): bool
     {
         //
     }
@@ -62,8 +62,19 @@ class AppointmentPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Appointment $appointment): bool
+    public function forceDelete(User $user, COA $cOA): bool
     {
         //
+    }
+
+    public function createForDoctor(User $user, Doctor $doctor): bool
+    {
+        return $user->doctor->id == $doctor->id;
+    }
+
+    public function createForOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 }

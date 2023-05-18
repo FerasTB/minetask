@@ -11,11 +11,8 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class COAType extends Enum
+final class DoubleEntryType extends Enum
 {
-    const Asset = 1;
-    const Liability = 2;
-    const Equity = 3;
-    const Revenue = 4;
-    const Expenses = 5;
+    const Positive = 1;
+    const Negative = 2;
 }

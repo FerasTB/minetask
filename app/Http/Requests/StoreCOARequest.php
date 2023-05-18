@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\COAType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreMedicalServiceRequest extends FormRequest
+class StoreCOARequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +24,12 @@ class StoreMedicalServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'office_id' => 'required|integer',
-            'doctor_id' => 'required|integer',
-            'cost' => 'nullable|integer',
-            'description' => 'nullable|string',
             'name' => 'required|string',
+            'office_id' => 'required|integer',
+            'doctor_id' => 'nullable|integer',
+            'note' => 'nullable|string',
+            'initial_balance' => 'nullable|integer',
+            'type' => ['required', Rule::in(COAType::getKeys())],
         ];
     }
 }

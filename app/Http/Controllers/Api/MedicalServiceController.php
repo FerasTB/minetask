@@ -16,7 +16,7 @@ class MedicalServiceController extends Controller
      */
     public function index()
     {
-        //
+        return MedicalServiceResource::collection(auth()->user()->doctor->services);
     }
 
     /**

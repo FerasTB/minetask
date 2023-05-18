@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('receipts', function (Blueprint $table) {
+        Schema::create('double_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('accounting_profile_id')->constrained('accounting_profiles')->onDelete('cascade');
-            $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('set null');
+            $table->foreignId('COA_id')->constrained('accounting_profiles')->onDelete('set null');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('cascade');
+            $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('cascade');
             $table->integer('total_price');
-            $table->date('date_of_payment')->default(now());
-            $table->string('note')->nullable();
+            $table->integer("type");
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('receipts');
+        Schema::dropIfExists('double_entries');
     }
 };
