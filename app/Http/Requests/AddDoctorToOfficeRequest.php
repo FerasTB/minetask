@@ -25,10 +25,9 @@ class AddDoctorToOfficeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|integer',
             'sub_role' => ['nullable', Rule::in(SubRole::getKeys())],
             'note' => 'string|nullable',
-            'doctor_id' => 'integer|nullable',
+            'doctor_id' => 'integer|required',
             'rate_type' => 'integer|nullable',
             'rate' => 'integer|nullable',
             'salary' => 'integer|nullable',

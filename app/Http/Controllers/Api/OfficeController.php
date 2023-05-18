@@ -118,7 +118,8 @@ class OfficeController extends Controller
         //     $relation = $user->roles()->create($fields);
         //     return DoctorInOfficeResource::collection($office->roles);
         // }
-        $user = User::find($fields['user_id']);
+        $doctor = Doctor::findOrFail($fields['doctor_id']);
+        $user = $doctor->user;
         $fields['sub_role'] = SubRole::getValue($request->sub_role);
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
