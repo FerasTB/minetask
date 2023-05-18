@@ -72,7 +72,7 @@ class Doctor extends Model
 
     public function patientAccountingProfiles()
     {
-        return $this->hasMany(AccountingProfile::class, 'doctor')->where(['patient_id' != null]);
+        return $this->hasMany(AccountingProfile::class, 'doctor_id')->where(['patient_id' != null]);
     }
 
     public function supplierAccountingProfiles()
