@@ -37,14 +37,14 @@ class COAController extends Controller
         $fields['type'] = COAType::getValue($request->type);
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);
-            $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
-            $profile = $doctor->accountingProfiles()->create($fields);
-            return $profile;
+            $this->authorize('createForDoctor', [COA::class, $doctor]);
+            $coa = $doctor->COAS()->create($fields);
+            return new COAResource($coa);
         }
         $office = Office::find($request->office_id);
-        $this->authorize('createForOffice', [AccountingProfile::class, $office]);
-        $profile = $office->accountingProfiles()->create($fields);
-        return $profile;
+        $this->authorize('createForOffice', [COA::class, $office]);
+        $coa = $office->COAS()->create($fields);
+        return new COAResource($coa);
     }
 
     /**
