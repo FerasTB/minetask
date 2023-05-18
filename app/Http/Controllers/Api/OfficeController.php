@@ -64,6 +64,13 @@ class OfficeController extends Controller
             'name' => COA::Payable,
             'type' => COAType::Liability,
         ]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            $doctor->cases()->create([
+                'case_name' => Doctor::DefaultCase,
+                'office_id' => $office->id,
+            ]);
+        }
         return new OfficeResource($office);
     }
 
