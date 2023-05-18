@@ -18,8 +18,8 @@ class COAResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'office_id' => new OfficeResource($this->office),
-            'doctor_id' => new DoctorResource($this->doctor),
+            'office' => new OfficeResource($this->office),
+            'doctor' => new DoctorResource($this->doctor),
             'note' => $this->note,
             'initial_balance' => $this->initial_balance,
             'type' => COAType::getKey($this->type),

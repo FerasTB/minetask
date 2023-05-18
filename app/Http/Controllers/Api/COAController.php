@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COAType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCOARequest;
@@ -33,6 +34,7 @@ class COAController extends Controller
     public function store(StoreCOARequest $request)
     {
         $fields = $request->validated();
+        $fields['type'] = COAType::getValue($request->type);
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);
             $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
