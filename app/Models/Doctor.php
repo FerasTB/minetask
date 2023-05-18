@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\AccountingProfileResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -72,7 +73,7 @@ class Doctor extends Model
 
     public function patientAccountingProfiles()
     {
-        return $this->hasMany(AccountingProfile::class, 'doctor_id')->where(['patient_id' != null]);
+        return AccountingProfileResource::collection($this->accountingProfiles)->where(['patient' != null]);
     }
 
     public function supplierAccountingProfiles()
