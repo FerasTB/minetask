@@ -9,7 +9,7 @@ class MedicalCase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['case_name'];
+    protected $fillable = ['case_name', 'doctor_id', 'office_id'];
 
     public function doctor()
     {
