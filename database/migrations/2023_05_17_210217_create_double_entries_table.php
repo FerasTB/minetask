@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('double_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('COA_id')->constrained('c_o_a_s')->onDelete('set null');
-            $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('cascade');
-            $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('cascade');
+            $table->foreignId('COA_id')->nullable()->constrained('c_o_a_s')->onDelete('set null');
+            $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
+            $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('set null');
             $table->integer('total_price');
             $table->integer("type");
             $table->timestamps();
