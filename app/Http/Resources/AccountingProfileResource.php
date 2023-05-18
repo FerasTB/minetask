@@ -23,7 +23,7 @@ class AccountingProfileResource extends JsonResource
         $doctor = Doctor::find($this->doctor_id);
         $office = Office::find($this->office_id);
         if ($office->type == OfficeType::Separate) {
-            $role = HasRole::where(['roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
+            $role = HasRole::where(['roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first()->get();
         } else {
             $role = HasRole::where(['roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->first();
         }
