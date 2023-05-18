@@ -72,12 +72,12 @@ class AccountingProfileController extends Controller
             $doctor = Doctor::find($request->doctor_id);
             $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
             $profile = $doctor->accountingProfiles()->create($fields);
-            return $profile;
+            return new AccountingProfileResource($profile);
         }
         $office = Office::find($request->office_id);
         $this->authorize('createForOffice', [AccountingProfile::class, $office]);
         $profile = $office->accountingProfiles()->create($fields);
-        return $profile;
+        return new AccountingProfileResource($profile);
     }
 
     // public function storeCoa(StoreCoaAccountingProfileRequest $request)
