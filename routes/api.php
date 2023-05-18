@@ -55,5 +55,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('accounting', App\Http\Controllers\Api\AccountingProfileController::class);
     Route::get('accounting/patient/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'patientProfile']);
     Route::get('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'supplierProfile']);
+    Route::post('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeSupplier']);
     Route::apiResource('coa', App\Http\Controllers\Api\COAController::class);
 });
