@@ -30,7 +30,7 @@ class AccountingProfileResource extends JsonResource
             'patient' => new MyPatientsResource($role),
             'doctor' => new DoctorResource($doctor),
             'initial_balance' => $this->initial_balance,
-            // 'invoice' => DebtResource::collection($this->debts),
+            'invoice' => InvoiceResource::collection($this->invoices),
             'receipts' => ReceiptResource::collection($this->receipts),
         ];
     }
