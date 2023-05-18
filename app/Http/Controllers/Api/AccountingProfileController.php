@@ -10,6 +10,7 @@ use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
+use App\Models\HasRole;
 use App\Models\Office;
 use Illuminate\Http\Request;
 
@@ -95,8 +96,7 @@ class AccountingProfileController extends Controller
         $this->authorize('inOffice', [AccountingProfile::class, $office]);
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
-            // return AccountingProfileResource::collection($doctor->accountingProfiles);
-            return $doctor->accountingProfiles;
+            return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['patient' != null]);
         } else {
             return AccountingProfileResource::collection($office->accountingProfiles)->where(['patient' != null]);
         }

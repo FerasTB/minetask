@@ -19,8 +19,8 @@ class AccountingProfileResource extends JsonResource
         $patient = Patient::find($this->patient_id);
         $doctor = Doctor::find($this->doctor_id);
         return [
-            'patient' => $patient == null ? null : new PatientInfoForDoctorResource($patient),
-            'doctor' => new DoctorInfoResource($doctor),
+            'patient' => new PatientInfoForDoctorResource($patient),
+            'doctor' => new DoctorResource($doctor),
             'initial_balance' => $this->initial_balance,
             'invoice' => DebtResource::collection($this->debts),
             'receipts' => ReceiptResource::collection($this->receipts),
