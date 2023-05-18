@@ -28,7 +28,7 @@ class OfficeThroughHasRoleResource extends JsonResource
             'start_time' => $office->start_time,
             'end_time' => $office->end_time,
             'role_in_office' => SubRole::getKey($this->sub_role),
-            'type' => OfficeType::getKey($this->type),
+            'type' => OfficeType::getKey($office->type),
         ];
     }
 }
