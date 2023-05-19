@@ -82,8 +82,8 @@ class DoctorInfoController extends Controller
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 // return MyPatientsResource::collection($roles);
             } else {
-                return $office;
                 $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id]);
+                return $office;
                 return MyPatientSeparateThroughAccountingProfileResource::collection($accounts);
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
                 // return MyPatientsResource::collection($roles);
