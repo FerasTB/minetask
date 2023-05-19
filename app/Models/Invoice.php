@@ -40,6 +40,20 @@ class Invoice extends Model
         );
     }
 
+    public function office()
+    {
+        return $this->belongsToThrough(
+            Office::class,
+            AccountingProfile::class,
+            null,
+            '',
+            [
+                AccountingProfile::class => 'accounting_profile_id',
+                Office::class => 'office_id'
+            ]
+        );
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');

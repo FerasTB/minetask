@@ -67,30 +67,13 @@ class InvoiceController extends Controller
                 'office_id' => $office->id, 'doctor_id' => null
             ])->first();
             $invoice = $profile->invoices()->create($fields);
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Receivable
-            ]);
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
             $invoice = $profile->invoices()->create($fields);
-            $doctor = Doctor::find($request->doctor_id);
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Receivable
-            ]);
         }
-        $doubleEntryFields['COA_id'] = $receivable->id;
-        $doubleEntryFields['invoice_id'] = $invoice->id;
-        $doubleEntryFields['total_price'] = $invoice->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $receivable->doubleEntries()->create($doubleEntryFields);
-        $serviceCoa = COA::findOrFail($request->service_coa);
-        $doubleEntryFields['COA_id'] = $serviceCoa->id;
-        $serviceCoa->doubleEntries()->create($doubleEntryFields);
         return new PatientInvoiceResource($invoice);
     }
 

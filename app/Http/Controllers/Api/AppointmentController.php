@@ -22,12 +22,12 @@ class AppointmentController extends Controller
     {
         if ($request->doctor) {
             $office = Office::find($request->office);
-            $this->authorize('view', [Appointment::class, $office]);
+            $this->authorize('viewAny', [Appointment::class, $office]);
             $appointments = Appointment::where('doctor_id', $request->doctor)->get();
             return AppointmentResource::collection($appointments);
         }
         $office = Office::find($request->office_id);
-        $this->authorize('view', [Appointment::class, $office]);
+        $this->authorize('viewAny', [Appointment::class, $office]);
         $appointments = Appointment::where('office_id', $request->office)->get();
         return AppointmentResource::collection($appointments);
     }

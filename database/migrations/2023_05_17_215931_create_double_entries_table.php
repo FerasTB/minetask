@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('COA_id')->nullable()->constrained('c_o_a_s')->onDelete('set null');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
+            $table->foreignId('invoice_item_id')->nullable()->constrained('invoice_items')->onDelete('set null');
             $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('set null');
             $table->integer('total_price');
             $table->integer("type");
