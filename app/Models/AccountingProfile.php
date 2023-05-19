@@ -21,6 +21,11 @@ class AccountingProfile extends Model
         return $this->belongsTo(Patient::class, 'patient_id');
     }
 
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'accounting_profile_id');
@@ -29,10 +34,5 @@ class AccountingProfile extends Model
     public function receipts()
     {
         return $this->hasMany(Receipt::class, 'accounting_profile_id');
-    }
-
-    public function labels()
-    {
-        return $this->hasMany(Label::class, 'accounting_profile_id');
     }
 }

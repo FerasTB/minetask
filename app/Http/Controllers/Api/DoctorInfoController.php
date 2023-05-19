@@ -8,12 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
 use App\Http\Resources\DoctorInfoResource;
+use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
+use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
+use App\Http\Resources\MyPatientThroughAccountingProfileResource;
 use App\Http\Resources\TeethRecordResource;
+use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\TeethRecord;
+use App\Models\User;
 use App\Policies\DoctorInfoPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -68,11 +73,17 @@ class DoctorInfoController extends Controller
         if ($doctor) {
             if ($office->type == OfficeType::Combined) {
                 $this->authorize('inOffice', [Doctor::class, $office]);
-                $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
-                return MyPatientsResource::collection($roles);
+                $ownerUser = User::find($office->owner->user_id);
+                $ownerDoctor = $ownerUser->doctor;
+                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor, 'office_id' => $office->id]);
+                return MyPatientCombinedThroughAccountingProfileResource::collection($accounts);
+                // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
+                // return MyPatientsResource::collection($roles);
             } else {
-                $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
-                return MyPatientsResource::collection($roles);
+                $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id]);
+                return MyPatientSeparateThroughAccountingProfileResource::collection($accounts);
+                // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
+                // return MyPatientsResource::collection($roles);
             }
         }
         return response('you have to complete your info', 404);

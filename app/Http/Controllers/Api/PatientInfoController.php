@@ -63,6 +63,7 @@ class PatientInfoController extends Controller
                     ]);
                     $patientAccountingProfile = $patient->accountingProfiles()->create([
                         'office_id' => $office->id,
+                        'doctor_id' => $ownerDoctor->id,
                         'type' => AccountingProfileType::PatientAccount,
                     ]);
                     $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $ownerDoctor->id])->first();
@@ -83,6 +84,7 @@ class PatientInfoController extends Controller
                     ]);
                     $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
                         'office_id' => $office->id,
+                        'doctor_id' => $doctor->id,
                         'type' => AccountingProfileType::PatientAccount,
                     ]);
                     $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $doctor->id])->first();
