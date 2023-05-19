@@ -71,8 +71,8 @@ class DoctorInfoController extends Controller
     {
         $doctor = auth()->user()->doctor;
         $office = Office::findOrFail($request->office);
-        return $office;
         if ($doctor) {
+            return $office;
             if ($office->type == OfficeType::Combined) {
                 return $office;
                 $this->authorize('inOffice', [Doctor::class, $office]);
