@@ -67,9 +67,10 @@ class DoctorInfoController extends Controller
         return response('you have to complete your info', 404);
     }
 
-    public function showMyPatient(Office $office)
+    public function showMyPatient(Request $request)
     {
         $doctor = auth()->user()->doctor;
+        $office = Office::findOrFail($request->office);
         if ($doctor) {
             if ($office->type == OfficeType::Combined) {
                 $this->authorize('inOffice', [Doctor::class, $office]);
