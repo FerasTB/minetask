@@ -70,9 +70,8 @@ class DoctorInfoController extends Controller
     public function showMyPatient(Request $request)
     {
         $doctor = auth()->user()->doctor;
-        return $doctor;
         $office = Office::findOrFail($request->office);
-
+        return $office;
         if ($doctor) {
             if ($office->type == OfficeType::Combined) {
                 return $office;
