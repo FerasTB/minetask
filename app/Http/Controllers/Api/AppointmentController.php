@@ -26,7 +26,7 @@ class AppointmentController extends Controller
             $appointments = Appointment::where(['office_id', $request->office, 'doctor_id', $request->doctor])->get();
             return AppointmentResource::collection($appointments);
         }
-        $office = Office::find($request->office_id);
+        $office = Office::find($request->office);
         $this->authorize('viewAny', [Appointment::class, $office]);
         $appointments = Appointment::where(['office_id', $request->office, 'doctor_id', auth()->user()->doctor->id])->get();
         return AppointmentResource::collection($appointments);
