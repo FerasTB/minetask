@@ -22,11 +22,12 @@ class StoreSupplierReceiptRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'debt_id' => 'nullable|integer',
+            'invoice_id' => 'nullable|integer',
             'note' => 'nullable|string',
-            'amount' => 'required|integer',
+            'date_of_payment' => 'nullable|date',
+            'total_price' => 'required|integer',
             'office_id' => 'required|integer',
-            'doctor' => 'required|integer',
+            'doctor_id' => 'required|integer',
             'supplier_name' => 'required|string',
         ];
     }

@@ -6,6 +6,7 @@ use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientInvoiceRequest;
+use App\Http\Requests\StoreSupplierInvoiceRequest;
 use App\Http\Resources\PatientInvoiceResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -77,7 +78,7 @@ class InvoiceController extends Controller
         return new PatientInvoiceResource($invoice);
     }
 
-    public function storeSupplierInvoice(StorePatientInvoiceRequest $request)
+    public function storeSupplierInvoice(StoreSupplierInvoiceRequest $request)
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);

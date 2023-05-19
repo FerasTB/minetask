@@ -22,13 +22,12 @@ class StorePatientReceiptRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patient_id' => 'integer|required',
-            'debt_id' => 'nullable|integer',
+            'invoice_id' => 'nullable|integer',
             'note' => 'nullable|string',
-            'amount' => 'required|integer',
+            'date_of_payment' => 'nullable|date',
+            'total_price' => 'required|integer',
             'office_id' => 'required|integer',
-            'doctor' => 'required|integer',
-            'supplier_name' => 'required|string',
+            'doctor_id' => 'required|integer',
         ];
     }
 }
