@@ -74,6 +74,7 @@ class DoctorInfoController extends Controller
         if ($doctor) {
             if ($office->type == OfficeType::Combined) {
                 $this->authorize('inOffice', [Doctor::class, $office]);
+                return $office;
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
                 $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor, 'office_id' => $office->id]);
