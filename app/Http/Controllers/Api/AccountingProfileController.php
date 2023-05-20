@@ -120,4 +120,16 @@ class AccountingProfileController extends Controller
             return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::SupplierAccount);
         }
     }
+
+    public function expensesProfile(Request $request)
+    {
+        $office = Office::findOrFail($request->office);
+        $this->authorize('inOffice', [AccountingProfile::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            $doctor = auth()->user()->doctor;
+            return AccountingProfileResource::collection($doctor->accountingProfiles)->where('type', AccountingProfileType::ExpensesAccount);
+        } else {
+            return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::ExpensesAccount);
+        }
+    }
 }
