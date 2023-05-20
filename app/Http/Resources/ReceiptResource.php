@@ -15,16 +15,12 @@ class ReceiptResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $bool = false;
-        if ($this->debt_id != null) {
-            $debt = Debt::find($this->debt_id);
-            $bool = true;
-        }
         return [
             'id' => $this->id,
-            'amount' => $this->amount,
-            'note' => $this->note,
-            'debt' => $bool ? new DebtResource($debt) : 'not connected to debt',
+            'total_price' => $this->amount,
+            'date_of_payment' => $this->note,
+            'invoice' => new PatientInvoiceResource($this->invoice),
+            'doctor' => new DoctorResource($this->doctor),
             'created_at' => $this->created_at,
         ];
     }

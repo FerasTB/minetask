@@ -2,7 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\HasRole;
 use App\Models\MedicalInformation;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -27,9 +29,10 @@ class MedicalInformationPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Office $office): bool
     {
-        //
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 
     /**
