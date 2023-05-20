@@ -3,20 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\COAType;
+use App\Enums\HasRolePropertyType;
 use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Enums\SubRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddDoctorToOfficeRequest;
+use App\Http\Requests\AddEmployeeToOfficeRequest;
 use App\Http\Requests\StoreOfficeRequest;
+use App\Http\Requests\UpdateHasRolePropertyRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
+use App\Http\Resources\EmployeeInOfficeResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -176,9 +181,46 @@ class OfficeController extends Controller
         return new DoctorInOfficeResource($relation);
     }
 
+    public function addEmployee(AddEmployeeToOfficeRequest $request)
+    {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        $this->authorize('officeOwner', $office);
+        $patient = Patient::findOrFail($fields['patient_id']);
+        $user = $patient->user;
+        $fields['sub_role'] = SubRole::getValue($request->sub_role);
+        $fields['roleable_id'] = $office->id;
+        $fields['roleable_type'] = 'App\Models\Office';
+        $relation = $user->roles()->create($fields);
+        $patientInfo = $relation->properties()->create([
+            'type' => HasRolePropertyType::PatientInfo,
+        ]);
+        $appointment = $relation->properties()->create([
+            'type' => HasRolePropertyType::Appointment,
+        ]);
+        $income = $relation->properties()->create([
+            'type' => HasRolePropertyType::Income,
+        ]);
+        return new EmployeeInOfficeResource($relation);
+    }
+
+    public function updateEmployeeProperty(UpdateHasRolePropertyRequest $request, Patient $patient)
+    {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        $this->authorize('officeOwner', $office);
+        $user = $patient->user;
+        $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
+        $property = $relation->properties()->where([
+            'type' => HasRolePropertyType::getValue($request->type),
+        ]);
+        $property->update($fields);
+        return new EmployeeInOfficeResource($relation);
+    }
+
     public function AllDoctorInOffice(Office $office)
     {
-        return DoctorInOfficeResource::collection($office->roles);
+        return EmployeeInOfficeResource::collection($office->roles);
     }
 
     public function MyOffices()

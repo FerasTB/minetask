@@ -26,4 +26,9 @@ class HasRole extends Model
     {
         return $this->hasOne(EmployeeSetting::class, 'has_role_id');
     }
+
+    public function properties()
+    {
+        return $this->hasMany(HasRoleProperty::class, 'has_role_id');
+    }
 }
