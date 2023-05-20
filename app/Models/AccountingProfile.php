@@ -26,6 +26,11 @@ class AccountingProfile extends Model
         return $this->belongsTo(Office::class, 'office_id');
     }
 
+    public function COA()
+    {
+        return $this->belongsTo(COA::class, 'COA_id');
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'accounting_profile_id');

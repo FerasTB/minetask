@@ -108,7 +108,7 @@ class InvoiceController extends Controller
         $doubleEntryFields['total_price'] = $invoice->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $payable->doubleEntries()->create($doubleEntryFields);
-        $expensesCoa = COA::findOrFail($request->service_coa);
+        $expensesCoa = $profile->COA;
         $expensesCoa->doubleEntries()->create($doubleEntryFields);
         return new PatientInvoiceResource($invoice);
     }
