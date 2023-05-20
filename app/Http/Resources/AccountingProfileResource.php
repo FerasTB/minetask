@@ -27,6 +27,7 @@ class AccountingProfileResource extends JsonResource
             $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->first();
         }
         return [
+            'id' => $this->id,
             'patient' => new MyPatientsResource($role),
             'doctor' => new DoctorResource($doctor),
             'supplier_name' => $this->supplier_name,
