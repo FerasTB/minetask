@@ -89,7 +89,7 @@ class InvoiceController extends Controller
             $invoice = $profile->invoices()->create($fields);
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Payable
+                'name' => COA::Payable
             ])->first();
         } else {
             $profile = AccountingProfile::findOrFail($request->supplier_account_id);
