@@ -30,6 +30,7 @@ class UpdateAppointmentRequest extends FormRequest
             'office_id' => 'required|integer',
             'patientCase_id' => 'nullable|integer',
             'note' => 'nullable|string',
+            'patientCase_id' => 'nullable|integer',
         ];
     }
 }
