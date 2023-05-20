@@ -181,10 +181,9 @@ class OfficeController extends Controller
         return new DoctorInOfficeResource($relation);
     }
 
-    public function addEmployee(AddEmployeeToOfficeRequest $request)
+    public function addEmployee(AddEmployeeToOfficeRequest $request, Office $office)
     {
         $fields = $request->validated();
-        $office = Office::findOrFail($request->office_id);
         $this->authorize('officeOwner', $office);
         $patient = Patient::findOrFail($fields['patient_id']);
         $user = $patient->user;
@@ -205,10 +204,9 @@ class OfficeController extends Controller
         return new EmployeeInOfficeResource($relation);
     }
 
-    public function updateEmployeeProperty(UpdateHasRolePropertyRequest $request, Patient $patient)
+    public function updateEmployeeProperty(UpdateHasRolePropertyRequest $request, Office $office, Patient $patient)
     {
         $fields = $request->validated();
-        $office = Office::findOrFail($request->office_id);
         $this->authorize('officeOwner', $office);
         $user = $patient->user;
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
