@@ -139,11 +139,11 @@ class ReceiptController extends Controller
             $receivable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Receivable
-            ]);
+            ])->first();
             $cash = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Cash
-            ]);
+            ])->first();
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
@@ -154,11 +154,11 @@ class ReceiptController extends Controller
             $receivable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'name' => COA::Receivable
-            ]);
+            ])->first();
             $cash = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'name' => COA::Cash
-            ]);
+            ])->first();
         }
         $doubleEntryFields['receipt_id'] = $receipt->id;
         $doubleEntryFields['total_price'] = $receipt->total_price;
