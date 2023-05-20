@@ -35,7 +35,7 @@ class MedicalInformationController extends Controller
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
         $office = Office::findOrFail($request->office_id);
-        $this->authorize('create', [TemporaryInformation::class, $office]);
+        $this->authorize('create', [MedicalInformation::class, $office]);
         if ($office->type == OfficeType::Combined) {
             $ownerUser = User::find($office->owner->user_id);
             $ownerDoctor = $ownerUser->doctor;
