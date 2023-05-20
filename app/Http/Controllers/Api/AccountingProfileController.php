@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
+use App\Enums\COAType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCoaAccountingProfileRequest;
@@ -67,7 +68,7 @@ class AccountingProfileController extends Controller
     public function storeSupplier(StoreSupplierAccountingProfileRequest $request)
     {
         $fields = $request->validated();
-        // $fields['type'] = AccountingProfileType::SupplierAccount;
+        $fields['type'] = COAType::getValue(AccountingProfileType::SupplierAccount);
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);
             $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
