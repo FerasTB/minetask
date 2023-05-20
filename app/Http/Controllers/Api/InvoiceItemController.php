@@ -80,7 +80,7 @@ class InvoiceItemController extends Controller
         $doubleEntryFields['total_price'] = $item->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $receivable->doubleEntries()->create($doubleEntryFields);
-        $serviceCoa = COA::findOrFail($request->COA_id);
+        $serviceCoa = COA::findOrFail($request->service_coa);
         $doubleEntryFields['COA_id'] = $serviceCoa->id;
         $serviceCoa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceItemsResource($item);
