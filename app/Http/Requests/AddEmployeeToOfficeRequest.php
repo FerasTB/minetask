@@ -31,6 +31,7 @@ class AddEmployeeToOfficeRequest extends FormRequest
             'rate_type' => 'integer|nullable',
             'rate' => 'integer|nullable',
             'salary' => 'integer|nullable',
+            'office_id' => 'required|integer',
         ];
     }
 }
