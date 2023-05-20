@@ -192,6 +192,7 @@ class OfficeController extends Controller
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
+        $relation->setting()->create($fields);
         $patientInfo = $relation->properties()->create([
             'type' => HasRolePropertyType::PatientInfo,
         ]);
