@@ -75,7 +75,7 @@ class DoctorInfoController extends Controller
                 $this->authorize('inOffice', [Doctor::class, $office]);
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
-                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor, 'office_id' => $office->id])->get();
+                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id])->get();
                 return MyPatientCombinedThroughAccountingProfileResource::collection($accounts);
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 // return MyPatientsResource::collection($roles);
