@@ -40,7 +40,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('record/case/{case}', [App\Http\Controllers\Api\TeethRecordController::class, 'CaseRecords']);
     Route::apiResource('operation', App\Http\Controllers\Api\OperationController::class);
     Route::get('operation/record/{record}', [App\Http\Controllers\Api\OperationController::class, 'RecordOperation']);
-    Route::get('operation/{operation}/add_tooth', [App\Http\Controllers\Api\OperationController::class, 'addTooth']);
+    Route::post('operation/{operation}/add_tooth', [App\Http\Controllers\Api\OperationController::class, 'addTooth']);
     Route::apiResource('diagnosis', App\Http\Controllers\Api\DiagnosisController::class);
     Route::get('diagnosis/record/{record}', [App\Http\Controllers\Api\DiagnosisController::class, 'RecordDiagnosis']);
     Route::post('diagnosis/{diagnosis}/add_tooth', [App\Http\Controllers\Api\DiagnosisController::class, 'addTooth']);
