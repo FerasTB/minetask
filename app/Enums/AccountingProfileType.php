@@ -15,4 +15,5 @@ final class AccountingProfileType extends Enum
 {
     const PatientAccount = 1;
     const SupplierAccount = 2;
+    const ExpensesAccount = 3;
 }

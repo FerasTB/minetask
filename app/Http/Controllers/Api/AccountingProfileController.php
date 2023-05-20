@@ -67,7 +67,7 @@ class AccountingProfileController extends Controller
     public function storeSupplier(StoreSupplierAccountingProfileRequest $request)
     {
         $fields = $request->validated();
-        $fields['type'] = AccountingProfileType::SupplierAccount;
+        // $fields['type'] = AccountingProfileType::SupplierAccount;
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);
             $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
