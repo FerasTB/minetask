@@ -213,7 +213,11 @@ class OfficeController extends Controller
         $property = $relation->properties()->where([
             'type' => HasRolePropertyType::getValue($request->property_type),
         ]);
-        $property->update($fields);
+        $property->update([
+            'read' => $fields['read'],
+            'write' => $fields['write'],
+            'edit' => $fields['edit'],
+        ]);
         return new EmployeeInOfficeResource($relation);
     }
 
