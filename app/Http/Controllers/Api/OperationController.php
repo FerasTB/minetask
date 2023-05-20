@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOperationRequest;
+use App\Http\Requests\StoreToothRequest;
 use App\Http\Requests\UpdateOperationRequest;
 use App\Http\Resources\OperationResource;
+use App\Http\Resources\ToothResource;
 use App\Models\Operation;
 use App\Models\Record;
 use App\Models\TeethRecord;
@@ -69,5 +71,12 @@ class OperationController extends Controller
     {
         $this->authorize('viewAny', [Operation::class, $record]);
         return OperationResource::collection($record->operations);
+    }
+
+    public function addTooth(StoreToothRequest $request, Operation $operation)
+    {
+        $fields = $request->validated();
+        $tooth = $operation->teeth()->create($fields);
+        return new ToothResource($tooth);
     }
 }

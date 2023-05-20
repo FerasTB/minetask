@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDiagnosisRequest;
+use App\Http\Requests\StoreToothRequest;
 use App\Http\Resources\DiagnosisResource;
+use App\Http\Resources\ToothResource;
 use App\Models\Diagnosis;
 use App\Models\Record;
 use App\Models\TeethRecord;
@@ -63,5 +65,12 @@ class DiagnosisController extends Controller
     {
         $diagnosis = $record->diagnosis;
         return new DiagnosisResource($diagnosis);
+    }
+
+    public function addTooth(StoreToothRequest $request, Diagnosis $diagnosis)
+    {
+        $fields = $request->validated();
+        $tooth = $diagnosis->teeth()->create($fields);
+        return new ToothResource($tooth);
     }
 }

@@ -15,4 +15,9 @@ class Operation extends Model
     {
         return $this->belongsTo(TeethRecord::class, 'record_id');
     }
+
+    public function teeth()
+    {
+        return $this->hasMany(Tooth::class, 'operation_id');
+    }
 }
