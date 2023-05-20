@@ -90,7 +90,7 @@ class InvoiceController extends Controller
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Payable
-            ]);
+            ])->first();
         } else {
             $profile = AccountingProfile::findOrFail($request->supplier_account_id);
             $invoice = $profile->invoices()->create($fields);
@@ -98,7 +98,7 @@ class InvoiceController extends Controller
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'name' => COA::Payable
-            ]);
+            ])->first();
         }
         $doubleEntryFields['invoice_id'] = $invoice->id;
         $doubleEntryFields['total_price'] = $invoice->total_price;

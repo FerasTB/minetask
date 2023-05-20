@@ -67,13 +67,13 @@ class InvoiceItemController extends Controller
             $receivable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Receivable
-            ]);
+            ])->first();
         } else {
             $doctor = $invoice->doctor;
             $receivable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'name' => COA::Receivable
-            ]);
+            ])->first();
         }
         $doubleEntryFields['COA_id'] = $receivable->id;
         $doubleEntryFields['invoice_item_id'] = $item->id;
