@@ -211,7 +211,7 @@ class OfficeController extends Controller
         $user = $patient->user;
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
         $property = $relation->properties()->where([
-            'type' => HasRolePropertyType::getValue($request->type),
+            'type' => HasRolePropertyType::getValue($request->property_type),
         ]);
         $property->update($fields);
         return new EmployeeInOfficeResource($relation);

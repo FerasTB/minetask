@@ -24,7 +24,7 @@ class UpdateHasRolePropertyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', Rule::in(HasRolePropertyType::getKeys())],
+            'property_type' => ['required', Rule::in(HasRolePropertyType::getKeys())],
             'read' => 'nullable|bool',
             'write' => 'nullable|bool',
             'edit' => 'nullable|bool',
