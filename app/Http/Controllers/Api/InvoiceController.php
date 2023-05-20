@@ -14,6 +14,7 @@ use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -63,9 +64,10 @@ class InvoiceController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
         if ($office->type == OfficeType::Combined) {
+            $owner = User::findOrFail($office->owner->user_id);
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => null
+                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
             ])->first();
             $invoice = $profile->invoices()->create($fields);
         } else {
@@ -83,20 +85,14 @@ class InvoiceController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
         if ($office->type == OfficeType::Combined) {
-            $profile = AccountingProfile::where([
-                'supplier_name' => $request->supplier_name,
-                'office_id' => $office->id, 'doctor_id' => null
-            ])->first();
+            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
             $invoice = $profile->invoices()->create($fields);
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Payable
             ]);
         } else {
-            $profile = AccountingProfile::where([
-                'supplier_name' => $request->supplier_name,
-                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
-            ])->first();
+            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
             $invoice = $profile->invoices()->create($fields);
             $doctor = Doctor::find($request->doctor_id);
             $payable = COA::where([

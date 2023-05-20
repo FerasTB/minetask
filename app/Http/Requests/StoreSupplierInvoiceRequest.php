@@ -27,7 +27,7 @@ class StoreSupplierInvoiceRequest extends FormRequest
             'total_price' => 'integer|required',
             'doctor_id' => 'required|integer',
             'office_id' => 'required|integer',
-            'supplier_name' => 'required|string',
+            'supplier_account_id' => 'required|integer',
         ];
     }
 }
