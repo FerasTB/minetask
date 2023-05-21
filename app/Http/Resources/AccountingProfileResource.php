@@ -35,6 +35,7 @@ class AccountingProfileResource extends JsonResource
             'type' => $this->type,
             'invoice' => InvoiceResource::collection($this->invoices),
             'receipts' => ReceiptResource::collection($this->receipts),
+            'office_id' => $this->office_id,
         ];
     }
 }
