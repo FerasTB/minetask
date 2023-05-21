@@ -103,7 +103,7 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             // return $doctor->accountingProfiles;
-            return AccountingProfileResource::collection($doctor->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
+            return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type', AccountingProfileType::PatientAccount]);
         } else {
             return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
         }

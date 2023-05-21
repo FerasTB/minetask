@@ -42,6 +42,7 @@ class AppointmentResource extends JsonResource
             'office' => new OfficeResource($office),
             'case' => $patientCase == false ? 'no case' : new PatientCaseResource($patientCase),
             'note' => $this->note,
+            'color' => $this->color,
         ];
     }
 }

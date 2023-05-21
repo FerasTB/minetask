@@ -31,6 +31,7 @@ class UpdateAppointmentRequest extends FormRequest
             'patientCase_id' => 'nullable|integer',
             'note' => 'nullable|string',
             'patientCase_id' => 'nullable|integer',
+            'color' => 'nullable|string',
         ];
     }
 }
