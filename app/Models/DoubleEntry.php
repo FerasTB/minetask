@@ -15,4 +15,19 @@ class DoubleEntry extends Model
     {
         return $this->belongsTo(COA::class, 'COA_id');
     }
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    public function invoiceItem()
+    {
+        return $this->belongsTo(InvoiceItem::class, 'invoice_item_id');
+    }
+
+    public function receipt()
+    {
+        return $this->belongsTo(Receipt::class, 'receipt_id');
+    }
 }

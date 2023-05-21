@@ -23,6 +23,7 @@ class COAResource extends JsonResource
             'note' => $this->note,
             'initial_balance' => $this->initial_balance,
             'type' => COAType::getKey($this->type),
+            'entry' => DoubleEntryResource::collection($this->doubleEntries),
         ];
     }
 }
