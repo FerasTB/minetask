@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
@@ -75,12 +76,12 @@ class DoctorInfoController extends Controller
                 $this->authorize('inOffice', [Doctor::class, $office]);
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
-                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id])->get();
+                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->get();
                 return MyPatientCombinedThroughAccountingProfileResource::collection($accounts);
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 // return MyPatientsResource::collection($roles);
             } else {
-                $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id])->get();
+                $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->get();
                 return MyPatientSeparateThroughAccountingProfileResource::collection($accounts);
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
                 // return MyPatientsResource::collection($roles);
