@@ -13,6 +13,7 @@ use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AccountingProfileController extends Controller
@@ -103,9 +104,15 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             // return $doctor->accountingProfiles;
-            return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
+            $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+            // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
+            return AccountingProfileResource::collection($accounts);
         } else {
-            return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
+            $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+            // return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
+            return AccountingProfileResource::collection($accounts);
         }
     }
 
