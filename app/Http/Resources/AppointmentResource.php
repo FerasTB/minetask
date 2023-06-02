@@ -37,6 +37,7 @@ class AppointmentResource extends JsonResource
             'office' => new OfficeResource($office),
             // 'patientCase' => new PatientCaseResource($this->patientCase),
             'case' => new PatientCaseResource($this->case),
+            'record' => new TeethRecordForAppointmentResource($this->record),
             'note' => $this->note,
             'step' => $this->step,
             'color' => $this->color,
