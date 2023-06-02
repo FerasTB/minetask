@@ -40,4 +40,9 @@ class AccountingProfile extends Model
     {
         return $this->hasMany(Receipt::class, 'accounting_profile_id');
     }
+
+    public function supplierItem()
+    {
+        return $this->hasMany(SupplierItem::class, 'COA_id');
+    }
 }

@@ -25,8 +25,6 @@ class StoreSupplierInvoiceRequest extends FormRequest
             'note' => 'nullable|string',
             'date_of_invoice' => 'date|nullable',
             'total_price' => 'integer|required',
-            'doctor_id' => 'required|integer',
-            'office_id' => 'required|integer',
             'supplier_account_id' => 'required|integer',
         ];
     }

@@ -83,29 +83,8 @@ class InvoiceController extends Controller
     public function storeSupplierInvoice(StoreSupplierInvoiceRequest $request)
     {
         $fields = $request->validated();
-        $office = Office::findOrFail($request->office_id);
-        if ($office->type == OfficeType::Combined) {
-            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
-            $invoice = $profile->invoices()->create($fields);
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Payable
-            ])->first();
-        } else {
-            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
-            $invoice = $profile->invoices()->create($fields);
-            $doctor = Doctor::find($request->doctor_id);
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Payable
-            ])->first();
-        }
-        $doubleEntryFields['invoice_id'] = $invoice->id;
-        $doubleEntryFields['total_price'] = $invoice->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $payable->doubleEntries()->create($doubleEntryFields);
-        $expensesCoa = $profile->COA;
-        $expensesCoa->doubleEntries()->create($doubleEntryFields);
+        $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+        $invoice = $profile->invoices()->create($fields);
         return new PatientInvoiceResource($invoice);
     }
 }

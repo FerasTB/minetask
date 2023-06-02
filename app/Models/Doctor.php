@@ -105,4 +105,15 @@ class Doctor extends Model
     {
         return $this->hasMany(COA::class, 'doctor_id')->where('name', COA::Payable)->get();
     }
+
+    public function drugs()
+    {
+        return $this->hasManyDeep(Drug::class, [MedicalCase::class, PatientCase::class, TeethRecord::class, Diagnosis::class], [
+            'office_id', // Foreign key on the "case" table.
+            'case_id',    // Foreign key on the "patient case" table.
+            'patientCase_id',    // Foreign key on the "teeth record" table.
+            'record_id',    // Foreign key on the "diagnosis" table.
+            'diagnosis_id'     // Foreign key on the "drug" table.
+        ]);
+    }
 }

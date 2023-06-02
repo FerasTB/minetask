@@ -9,6 +9,8 @@ use App\Http\Requests\StoreInvoiceItemRequest;
 use App\Http\Requests\StorePatientInvoiceItemRequest;
 use App\Http\Requests\StoreSupplierInvoiceItemRequest;
 use App\Http\Resources\InvoiceItemsResource;
+use App\Http\Resources\InvoiceResource;
+use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -90,6 +92,25 @@ class InvoiceItemController extends Controller
     {
         $fields = $request->validated();
         $item = $invoice->items()->create($fields);
-        return new InvoiceItemsResource($item);
+        $office = $invoice->office;
+        if ($office->type == OfficeType::Combined) {
+            $payable = COA::where([
+                'office_id' => $office->id,
+                'doctor_id' => null, 'name' => COA::Payable
+            ])->first();
+        } else {
+            $doctor = auth()->user()->doctor;
+            $payable = COA::where([
+                'office_id' => $office->id,
+                'doctor_id' => $doctor->id, 'name' => COA::Payable
+            ])->first();
+        }
+        $doubleEntryFields['invoice_item_id'] = $item->id;
+        $doubleEntryFields['total_price'] = $item->total_price;
+        $doubleEntryFields['type'] = DoubleEntryType::Positive;
+        $payable->doubleEntries()->create($doubleEntryFields);
+        $expensesCoa = COA::findOrFail($request->item_coa);
+        $expensesCoa->doubleEntries()->create($doubleEntryFields);
+        return new InvoiceResource($item);
     }
 }

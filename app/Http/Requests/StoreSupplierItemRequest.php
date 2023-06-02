@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSupplierInvoiceItemRequest extends FormRequest
+class StoreSupplierItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,8 @@ class StoreSupplierInvoiceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'COA_id' => 'required|integer',
             'name' => 'required|string',
-            'description' => 'nullable|string',
-            'amount' => 'required|integer',
-            'total_price' => 'required|integer',
-            'price_per_one' => 'required|integer',
-            'item_coa' => 'required|integer',
         ];
     }
 }

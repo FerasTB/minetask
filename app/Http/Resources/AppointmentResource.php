@@ -26,11 +26,6 @@ class AppointmentResource extends JsonResource
         $doctor = Doctor::find($this->doctor_id);
         $office = Office::find($this->office_id);
         $patient = Patient::find($this->patient_id);
-        if ($this->patientCase_id) {
-            $patientCase = PatientCase::find($this->patientCase_id);
-        } else {
-            $patientCase = false;
-        }
         return [
             'id' => $this->id,
             'start_time' => $this->start_time,
@@ -40,7 +35,7 @@ class AppointmentResource extends JsonResource
             'patient' => new PatientInfoForDoctorResource($patient),
             'doctor' => new DoctorResource($doctor),
             'office' => new OfficeResource($office),
-            'case' => $patientCase == false ? 'no case' : new PatientCaseResource($patientCase),
+            'patientCase' => new PatientCaseResource($this->patientCase),
             'note' => $this->note,
             'color' => $this->color,
         ];

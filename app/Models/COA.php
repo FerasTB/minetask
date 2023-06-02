@@ -34,4 +34,9 @@ class COA extends Model
     {
         return $this->hasMany(DoubleEntry::class, 'COA_id');
     }
+
+    public function supplierItem()
+    {
+        return $this->hasMany(SupplierItem::class, 'COA_id');
+    }
 }
