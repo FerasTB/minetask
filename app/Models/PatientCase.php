@@ -26,4 +26,9 @@ class PatientCase extends Model
     {
         return $this->hasMany(TeethRecord::class, 'patientCase_id');
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'patientCase_id');
+    }
 }
