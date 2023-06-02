@@ -69,8 +69,13 @@ class OfficeController extends Controller
             'name' => COA::Payable,
             'type' => COAType::Liability,
         ]);
+        $doctor = auth()->user()->doctor;
+        $doctor->cases()->create([
+            'case_name' => Doctor::DefaultCase,
+            'office_id' => $office->id,
+        ]);
         if ($office->type == OfficeType::Separate) {
-            $doctor = auth()->user()->doctor;
+            // $doctor = auth()->user()->doctor;
             $doctor->COAS()->create([
                 'name' => COA::Receivable,
                 'type' => COAType::Asset,
@@ -84,10 +89,6 @@ class OfficeController extends Controller
             $doctor->COAS()->create([
                 'name' => COA::Payable,
                 'type' => COAType::Liability,
-                'office_id' => $office->id,
-            ]);
-            $doctor->cases()->create([
-                'case_name' => Doctor::DefaultCase,
                 'office_id' => $office->id,
             ]);
         }

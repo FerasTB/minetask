@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('total_price');
             $table->integer('price_per_one');
             $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
+            $table->foreignId('invoice_receipt_id')->nullable()->constrained('invoice_receipts')->onDelete('set null');
             $table->timestamps();
         });
     }

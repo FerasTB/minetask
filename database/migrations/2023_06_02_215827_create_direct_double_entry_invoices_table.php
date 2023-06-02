@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('c_o_a_s', function (Blueprint $table) {
+        Schema::create('direct_double_entry_invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('set null');
             $table->foreignId('office_id')->nullable()->constrained('offices')->onDelete('set null');
-            $table->integer("general_type");
-            $table->integer("type")->nullable();
-            $table->integer("sub_type")->nullable();
-            $table->string("name");
-            $table->string("note")->nullable();
-            $table->integer('initial_balance')->default(0);
+            $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('set null');
+            $table->integer('total_price');
+            $table->date('date_of_transaction')->default(now());
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('c_o_a_s');
+        Schema::dropIfExists('direct_double_entry_invoices');
     }
 };

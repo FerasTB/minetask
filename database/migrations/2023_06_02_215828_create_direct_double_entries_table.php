@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('double_entries', function (Blueprint $table) {
+        Schema::create('direct_double_entries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('COA_id')->nullable()->constrained('c_o_a_s')->onDelete('set null');
-            $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
-            $table->foreignId('invoice_item_id')->nullable()->constrained('invoice_items')->onDelete('set null');
-            $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('set null');
-            $table->foreignId('invoice_receipt_id')->nullable()->constrained('invoice_receipts')->onDelete('set null');
+            $table->foreignId('direct_double_entry_invoice_id')->nullable()->constrained('direct_double_entry_invoices')->onDelete('set null');
             $table->integer('total_price');
             $table->integer("type");
             $table->timestamps();
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('double_entries');
+        Schema::dropIfExists('direct_double_entries');
     }
 };
