@@ -33,6 +33,6 @@ class Appointment extends Model
 
     public function case()
     {
-        return $this->belongsTo(patientCase::class, 'patientCase_id');
+        return $this->belongsTo(PatientCase::class, 'patientCase_id');
     }
 }
