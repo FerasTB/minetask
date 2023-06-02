@@ -31,7 +31,7 @@ class Appointment extends Model
         return $this->hasOne(TeethRecord::class, 'appointment_id');
     }
 
-    public function patientCase()
+    public function case()
     {
         return $this->belongsTo(patientCase::class, 'patientCase_id');
     }
