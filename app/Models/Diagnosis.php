@@ -23,6 +23,6 @@ class Diagnosis extends Model
 
     public function teeth()
     {
-        return $this->hasMany(Tooth::class, 'operation_id');
+        return $this->hasMany(Tooth::class, 'diagnosis_id');
     }
 }
