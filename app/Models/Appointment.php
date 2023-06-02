@@ -26,11 +26,6 @@ class Appointment extends Model
         return $this->belongsTo(Office::class, 'office_id');
     }
 
-    public function status()
-    {
-        return $this->belongsTo(AppointmentStatus::class, 'status_id');
-    }
-
     public function record()
     {
         return $this->hasOne(TeethRecord::class, 'appointment_id');
