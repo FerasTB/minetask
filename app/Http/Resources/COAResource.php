@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\COAGeneralType;
+use App\Enums\COASubType;
 use App\Enums\COAType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,6 +24,8 @@ class COAResource extends JsonResource
             'doctor' => new DoctorResource($this->doctor),
             'note' => $this->note,
             'initial_balance' => $this->initial_balance,
+            'sub_type' => COASubType::getKey($this->sub_type),
+            'general_type' => COAGeneralType::getKey($this->general_type),
             'type' => COAType::getKey($this->type),
             'entry' => DoubleEntryResource::collection($this->doubleEntries),
         ];

@@ -16,4 +16,5 @@ final class COASubType extends Enum
     const Cash = 1;
     const Receivable = 2;
     const Payable = 3;
+    const NoSubType = null;
 }
