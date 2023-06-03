@@ -25,6 +25,11 @@ class StoreDrugRequest extends FormRequest
         return [
             'diagnosis_id' => 'required|integer',
             'drug_name' => 'required|string',
+            'eat' => 'nullable|bool',
+            'portion' => 'nullable|string',
+            'frequency' => 'nullable|string',
+            'note' => 'nullable|string',
+            'effect' => 'nullable|string',
         ];
     }
 }

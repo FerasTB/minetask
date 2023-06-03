@@ -77,6 +77,16 @@ class OfficeController extends Controller
             'general_type' => COAGeneralType::Liability,
             'sub_type' => COASubType::Payable,
         ]);
+        $office->COAS()->create([
+            'name' => COA::Capital,
+            'type' => COAType::Capital,
+            'general_type' => COAGeneralType::Equity,
+        ]);
+        $office->COAS()->create([
+            'name' => COA::OwnerWithDraw,
+            'type' => COAType::OwnerWithdraw,
+            'general_type' => COAGeneralType::Equity,
+        ]);
         $doctor = auth()->user()->doctor;
         $doctor->cases()->create([
             'case_name' => Doctor::DefaultCase,
@@ -103,6 +113,18 @@ class OfficeController extends Controller
                 'type' => COAType::Current,
                 'general_type' => COAGeneralType::Liability,
                 'sub_type' => COASubType::Payable,
+                'office_id' => $office->id,
+            ]);
+            $doctor->COAS()->create([
+                'name' => COA::Capital,
+                'type' => COAType::Capital,
+                'general_type' => COAGeneralType::Equity,
+                'office_id' => $office->id,
+            ]);
+            $doctor->COAS()->create([
+                'name' => COA::OwnerWithDraw,
+                'type' => COAType::OwnerWithdraw,
+                'general_type' => COAGeneralType::Equity,
                 'office_id' => $office->id,
             ]);
         }

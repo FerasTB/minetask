@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('drugs', function (Blueprint $table) {
             $table->id();
             $table->string('drug_name');
+            $table->boolean('eat')->nullable();
+            $table->string('portion')->nullable();
+            $table->string('frequency')->nullable();
+            $table->string('note')->nullable();
+            $table->string('effect')->nullable();
             $table->foreignId('diagnosis_id')->constrained('diagnoses')->onDelete('cascade');
             $table->timestamps();
         });
