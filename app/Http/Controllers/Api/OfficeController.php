@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COAGeneralType;
+use App\Enums\COASubType;
 use App\Enums\COAType;
 use App\Enums\HasRolePropertyType;
 use App\Enums\OfficeType;
@@ -59,15 +61,21 @@ class OfficeController extends Controller
         ]);
         $office->COAS()->create([
             'name' => COA::Receivable,
-            'type' => COAType::Asset,
+            'type' => COAType::Current,
+            'general_type' => COAGeneralType::Asset,
+            'sub_type' => COASubType::Receivable,
         ]);
         $office->COAS()->create([
             'name' => COA::Cash,
-            'type' => COAType::Asset,
+            'type' => COAType::Current,
+            'general_type' => COAGeneralType::Asset,
+            'sub_type' => COASubType::Cash,
         ]);
         $office->COAS()->create([
             'name' => COA::Payable,
-            'type' => COAType::Liability,
+            'type' => COAType::Current,
+            'general_type' => COAGeneralType::Liability,
+            'sub_type' => COASubType::Payable,
         ]);
         $doctor = auth()->user()->doctor;
         $doctor->cases()->create([
@@ -78,17 +86,23 @@ class OfficeController extends Controller
             // $doctor = auth()->user()->doctor;
             $doctor->COAS()->create([
                 'name' => COA::Receivable,
-                'type' => COAType::Asset,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Asset,
+                'sub_type' => COASubType::Receivable,
                 'office_id' => $office->id,
             ]);
             $doctor->COAS()->create([
                 'name' => COA::Cash,
-                'type' => COAType::Asset,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Asset,
+                'sub_type' => COASubType::Cash,
                 'office_id' => $office->id,
             ]);
             $doctor->COAS()->create([
                 'name' => COA::Payable,
-                'type' => COAType::Liability,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Liability,
+                'sub_type' => COASubType::Payable,
                 'office_id' => $office->id,
             ]);
         }
@@ -160,17 +174,23 @@ class OfficeController extends Controller
             $doctor = $user->doctor;
             $doctor->COAS()->create([
                 'name' => COA::Receivable,
-                'type' => COAType::Asset,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Asset,
+                'sub_type' => COASubType::Receivable,
                 'office_id' => $office->id,
             ]);
             $doctor->COAS()->create([
                 'name' => COA::Cash,
-                'type' => COAType::Asset,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Asset,
+                'sub_type' => COASubType::Cash,
                 'office_id' => $office->id,
             ]);
             $doctor->COAS()->create([
                 'name' => COA::Payable,
-                'type' => COAType::Liability,
+                'type' => COAType::Current,
+                'general_type' => COAGeneralType::Liability,
+                'sub_type' => COASubType::Payable,
                 'office_id' => $office->id,
             ]);
             $doctor->cases()->create([

@@ -9,7 +9,7 @@ class COA extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['doctor_id', 'type', 'office_id', 'name', 'note', 'initial_balance'];
+    protected $fillable = ['sub_type', 'general_type', 'doctor_id', 'type', 'office_id', 'name', 'note', 'initial_balance'];
 
     const Cash = "Cash";
     const Payable =  "Payable";

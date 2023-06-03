@@ -11,11 +11,11 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class COAType extends Enum
+final class COAGeneralType extends Enum
 {
-    const Current = 1;
-    const NonCurrent = 2;
-    // const Equity = 3;
-    // const Revenue = 4;
-    // const Expenses = 5;
+    const Asset = 1;
+    const Liability = 2;
+    const Equity = 3;
+    const Revenue = 4;
+    const Expenses = 5;
 }

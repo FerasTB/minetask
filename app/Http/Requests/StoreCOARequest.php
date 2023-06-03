@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\COAGeneralType;
+use App\Enums\COASubType;
 use App\Enums\COAType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,7 +31,9 @@ class StoreCOARequest extends FormRequest
             'doctor_id' => 'nullable|integer',
             'note' => 'nullable|string',
             'initial_balance' => 'nullable|integer',
-            'type' => ['required', Rule::in(COAType::getKeys())],
+            'type' => ['nullable', Rule::in(COAType::getKeys())],
+            'sub_type' => ['nullable', Rule::in(COASubType::getKeys())],
+            'general_type' => ['required', Rule::in(COAGeneralType::getKeys())],
         ];
     }
 }
