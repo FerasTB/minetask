@@ -17,18 +17,22 @@ class OfficeThroughHasRoleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $office = Office::find($this->roleable_id);
+        // $office = Office::find($this->roleable_id);
+        // return [
+        //     'id' => $office->id,
+        //     'number' => $office->number,
+        //     'time_per_client' => $office->time_per_client,
+        //     'address' => $office->address,
+        //     'office_image' => $office->office_image,
+        //     'office_name' => $office->office_name,
+        //     'start_time' => $office->start_time,
+        //     'end_time' => $office->end_time,
+        //     'role_in_office' => SubRole::getKey($this->sub_role),
+        //     'type' => OfficeType::getKey($office->type),
+        // ];
         return [
-            'id' => $office->id,
-            'number' => $office->number,
-            'time_per_client' => $office->time_per_client,
-            'address' => $office->address,
-            'office_image' => $office->office_image,
-            'office_name' => $office->office_name,
-            'start_time' => $office->start_time,
-            'end_time' => $office->end_time,
             'role_in_office' => SubRole::getKey($this->sub_role),
-            'type' => OfficeType::getKey($office->type),
+            'office' => new OfficeResource($this->whenLoaded('roleable')),
         ];
     }
 }
