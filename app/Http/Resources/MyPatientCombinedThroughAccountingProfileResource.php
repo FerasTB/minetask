@@ -33,6 +33,7 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                 'birth_date' => $patient->birth_date,
                 'note' => $patient->note,
                 'gender' => $patient->gender,
+                'created_at' => $patient->created_at,
                 'status' => 'Approve'
             ];
         }
@@ -48,6 +49,7 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                 'birth_date' => $patient->birth_date,
                 'gender' => $originalPatient->gender,
                 'note' => $patient->note,
+                'created_at' => $patient->created_at,
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
             ];
