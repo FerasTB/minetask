@@ -63,7 +63,7 @@ class DoctorInfoController extends Controller
     public function showMyInfo()
     {
         if (auth()->user()->doctor) {
-            return new DoctorInfoResource(auth()->user()->doctor);
+            return new DoctorInfoResource(auth()->user()->doctor->with('user'));
         }
         return response('you have to complete your info', 404);
     }
