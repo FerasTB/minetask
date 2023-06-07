@@ -74,10 +74,10 @@ class TeethRecordController extends Controller
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
         $case = MedicalCase::find($request->case_id);
-        $PatientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
+        $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('create', [Record::class, $case]);
-        if ($PatientCase) {
-            if ($PatientCase->status == PatientCaseStatus::Closed) {
+        if ($patientCase) {
+            if ($patientCase->status == PatientCaseStatus::Closed) {
                 $patientCase = $case->patientCases()->create($fields);
             }
             $fields['report_id'] = $patientCase->patient->teethReport->id;
