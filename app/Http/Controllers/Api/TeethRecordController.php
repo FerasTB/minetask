@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PatientCaseStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAppointmentFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
+use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\TeethRecordResource;
+use App\Models\Appointment;
+use App\Models\Doctor;
+use App\Models\MedicalCase;
+use App\Models\Patient;
 use App\Models\PatientCase;
 use App\Models\TeethRecord;
 use Illuminate\Http\Request;
@@ -60,5 +67,40 @@ class TeethRecordController extends Controller
     {
         // $this->authorize('viewAny', [Record::class, $case]);
         return TeethRecordResource::collection($case->teethRecords);
+    }
+
+    public function firstStep(StoreAppointmentFirstStep $request)
+    {
+        $fields = $request->validated();
+        $patient = Patient::findOrFail($request->patient_id);
+        $case = MedicalCase::find($request->case_id);
+        $PatientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
+        // $this->authorize('create', [Record::class, $case]);
+        if ($PatientCase) {
+            if ($PatientCase->status == PatientCaseStatus::Closed) {
+                $patientCase = $case->patientCases()->create($fields);
+            }
+            $fields['report_id'] = $patientCase->patient->teethReport->id;
+            $record = $patientCase->teethRecords()->create($fields);
+            $fields['description'] = $request->diagnosis;
+            $diagnosis = $record->diagnosis()->create($fields);
+            return response()->json([
+                'patientCase_id' => $patientCase->id,
+                'closable' => $case->case_name == Doctor::DefaultCase,
+                'record_id' => $record->id,
+                'diagnosis_id' => $diagnosis->id,
+            ]);
+        }
+        $patientCase = $case->patientCases()->create($fields);
+        $fields['report_id'] = $patientCase->patient->teethReport->id;
+        $record = $patientCase->teethRecords()->create($fields);
+        $fields['description'] = $request->diagnosis;
+        $diagnosis = $record->diagnosis()->create($fields);
+        return response()->json([
+            'patientCase_id' => $patientCase->id,
+            'closable' => $case->case_name == Doctor::DefaultCase,
+            'record_id' => $record->id,
+            'diagnosis_id' => $diagnosis->id,
+        ]);
     }
 }
