@@ -98,7 +98,7 @@ class TeethRecordController extends Controller
         $diagnosis = $record->diagnosis()->create($fields);
         return response()->json([
             'patientCase_id' => $patientCase->id,
-            'closable' => $case->case_name == Doctor::DefaultCase,
+            'closable' => $case->case_name != Doctor::DefaultCase,
             'record_id' => $record->id,
             'diagnosis_id' => $diagnosis->id,
         ]);
