@@ -22,11 +22,15 @@ class CaseController extends Controller
     {
         $office = Office::findOrFail($request->office_id);
         $this->authorize('viewAny', [MedicalCase::class, $office]);
-        if ($office->type == OfficeType::Separate) {
-            return MedicalCaseResource::collection(auth()->user()->doctor->cases);
-        } else {
-            return MedicalCaseResource::collection($office->cases);
-        }
+        // if ($office->type == OfficeType::Separate) {
+        $case = MedicalCase::where([
+            'doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id
+        ])->with(['doctor', 'office'])->get();
+        // return MedicalCaseResource::collection(auth()->user()->doctor->cases)->where('office.id');
+        return MedicalCaseResource::collection($case);
+        // } else {
+        //     return MedicalCaseResource::collection($office->cases);
+        // }
     }
 
     /**

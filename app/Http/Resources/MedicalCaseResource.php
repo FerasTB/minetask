@@ -18,6 +18,8 @@ class MedicalCaseResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'office' => new OfficeResource($this->whenLoaded('office')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'case_name' => $this->case_name,
         ];
     }
