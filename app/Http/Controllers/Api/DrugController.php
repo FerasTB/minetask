@@ -7,6 +7,7 @@ use App\Http\Requests\StoreDrugRequest;
 use App\Http\Resources\DrugResource;
 use App\Models\Diagnosis;
 use App\Models\Drug;
+use App\Models\DrugList;
 use Illuminate\Http\Request;
 
 class DrugController extends Controller
@@ -29,6 +30,14 @@ class DrugController extends Controller
         if ($diagnosis) {
             $this->authorize('create', [Drug::class, $diagnosis]);
             $drug = $diagnosis->drug()->create($fields);
+            $list = DrugList::firstOrCreate([
+                'drug_name' => $drug->drug_name,
+                'eat' => $drug->eat,
+                'portion' => $drug->portion,
+                'frequency' => $drug->frequency,
+                'effect' => $drug->effect,
+                'doctor_id' => auth()->user()->doctor->id,
+            ]);
             return new DrugResource($drug);
         }
         return response('the is no diagnosis', 404);
