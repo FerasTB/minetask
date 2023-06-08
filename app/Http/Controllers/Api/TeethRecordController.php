@@ -89,6 +89,11 @@ class TeethRecordController extends Controller
             }
             $fields['report_id'] = $patientCase->patient->teethReport->id;
             $record = $patientCase->teethRecords()->create($fields);
+            if ($record->description != null) {
+                $complaint = TeethComplaintList::firstOrCreate([
+                    'complaint' => $record->description,
+                ]);
+            }
             $fields['description'] = $request->diagnosis;
             $diagnosis = $record->diagnosis()->create($fields);
             return response()->json([
@@ -101,6 +106,11 @@ class TeethRecordController extends Controller
         $patientCase = $case->patientCases()->create($fields);
         $fields['report_id'] = $patientCase->patient->teethReport->id;
         $record = $patientCase->teethRecords()->create($fields);
+        if ($record->description != null) {
+            $complaint = TeethComplaintList::firstOrCreate([
+                'complaint' => $record->description,
+            ]);
+        }
         $fields['description'] = $request->diagnosis;
         $diagnosis = $record->diagnosis()->create($fields);
         return response()->json([
