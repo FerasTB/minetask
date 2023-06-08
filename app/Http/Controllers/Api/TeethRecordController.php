@@ -14,6 +14,7 @@ use App\Models\Doctor;
 use App\Models\MedicalCase;
 use App\Models\Patient;
 use App\Models\PatientCase;
+use App\Models\TeethComplaintList;
 use App\Models\TeethRecord;
 use Illuminate\Http\Request;
 
@@ -37,6 +38,11 @@ class TeethRecordController extends Controller
         // $this->authorize('create', [Record::class, $case]);
         $fields['report_id'] = $case->patient->teethReport->id;
         $record = $case->teethRecords()->create($fields);
+        if ($record->description != null) {
+            $complaint = TeethComplaintList::firstOrCreate([
+                'complaint' => $record->description,
+            ]);
+        }
         return new TeethRecordResource($record);
     }
 

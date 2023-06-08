@@ -64,6 +64,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('accounting/expenses/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'expensesProfile']);
     Route::post('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeSupplier']);
     Route::apiResource('accounting/supplier/{supplier}/item', App\Http\Controllers\Api\SupplierItemController::class);
+    Route::apiResource('list/complaint', App\Http\Controllers\Api\TeethComplaintListController::class);
     Route::apiResource('coa', App\Http\Controllers\Api\COAController::class);
     Route::post('receipt/patient/{patient}', [App\Http\Controllers\Api\ReceiptController::class, 'storePatientReceipt']);
     Route::post('invoice/patient/{patient}', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoice']);
