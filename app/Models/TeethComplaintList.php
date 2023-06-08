@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class TeethComplaintList extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['complaint'];
 }
