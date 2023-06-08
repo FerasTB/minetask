@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\Appointment;
+use App\Models\DiagnosisList;
 use App\Models\Doctor;
 use App\Models\MedicalCase;
 use App\Models\Patient;
@@ -113,6 +114,11 @@ class TeethRecordController extends Controller
         }
         $fields['description'] = $request->diagnosis;
         $diagnosis = $record->diagnosis()->create($fields);
+        if ($diagnosis->description != null) {
+            $diagnosis = DiagnosisList::firstOrCreate([
+                'description' => $diagnosis->description,
+            ]);
+        }
         return response()->json([
             'patientCase_id' => $patientCase->id,
             'closable' => $case->case_name != Doctor::DefaultCase,

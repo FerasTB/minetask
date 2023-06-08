@@ -8,6 +8,7 @@ use App\Http\Requests\StoreToothRequest;
 use App\Http\Resources\DiagnosisResource;
 use App\Http\Resources\ToothResource;
 use App\Models\Diagnosis;
+use App\Models\DiagnosisList;
 use App\Models\Record;
 use App\Models\TeethRecord;
 use Illuminate\Http\Request;
@@ -32,6 +33,11 @@ class DiagnosisController extends Controller
         if ($record) {
             $this->authorize('create', [Diagnosis::class, $record]);
             $diagnosis = $record->diagnosis()->create($fields);
+            if ($diagnosis->description != null) {
+                $diagnosis = DiagnosisList::firstOrCreate([
+                    'description' => $diagnosis->description,
+                ]);
+            }
             return new DiagnosisResource($diagnosis);
         }
         return response('there is no record', 404);
