@@ -2,17 +2,16 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDrugRequest extends FormRequest
+class UpdateAfterTreatmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->user()->role == Role::Doctor;
+        return true;
     }
 
     /**
@@ -23,13 +22,8 @@ class StoreDrugRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'diagnosis_id' => 'required|integer',
-            'drug_name' => 'required|string',
-            'eat' => 'nullable|integer',
-            'portion' => 'nullable|string',
-            'frequency' => 'nullable|string',
-            'note' => 'nullable|string',
-            'effect' => 'nullable|string',
+            'after_treatment_instruction' => 'required|string',
+
         ];
     }
 }

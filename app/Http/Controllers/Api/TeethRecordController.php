@@ -6,6 +6,7 @@ use App\Enums\PatientCaseStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
+use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\Appointment;
@@ -102,5 +103,12 @@ class TeethRecordController extends Controller
             'record_id' => $record->id,
             'diagnosis_id' => $diagnosis->id,
         ]);
+    }
+
+    public function AfterTreatmentUpdate(TeethRecord $record, UpdateAfterTreatmentRequest $request)
+    {
+        $fields = $request->validated();
+        $record->update($fields);
+        return new TeethRecordResource($record);
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('drugs', function (Blueprint $table) {
             $table->id();
             $table->string('drug_name');
-            $table->boolean('eat')->nullable();
+            $table->smallInteger('eat')->nullable();
             $table->string('portion')->nullable();
             $table->string('frequency')->nullable();
             $table->string('note')->nullable();
