@@ -27,6 +27,7 @@ class UpdateAppointmentStatusRequest extends FormRequest
         return [
             'status' => ['required', 'string', Rule::in(AppointmentStatus::getKeys())],
             'step' => 'nullable|integer',
+            'is_patient_in_clinic' => 'nullable|bool',
         ];
     }
 }

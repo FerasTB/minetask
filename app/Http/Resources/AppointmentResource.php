@@ -41,6 +41,7 @@ class AppointmentResource extends JsonResource
             'note' => $this->note,
             'step' => $this->step,
             'color' => $this->color,
+            'is_patient_in_clinic' => $this->is_patient_in_clinic,
         ];
     }
 }
