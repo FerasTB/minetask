@@ -6,6 +6,7 @@ use App\Enums\AccountingProfileType;
 use App\Enums\COAType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCoaAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
@@ -138,5 +139,16 @@ class AccountingProfileController extends Controller
         } else {
             return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::ExpensesAccount);
         }
+    }
+
+    public function setInitialBalance(SetInitialBalanceRequest $request, AccountingProfile $accounting)
+    {
+        $fields = $request->validated();
+        $this->authorize('update', [$accounting]);
+        if ($accounting->initial_balance != 0) {
+            return response('the initial balance only can be set once', 403);
+        }
+        $accounting->update($fields);
+        return new AccountingProfileResource($accounting);
     }
 }

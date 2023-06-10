@@ -57,7 +57,7 @@ class AccountingProfilePolicy
      */
     public function update(User $user, AccountingProfile $accountingProfile): bool
     {
-        //
+        return $accountingProfile->doctor_id == $user->doctor->id;
     }
 
     /**
