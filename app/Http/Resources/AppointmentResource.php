@@ -23,9 +23,6 @@ class AppointmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $doctor = Doctor::find($this->doctor_id);
-        $office = Office::find($this->office_id);
-        $patient = Patient::find($this->patient_id);
         return [
             'id' => $this->id,
             'start_time' => $this->start_time,
