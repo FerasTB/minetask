@@ -23,7 +23,7 @@ class COAController extends Controller
         $office = Office::findOrFail($request->office);
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
-            return COAResource::collection($doctor->COAS);
+            return COAResource::collection($doctor->COAS()->with(['doctor', 'office'])->get());
         } else {
             return COAResource::collection($office->COAS);
         }
