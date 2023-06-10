@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('list/drug', App\Http\Controllers\Api\DrugListController::class);
     Route::apiResource('coa', App\Http\Controllers\Api\COAController::class);
     Route::put('coa/{coa}/initial', [App\Http\Controllers\Api\COAController::class, 'setInitialBalance']);
+    Route::get('coa/{coa}/balance', [App\Http\Controllers\Api\COAController::class, 'coaOutcome']);
     Route::post('receipt/patient/{patient}', [App\Http\Controllers\Api\ReceiptController::class, 'storePatientReceipt']);
     Route::post('invoice/patient/{patient}', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoice']);
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\COAGeneralType;
 use App\Enums\COAType;
+use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SetInitialBalanceRequest;
@@ -88,6 +89,28 @@ class COAController extends Controller
         }
         $coa->update($fields);
         return new COAResource($coa);
+    }
+
+    public function coaOutcome(COA $coa)
+    {
+        $this->authorize('view', [$coa]);
+        $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
+        $totalPositive = $positiveDoubleEntries != null ?
+            $positiveDoubleEntries->sum('amount') : 0;
+        $negativeDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Negative)->get();
+        $totalNegative = $negativeDoubleEntries != null ?
+            $negativeDoubleEntries->sum('amount') : 0;
+        $positiveDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Positive)->get();
+        $totalDirectPositive = $positiveDirectDoubleEntries != null ?
+            $positiveDirectDoubleEntries->sum('total_price') : 0;
+        $negativeDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Negative)->get();
+        $totalDirectNegative = $negativeDirectDoubleEntries != null ?
+            $negativeDirectDoubleEntries->sum('amount') : 0;
+        $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $coa->initial_balance;
+        return response()->json([
+            'coa' => new COAResource($coa),
+            'total' => $total,
+        ]);
     }
 
     /**

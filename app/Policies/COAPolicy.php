@@ -23,9 +23,13 @@ class COAPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, COA $cOA): bool
+    public function view(User $user, COA $coa): bool
     {
-        //
+        if ($coa->doctor_id == null) {
+            $role = HasRole::where(['roleable_id' => $coa->office_id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+            return $role != null && $role->sub_role == SubRole::OfficeOwner;
+        }
+        return $user->doctor && $coa->doctor_id == $user->doctor->id;
     }
 
     /**
