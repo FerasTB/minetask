@@ -50,4 +50,16 @@ class AccountingProfile extends Model
     {
         return $this->hasMany(SupplierItem::class, 'COA_id');
     }
+
+    public function accountOutcome()
+    {
+        $positive = $this->invoices();
+        $totalPositive = $positive != null ?
+            $positive->sum('total_price') : 0;
+        $negative = $this->receipts();
+        $totalNegative = $negative != null ?
+            $negative->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $this->initial_balance;
+        return $total;
+    }
 }
