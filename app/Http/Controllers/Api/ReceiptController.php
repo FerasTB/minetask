@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
@@ -98,10 +99,7 @@ class ReceiptController extends Controller
                 'office_id' => $office->id,
                 'doctor_id' => null, 'name' => COA::Payable
             ]);
-            $cash = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Cash
-            ]);
+            $cash = COA::findOrFail($request->cash_coa);
         } else {
             $profile = AccountingProfile::where([
                 'supplier_name' => $request->supplier_name,
@@ -113,10 +111,7 @@ class ReceiptController extends Controller
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'name' => COA::Payable
             ]);
-            $cash = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Cash
-            ]);
+            $cash = COA::findOrFail($request->cash_coa);
         }
         $doubleEntryFields['receipt_id'] = $receipt->id;
         $doubleEntryFields['total_price'] = $receipt->total_price;
@@ -138,12 +133,9 @@ class ReceiptController extends Controller
             $receipt = $profile->receipts()->create($fields);
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Receivable
+                'doctor_id' => null, 'sub_type' => COASubType::Receivable
             ])->first();
-            $cash = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Cash
-            ])->first();
+            $cash = COA::findOrFail($request->cash_coa);
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
@@ -153,12 +145,9 @@ class ReceiptController extends Controller
             $doctor = Doctor::find($request->doctor_id);
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Receivable
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
             ])->first();
-            $cash = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Cash
-            ])->first();
+            $cash = COA::findOrFail($request->cash_coa);
         }
         $doubleEntryFields['receipt_id'] = $receipt->id;
         $doubleEntryFields['total_price'] = $receipt->total_price;

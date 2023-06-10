@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
@@ -68,13 +69,13 @@ class InvoiceItemController extends Controller
         if ($office->type == OfficeType::Combined) {
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Receivable
+                'doctor_id' => null, 'sub_type' => COASubType::Receivable
             ])->first();
         } else {
             $doctor = $invoice->doctor;
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Receivable
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
             ])->first();
         }
         $doubleEntryFields['COA_id'] = $receivable->id;

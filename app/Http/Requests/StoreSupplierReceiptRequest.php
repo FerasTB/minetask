@@ -28,6 +28,7 @@ class StoreSupplierReceiptRequest extends FormRequest
             'total_price' => 'required|integer',
             'office_id' => 'required|integer',
             'doctor_id' => 'required|integer',
+            'cash_coa' => 'required|integer',
             'supplier_name' => 'required|string',
         ];
     }
