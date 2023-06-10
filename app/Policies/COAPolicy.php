@@ -42,7 +42,7 @@ class COAPolicy
     public function update(User $user, COA $coa): bool
     {
         if ($coa->doctor_id == null) {
-            $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+            $role = HasRole::where(['roleable_id' => $coa->office_id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
             return $role != null && $role->sub_role == SubRole::OfficeOwner;
         }
         return $coa->doctor_id == $user->doctor->id;
