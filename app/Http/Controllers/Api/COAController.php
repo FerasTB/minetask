@@ -113,6 +113,25 @@ class COAController extends Controller
         ]);
     }
 
+    public static function coaOutcomeInt(int $id)
+    {
+        $coa = COA::findOrFail($id);
+        $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
+        $totalPositive = $positiveDoubleEntries != null ?
+            $positiveDoubleEntries->sum('amount') : 0;
+        $negativeDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Negative)->get();
+        $totalNegative = $negativeDoubleEntries != null ?
+            $negativeDoubleEntries->sum('amount') : 0;
+        $positiveDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Positive)->get();
+        $totalDirectPositive = $positiveDirectDoubleEntries != null ?
+            $positiveDirectDoubleEntries->sum('total_price') : 0;
+        $negativeDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Negative)->get();
+        $totalDirectNegative = $negativeDirectDoubleEntries != null ?
+            $negativeDirectDoubleEntries->sum('total_price') : 0;
+        $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $coa->initial_balance;
+        return $total;
+    }
+
     /**
      * Remove the specified resource from storage.
      */
