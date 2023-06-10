@@ -43,7 +43,6 @@ class COAController extends Controller
     {
         $office = Office::findOrFail($request->office);
         $this->authorize('officeOwner', [COA::class, $office]);
-        $doctor = auth()->user()->doctor;
         return COAResource::collection(
             $office->COAS()
                 ->with([

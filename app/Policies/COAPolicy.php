@@ -96,6 +96,6 @@ class COAPolicy
     public function officeOwner(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return $role != null && $role->sub_role == SubRole::OfficeOwner;
+        return $role != null;
     }
 }
