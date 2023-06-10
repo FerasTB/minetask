@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\SubRole;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -38,9 +39,13 @@ class COAPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, COA $cOA): bool
+    public function update(User $user, COA $coa): bool
     {
-        //
+        if ($coa->doctor_id == null) {
+            $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+            return $role != null && $role->sub_role == SubRole::OfficeOwner;
+        }
+        return $coa->doctor_id == $user->doctor->id;
     }
 
     /**

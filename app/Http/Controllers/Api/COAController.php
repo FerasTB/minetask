@@ -6,6 +6,7 @@ use App\Enums\COAGeneralType;
 use App\Enums\COAType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
 use App\Http\Resources\COAResource;
 use App\Models\COA;
@@ -76,6 +77,17 @@ class COAController extends Controller
     public function update(Request $request, COA $cOA)
     {
         //
+    }
+
+    public function setInitialBalance(SetInitialBalanceRequest $request, COA $coa)
+    {
+        $fields = $request->validated();
+        $this->authorize('update', [$coa]);
+        if ($coa->initial_balance != 0) {
+            return response('the initial balance only can be set once', 403);
+        }
+        $coa->update($fields);
+        return new COAResource($coa);
     }
 
     /**
