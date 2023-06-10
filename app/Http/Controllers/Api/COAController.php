@@ -39,6 +39,20 @@ class COAController extends Controller
         }
     }
 
+    public function indexOwner(Request $request)
+    {
+        $office = Office::findOrFail($request->office);
+        $this->authorize('officeOwner', [COA::class, $office]);
+        $doctor = auth()->user()->doctor;
+        return COAResource::collection(
+            $office->COAS()
+                ->with([
+                    'doctor', 'office'
+                ])
+                ->get()
+        );
+    }
+
     /**
      * Store a newly created resource in storage.
      */
