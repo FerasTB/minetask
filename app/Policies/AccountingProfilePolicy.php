@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\SubRole;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -24,7 +25,8 @@ class AccountingProfilePolicy
      */
     public function view(User $user, AccountingProfile $accountingProfile): bool
     {
-        //
+        $role = HasRole::where(['roleable_id' => $accountingProfile->office_id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return ($accountingProfile->doctor_id == $user->doctor->id) || ($role != null && $role->sub_role == SubRole::OfficeOwner);
     }
 
     /**
