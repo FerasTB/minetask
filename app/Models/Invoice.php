@@ -58,4 +58,9 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');
     }
+
+    public function receipts()
+    {
+        return $this->belongsToMany('invoice_receipt');
+    }
 }

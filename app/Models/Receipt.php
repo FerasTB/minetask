@@ -40,8 +40,8 @@ class Receipt extends Model
         );
     }
 
-    public function invoice()
+    public function invoices()
     {
-        return $this->belongsTo(Invoice::class, 'invoice_id');
+        return $this->belongsToMany('invoice_receipt');
     }
 }
