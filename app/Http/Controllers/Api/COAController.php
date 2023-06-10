@@ -46,7 +46,7 @@ class COAController extends Controller
         return COAResource::collection(
             $office->COAS()
                 ->with([
-                    'doctor', 'office'
+                    'office'
                 ])
                 ->get()
         );

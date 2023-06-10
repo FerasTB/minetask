@@ -74,7 +74,7 @@ class Office extends Model
 
     public function COAS()
     {
-        return $this->hasMany(COA::class, 'office_id');
+        return $this->hasMany(COA::class, 'office_id')->whereNull('doctor_id');
     }
 
     public function cash()
