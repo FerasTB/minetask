@@ -37,7 +37,7 @@ class DirectDoubleEntryInvoiceController extends Controller
             'type' => DoubleEntryType::getValue($request->main_coa_type),
         ]);
         $coa2Type = $request->main_coa_type == "Positive" ? 'Negative' : 'Positive';
-        $coa->directDoubleEntries()->create([
+        $coa2->directDoubleEntries()->create([
             'direct_double_entry_invoice_id' => $directDE->id,
             'total_price' => $directDE->total_price,
             'type' => DoubleEntryType::getValue($coa2Type),

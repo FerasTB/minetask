@@ -105,7 +105,7 @@ class COAController extends Controller
             $positiveDirectDoubleEntries->sum('total_price') : 0;
         $negativeDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Negative)->get();
         $totalDirectNegative = $negativeDirectDoubleEntries != null ?
-            $negativeDirectDoubleEntries->sum('amount') : 0;
+            $negativeDirectDoubleEntries->sum('total_price') : 0;
         $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $coa->initial_balance;
         return response()->json([
             'coa' => new COAResource($coa),
