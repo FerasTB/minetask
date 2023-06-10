@@ -76,16 +76,6 @@ class Doctor extends Model
         return $this->hasMany(AccountingProfile::class, 'doctor_id');
     }
 
-    // public function patientAccountingProfiles()
-    // {
-    //     return AccountingProfileResource::collection($this->accountingProfiles)->where(['patient' != null]);
-    // }
-
-    // public function supplierAccountingProfiles()
-    // {
-    //     return $this->hasMany(AccountingProfile::class, 'doctor_id')->where(['patient_id' => null]);
-    // }
-
     public function services()
     {
         return $this->hasMany(MedicalService::class, 'doctor_id');
@@ -120,5 +110,10 @@ class Doctor extends Model
             'record_id',    // Foreign key on the "diagnosis" table.
             'diagnosis_id'     // Foreign key on the "drug" table.
         ]);
+    }
+
+    public function DirectDoubleEntryInvoice()
+    {
+        return $this->hasMany(DirectDoubleEntryInvoice::class, 'doctor_id');
     }
 }
