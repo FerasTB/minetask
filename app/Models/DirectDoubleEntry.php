@@ -11,7 +11,7 @@ class DirectDoubleEntry extends Model
 
     protected $fillable = ['COA_id', 'direct_double_entry_invoice_id', 'total_price', 'type'];
 
-    public function invoice()
+    public function directDoubleEntryInvoice()
     {
         return $this->belongsTo(DirectDoubleEntryInvoice::class, 'direct_double_entry_invoice_id');
     }
