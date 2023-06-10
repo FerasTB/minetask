@@ -97,7 +97,7 @@ class ReceiptController extends Controller
             $receipt = $profile->receipts()->create($fields);
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Payable
+                'doctor_id' => null, 'sub_type' => COASubType::Payable
             ]);
             $cash = COA::findOrFail($request->cash_coa);
         } else {
@@ -109,7 +109,7 @@ class ReceiptController extends Controller
             $doctor = Doctor::find($request->doctor_id);
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Payable
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
             ]);
             $cash = COA::findOrFail($request->cash_coa);
         }

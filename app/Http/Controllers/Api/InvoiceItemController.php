@@ -97,13 +97,13 @@ class InvoiceItemController extends Controller
         if ($office->type == OfficeType::Combined) {
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'name' => COA::Payable
+                'doctor_id' => null, 'sub_type' => COASubType::Payable
             ])->first();
         } else {
             $doctor = auth()->user()->doctor;
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'name' => COA::Payable
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
             ])->first();
         }
         $doubleEntryFields['invoice_item_id'] = $item->id;
