@@ -151,4 +151,20 @@ class AccountingProfileController extends Controller
         $accounting->update($fields);
         return new AccountingProfileResource($accounting);
     }
+
+    public function accountOutcome(AccountingProfile $accounting)
+    {
+        $this->authorize('view', [$accounting]);
+        $positive = $accounting->invoices();
+        $totalPositive = $positive != null ?
+            $positive->sum('total_price') : 0;
+        $negative = $accounting->receipts();
+        $totalNegative = $negative != null ?
+            $negative->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $accounting->initial_balance;
+        return response()->json([
+            'account' => new AccountingProfileResource($accounting),
+            'total' => $total,
+        ]);
+    }
 }
