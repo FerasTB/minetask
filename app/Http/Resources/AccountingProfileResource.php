@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\OfficeType;
+use App\Http\Controllers\Api\AccountingProfileController;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -36,7 +37,7 @@ class AccountingProfileResource extends JsonResource
             'invoice' => InvoiceResource::collection($this->invoices),
             'receipts' => ReceiptResource::collection($this->receipts),
             'office_id' => $this->office_id,
-            'total' => $this->accountOutcome,
+            'total' => AccountingProfileController::accountOutcomeInt($this->id)
         ];
     }
 }

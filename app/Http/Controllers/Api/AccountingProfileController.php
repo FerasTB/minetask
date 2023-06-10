@@ -167,4 +167,17 @@ class AccountingProfileController extends Controller
             'total' => $total,
         ]);
     }
+
+    public static function accountOutcomeInt(int $id)
+    {
+        $accounting = AccountingProfile::findOrFail($id);
+        $positive = $accounting->invoices();
+        $totalPositive = $positive != null ?
+            $positive->sum('total_price') : 0;
+        $negative = $accounting->receipts();
+        $totalNegative = $negative != null ?
+            $negative->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $accounting->initial_balance;
+        return $total;
+    }
 }
