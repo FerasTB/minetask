@@ -27,7 +27,7 @@ class COAResource extends JsonResource
             'sub_type' => COASubType::getKey($this->sub_type),
             'general_type' => COAGeneralType::getKey($this->general_type),
             'type' => COAType::getKey($this->type),
-            'entry' => DoubleEntryResource::collection($this->doubleEntries),
+            'entry' => DoubleEntryResource::collection($this->whenLoaded('doubleEntries')),
         ];
     }
 }

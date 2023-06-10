@@ -21,11 +21,19 @@ class COAController extends Controller
     public function index(Request $request)
     {
         $office = Office::findOrFail($request->office);
+        $this->authorize('inOffice', [COA::class, $office]);
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
-            return COAResource::collection($doctor->COAS()->with(['doctor', 'office'])->get());
+            return COAResource::collection(
+                $doctor->COAS()
+                    ->where('office_id', $office->id)
+                    ->with([
+                        'doctor', 'office'
+                    ])
+                    ->get()
+            );
         } else {
-            return COAResource::collection($office->COAS);
+            return COAResource::collection($office->COAS()->with(['office'])->get());
         }
     }
 
