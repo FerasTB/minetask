@@ -26,6 +26,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('office/{office}/doctor/my_patient', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatient']);
     Route::apiResource('patient/info', App\Http\Controllers\Api\PatientInfoController::class);
     Route::get('patient/{patient}/medical_info', [App\Http\Controllers\Api\PatientInfoController::class, 'showMedicalInformation']);
+    Route::get('office/coa', [App\Http\Controllers\Api\COAController::class, 'indexOwner']);
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
     Route::get('my_offices', [App\Http\Controllers\Api\OfficeController::class, 'MyOffices']);
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
@@ -73,7 +74,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('coa', App\Http\Controllers\Api\COAController::class);
     Route::put('coa/{coa}/initial', [App\Http\Controllers\Api\COAController::class, 'setInitialBalance']);
     Route::get('coa/{coa}/balance', [App\Http\Controllers\Api\COAController::class, 'coaOutcome']);
-    Route::get('office/coa', [App\Http\Controllers\Api\COAController::class, 'indexOwner']);
     Route::apiResource('coa/{coa}/direct/entry', App\Http\Controllers\Api\DirectDoubleEntryInvoiceController::class);
     Route::post('receipt/patient/{patient}', [App\Http\Controllers\Api\ReceiptController::class, 'storePatientReceipt']);
     Route::post('invoice/patient/{patient}', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoice']);
