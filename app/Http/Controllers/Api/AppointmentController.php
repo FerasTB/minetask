@@ -23,12 +23,28 @@ class AppointmentController extends Controller
         if ($request->doctor) {
             $office = Office::find($request->office);
             $this->authorize('viewAny', [Appointment::class, $office]);
-            $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])->get();
+            $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])
+                ->with([
+                    'patient',
+                    'doctor',
+                    'office',
+                    'case',
+                    'record',
+                ])
+                ->get();
             return AppointmentResource::collection($appointments);
         }
         $office = Office::find($request->office);
         $this->authorize('viewAny', [Appointment::class, $office]);
-        $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])->get();
+        $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])
+            ->with([
+                'patient',
+                'doctor',
+                'office',
+                'case',
+                'record',
+            ])
+            ->get();
         return AppointmentResource::collection($appointments);
     }
 

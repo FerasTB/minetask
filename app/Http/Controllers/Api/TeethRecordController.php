@@ -82,6 +82,7 @@ class TeethRecordController extends Controller
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
         $case = MedicalCase::find($request->case_id);
+        $appointment = Appointment::findOrFail($request->appointment_id);
         $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('create', [Record::class, $case]);
         if ($patientCase) {
@@ -102,11 +103,14 @@ class TeethRecordController extends Controller
                     'description' => $diagnosis->description,
                 ]);
             }
+            $appointment->update([
+                'patientCase_id' => $patientCase->id,
+            ]);
             return response()->json([
                 'patientCase_id' => $patientCase->id,
                 'closable' => $case->case_name != Doctor::DefaultCase,
                 'record_id' => $record->id,
-                'diagnosis_id' => $diagnosis->id,
+                'diagnosis_id' => $record->diagnosis->id,
             ]);
         }
         $patientCase = $case->patientCases()->create($fields);
@@ -124,11 +128,14 @@ class TeethRecordController extends Controller
                 'description' => $diagnosis->description,
             ]);
         }
+        $appointment->update([
+            'patientCase_id' => $patientCase->id,
+        ]);
         return response()->json([
             'patientCase_id' => $patientCase->id,
             'closable' => $case->case_name != Doctor::DefaultCase,
             'record_id' => $record->id,
-            'diagnosis_id' => $diagnosis->id,
+            'diagnosis_id' => $record->diagnosis->id,
         ]);
     }
 
