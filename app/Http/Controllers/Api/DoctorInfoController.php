@@ -96,7 +96,7 @@ class DoctorInfoController extends Controller
 
     public function drug()
     {
-        return auth()->user()->doctor->drugs;
+        return auth()->user()->doctor->drugs->diagnosis;
     }
 
     public function activePatient(Office $office)
