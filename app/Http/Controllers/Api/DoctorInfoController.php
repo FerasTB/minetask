@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
 use App\Http\Resources\DoctorInfoResource;
+use App\Http\Resources\DoctorPatientWithAppointmentResource;
 use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
@@ -94,16 +95,24 @@ class DoctorInfoController extends Controller
 
     public function activePatient(Office $office)
     {
+        $this->authorize('inOffice', [Doctor::class, $office]);
         $doctor = auth()->user()->doctor;
-        if ($doctor) {
+        if ($doctor && $office->type == OfficeType::Separate) {
             // $patients = Patient::has('appointments')->with('appointments')->get();
             $patients = Patient::whereHas('appointments', function (Builder $query) use ($office) {
                 $query->where('taken_date', '>', now()->subDays(30)->endOfDay())
                     ->where('doctor_id', auth()->user()->doctor->id)
                     ->where('office_id', $office->id);
             })->get();
-            return $patients;
+            return DoctorPatientWithAppointmentResource::collection($patients);
             // return $doctor->appointments()->with('patient')->where('taken_date', '>', now()->subDays(30)->endOfDay())->get();
+        } else if ($doctor && $office->type == OfficeType::Combined) {
+            $this->authorize('officeOwner', [Doctor::class, $office]);
+            $patients = Patient::whereHas('appointments', function (Builder $query) use ($office) {
+                $query->where('taken_date', '>', now()->subDays(30)->endOfDay())
+                    ->where('office_id', $office->id);
+            })->get();
+            return DoctorPatientWithAppointmentResource::collection($patients);
         }
         return response('you have to complete your info', 404);
     }
