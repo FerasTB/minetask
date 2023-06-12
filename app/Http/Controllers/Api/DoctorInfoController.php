@@ -97,7 +97,7 @@ class DoctorInfoController extends Controller
     public function drug(Office $office, Patient $patient)
     {
         // return auth()->user()->doctor->drugs;
-        return Drug::with(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
+        return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
             $query->where('id', $office->id);
         }])
             ->get();
