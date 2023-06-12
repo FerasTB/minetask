@@ -96,7 +96,10 @@ class DoctorInfoController extends Controller
     {
         $doctor = auth()->user()->doctor;
         if ($doctor) {
-            $patients = Patient::has('appointments')->with('appointments')->get();
+            // $patients = Patient::has('appointments')->with('appointments')->get();
+            $patients = Patient::whereHas('appointments', function (Builder $query) {
+                $query->where('doctor_id', auth()->user()->doctor->id);
+            })->get();
             return $patients;
             // return $doctor->appointments()->with('patient')->where('taken_date', '>', now()->subDays(30)->endOfDay())->get();
         }
