@@ -17,6 +17,7 @@ use App\Http\Resources\MyPatientThroughAccountingProfileResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
+use App\Models\Drug;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\Patient;
@@ -91,6 +92,12 @@ class DoctorInfoController extends Controller
             }
         }
         return response('you have to complete your info', 404);
+    }
+
+    public function drug()
+    {
+        $drug = Drug::find(3);
+        return $drug->doctor;
     }
 
     public function activePatient(Office $office)

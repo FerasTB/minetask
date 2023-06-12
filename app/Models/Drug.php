@@ -15,4 +15,20 @@ class Drug extends Model
     {
         return $this->belongsTo(Diagnosis::class, 'diagnosis_id');
     }
+
+    public function doctor()
+    {
+        return $this->belongsToThrough(
+            Doctor::class,
+            [MedicalCase::class, PatientCase::class, TeethRecord::class, Diagnosis::class],
+            null,
+            '',
+            [
+                MedicalCase::class => 'doctor_id',
+                PatientCase::class => 'case_id',
+                TeethRecord::class => 'patientCase_id',
+                Diagnosis::class => 'record_id',
+            ]
+        );
+    }
 }
