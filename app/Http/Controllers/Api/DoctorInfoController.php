@@ -108,9 +108,9 @@ class DoctorInfoController extends Controller
             ->join('patients', 'patients.id', '=', 'patient_cases.patient_id')
             ->join('doctors', 'doctors.id', '=', 'medical_cases.doctor_id')
             ->join('offices', 'offices.id', '=', 'medical_cases.office_id')
-            ->where('patient_id', $patient->id)
-            ->where('doctor_id', auth()->user()->doctor->id)
-            ->where('office_id', $office->id)
+            ->where('patient_cases.patient_id', $patient->id)
+            ->where('medical_cases.doctor_id', auth()->user()->doctor->id)
+            ->where('medical_cases.office_id', $office->id)
             ->get();
         return $drugs;
         // return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
