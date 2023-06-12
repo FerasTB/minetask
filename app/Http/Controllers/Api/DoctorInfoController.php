@@ -27,6 +27,7 @@ use App\Policies\DoctorInfoPolicy;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -97,10 +98,15 @@ class DoctorInfoController extends Controller
     public function drug(Office $office, Patient $patient)
     {
         // return auth()->user()->doctor->drugs;
-        return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
-            $query->where('id', $office->id);
-        }])
+        $drugs = DB::table('drugs')
+            ->join('diagnoses', 'diagnoses.id', '=', 'drugs.diagnosis_id')
+            ->join('teeth_records', 'teeth_records.id', '=', 'diagnoses.record_id')
             ->get();
+        return $drugs;
+        // return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
+        //     $query->where('id', $office->id);
+        // }])
+        //     ->get();
     }
 
     public function activePatient(Office $office)
