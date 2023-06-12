@@ -94,7 +94,7 @@ class DoctorInfoController extends Controller
     {
         $doctor = auth()->user()->doctor;
         if ($doctor) {
-            return $doctor->trustPatients;
+            return $doctor->appointments()->with('patient')->where('taken_date', '>', now()->subDays(30)->endOfDay());
         }
         return response('you have to complete your info', 404);
     }

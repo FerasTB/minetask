@@ -87,10 +87,10 @@ class Doctor extends Model
     }
 
     // patient with appointment
-    public function trustPatients()
-    {
-        return $this->hasManyThrough(Patient::class, Appointment::class);
-    }
+    // public function trustPatients()
+    // {
+    //     return $this->hasManyThrough(Patient::class, Appointment::class, 'doctor_id','');
+    // }
 
     public function cash()
     {
