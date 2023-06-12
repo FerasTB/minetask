@@ -101,10 +101,11 @@ class DoctorInfoController extends Controller
         $drugs = DB::table('drugs')
             ->join('diagnoses', 'diagnoses.id', '=', 'drugs.diagnosis_id')
             ->join('teeth_records', 'teeth_records.id', '=', 'diagnoses.record_id')
-            ->join('reports', 'reports.id', '=', 'teeth_records.report_id')
-            ->join('patients', 'patients.id', '=', 'reports.patient_id')
+            // ->join('reports', 'reports.id', '=', 'teeth_records.report_id')
+            // ->join('patients', 'patients.id', '=', 'reports.patient_id')
             ->join('patient_cases', 'patient_cases.id', '=', 'teeth_records.patientCase_id')
             ->join('medical_services', 'medical_services.id', '=', 'patient_cases.case_id')
+            ->join('patients', 'patients.id', '=', 'patient_cases.patient_id')
             ->join('doctors', 'doctors.id', '=', 'medical_services.doctor_id')
             ->join('offices', 'offices.id', '=', 'medical_services.office_id')
             ->get();
