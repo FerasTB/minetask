@@ -10,6 +10,7 @@ use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
 use App\Http\Resources\DoctorInfoResource;
 use App\Http\Resources\DoctorPatientWithAppointmentResource;
+use App\Http\Resources\DrugResource;
 use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
@@ -97,6 +98,7 @@ class DoctorInfoController extends Controller
 
     public function drug(Office $office, Patient $patient)
     {
+        $this->authorize('inOffice', [Doctor::class, $office]);
         // return auth()->user()->doctor->drugs;
         $drugs = DB::table('drugs')
             ->join('diagnoses', 'diagnoses.id', '=', 'drugs.diagnosis_id')
@@ -112,7 +114,7 @@ class DoctorInfoController extends Controller
             ->where('medical_cases.doctor_id', auth()->user()->doctor->id)
             ->where('medical_cases.office_id', $office->id)
             ->get();
-        return $drugs;
+        return DrugResource::collection($drugs);
         // return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
         //     $query->where('id', $office->id);
         // }])
