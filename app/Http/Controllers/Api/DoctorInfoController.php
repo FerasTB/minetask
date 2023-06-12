@@ -96,7 +96,7 @@ class DoctorInfoController extends Controller
 
     public function drug()
     {
-        return auth()->user()->doctor->drugs()->where('patient.id', 5);
+        return auth()->user()->doctor->drugs;
     }
 
     public function activePatient(Office $office)
