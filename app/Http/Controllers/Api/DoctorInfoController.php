@@ -90,6 +90,15 @@ class DoctorInfoController extends Controller
         return response('you have to complete your info', 404);
     }
 
+    public function activePatient(Office $office)
+    {
+        $doctor = auth()->user()->doctor;
+        if ($doctor) {
+            return $doctor->trustPatients;
+        }
+        return response('you have to complete your info', 404);
+    }
+
     /**
      * Update the specified resource in storage.
      */

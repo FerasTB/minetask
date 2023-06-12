@@ -86,6 +86,12 @@ class Doctor extends Model
         return $this->hasMany(COA::class, 'doctor_id');
     }
 
+    // patient with appointment
+    public function trustPatients()
+    {
+        return $this->hasManyThrough(Patient::class, Appointment::class);
+    }
+
     public function cash()
     {
         return $this->hasOne(COA::class, 'doctor_id')->where('name', COA::Cash)->get();

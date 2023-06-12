@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Enums\AppointmentStatus as EnumsAppointmentStatus;
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\PatientInClinicStatus;
 use App\Models\AppointmentStatus;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -38,7 +39,7 @@ class AppointmentResource extends JsonResource
             'note' => $this->note,
             'step' => $this->step,
             'color' => $this->color,
-            'is_patient_in_clinic' => $this->is_patient_in_clinic,
+            'is_patient_in_clinic' => PatientInClinicStatus::getKey($this->is_patient_in_clinic),
         ];
     }
 }

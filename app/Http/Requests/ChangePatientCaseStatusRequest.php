@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PatientCaseStatus;
 use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class ChangePatientCaseStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(['Open', 'Closed'])],
+            'status' => ['required', PatientCaseStatus::getKeys()],
         ];
     }
 }
