@@ -18,9 +18,11 @@ use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\Patient;
 use App\Models\TeethRecord;
 use App\Models\User;
 use App\Policies\DoctorInfoPolicy;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -94,7 +96,11 @@ class DoctorInfoController extends Controller
     {
         $doctor = auth()->user()->doctor;
         if ($doctor) {
-            return $doctor->appointments()->with('patient')->where('taken_date', '>', now()->subDays(30)->endOfDay())->get();
+            $patients = Patient::whereHas('appointments', function (Builder $query, $doctor, $office) {
+                $query->where(['doctor_id' => $doctor->id, 'office_id' => $office->id]);
+            })->get();
+            return $patients;
+            // return $doctor->appointments()->with('patient')->where('taken_date', '>', now()->subDays(30)->endOfDay())->get();
         }
         return response('you have to complete your info', 404);
     }
