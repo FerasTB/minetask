@@ -31,7 +31,7 @@ class DoctorResource extends Resource
     {
         return $table
             ->columns([
-                // Tables\Columns\TextColumn::make('first_name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('first_name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('phone')->sortable()->searchable(),
             ])
             ->filters([
