@@ -23,7 +23,11 @@ class DoctorResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('first_name')->required(),
+                Forms\Components\TextInput::make('last_name')->required(),
+                Forms\Components\TextInput::make('practicing_from')->date(),
+                Forms\Components\Select::make('user_id')->date()
+                    ->relationship('user', 'phone'),
             ]);
     }
 
