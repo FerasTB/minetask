@@ -23,7 +23,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->date('taken_date');
-            $table->smallInteger('is_patient_in_clinic')->default(PatientInClinicStatus::In);
+            $table->smallInteger('is_patient_in_clinic')->default(PatientInClinicStatus::Out);
             $table->string('color')->nullable();
             $table->timestamps();
         });
