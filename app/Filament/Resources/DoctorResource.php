@@ -25,8 +25,8 @@ class DoctorResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('first_name')->required(),
                 Forms\Components\TextInput::make('last_name')->required(),
-                Forms\Components\TextInput::make('practicing_from')->date(),
-                Forms\Components\Select::make('user_id')->date()
+                Forms\Components\TextInput::make('practicing_from')->rule('date'),
+                Forms\Components\Select::make('user_id')->required()
                     ->relationship('user', 'phone'),
             ]);
     }
