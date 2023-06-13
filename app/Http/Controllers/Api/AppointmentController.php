@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\PatientInClinicStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentRequest;
 use App\Http\Requests\UpdateAppointmentRequest;
@@ -98,6 +99,9 @@ class AppointmentController extends Controller
         $this->authorize('update', $appointment);
         $fields = $request->validated();
         $fields['status'] = AppointmentStatus::getValue($request->status);
+        if ($request->is_patient_in_clinic != null) {
+            $fields['is_patient_in_clinic'] = PatientInClinicStatus::getValue($request->is_patient_in_clinic);
+        }
         $appointment->update($fields);
         return response('Status Updated', 200);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\COAGeneralType;
+use App\Enums\COASubType;
 use App\Enums\COAType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
@@ -95,6 +96,9 @@ class COAController extends Controller
 
     public function setInitialBalance(SetInitialBalanceRequest $request, COA $coa)
     {
+        if ($coa->sub_type && ($coa->sub_type == COASubType::Payable || $coa->sub_type == COASubType::Receivable)) {
+            return response('you can set initial balance for this coa type', 403);
+        }
         $fields = $request->validated();
         $this->authorize('update', [$coa]);
         if ($coa->initial_balance != 0) {
@@ -107,6 +111,9 @@ class COAController extends Controller
     public function coaOutcome(COA $coa)
     {
         $this->authorize('view', [$coa]);
+        if ($coa->sub_type && ($coa->sub_type == COASubType::Payable || $coa->sub_type == COASubType::Receivable)) {
+            return response('you can set initial balance for this coa type', 403);
+        }
         $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
         $totalPositive = $positiveDoubleEntries != null ?
             $positiveDoubleEntries->sum('amount') : 0;
