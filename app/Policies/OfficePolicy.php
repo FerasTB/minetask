@@ -40,7 +40,7 @@ class OfficePolicy
      */
     public function update(User $user, Office $office): bool
     {
-        //
+        return $user->email && $user->email == "feras@marstaan.com";
     }
 
     /**
@@ -48,7 +48,7 @@ class OfficePolicy
      */
     public function delete(User $user, Office $office): bool
     {
-        //
+        return $user->email && $user->email == "feras@marstaan.com";
     }
 
     /**
