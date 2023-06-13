@@ -16,7 +16,7 @@ class OfficePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->email && $user->email == "feras@marstaan.com";
     }
 
     /**

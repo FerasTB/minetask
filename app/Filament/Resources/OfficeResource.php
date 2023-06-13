@@ -32,7 +32,6 @@ class OfficeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('office_name')->sortable()->searchable(),
-
             ])
             ->filters([
                 //
