@@ -19,9 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://marstaan.com', '*.marstaan.com'],
+    'allowed_origins' => ['https://marstaan.com', '*.marstaan.com', 'https://clinic.marstaan.com'],
 
-    'allowed_origins_patterns' => ['/(.marstaan)\.com'],
+    'allowed_origins_patterns' => ['/(*.marstaan)\.com'],
 
     'allowed_headers' => ['*'],
 
