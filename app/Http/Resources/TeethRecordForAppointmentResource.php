@@ -20,8 +20,8 @@ class TeethRecordForAppointmentResource extends JsonResource
             'number_of_teeth' => $this->number_of_teeth,
             'after_treatment_instruction' => $this->after_treatment_instruction,
             'anesthesia_type' => $this->anesthesia_type,
-            'diagnosis' => new DiagnosisResource($this->diagnosis),
-            'operations' => OperationResource::collection($this->operations),
+            'diagnosis' => new DiagnosisResource($this->whenLoaded('diagnosis')),
+            'operations' => OperationResource::collection($this->whenLoaded('operations')),
         ];
     }
 }

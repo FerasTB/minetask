@@ -17,8 +17,8 @@ class DiagnosisResource extends JsonResource
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'drugs' => DrugResource::collection($this->drug),
-            'teeth' => ToothResource::collection($this->teeth),
+            'drugs' => DrugResource::collection($this->whenLoaded('drug')),
+            'teeth' => ToothResource::collection($this->whenLoaded('teeth')),
         ];
     }
 }
