@@ -18,7 +18,7 @@ class PatientInfoForDoctorResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = auth()->user()->roles->where(['roleable_id' => $this->id, 'roleable_type' => 'App\Models\Patient'])->first();
+        $role = auth()->user()->roles()->where(['roleable_id' => $this->id, 'roleable_type' => 'App\Models\Patient'])->first();
         if ($role) {
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
                 return [
