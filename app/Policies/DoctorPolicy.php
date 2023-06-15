@@ -26,7 +26,7 @@ class DoctorPolicy
      */
     public function view(User $user, Doctor $doctor): bool
     {
-        //
+        return $doctor->user_id == $user->id;
     }
 
     /**

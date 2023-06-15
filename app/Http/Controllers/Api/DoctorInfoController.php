@@ -64,6 +64,8 @@ class DoctorInfoController extends Controller
      */
     public function show(Doctor $info)
     {
+        $this->authorize('view', $info);
+        $info->load('user');
         return new DoctorInfoResource($info);
     }
 
