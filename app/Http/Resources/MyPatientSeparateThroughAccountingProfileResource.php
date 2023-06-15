@@ -18,7 +18,8 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
+        // $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
+        $role = auth()->user()->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
         if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
             $patient = $this->patient;
             return [
@@ -34,8 +35,9 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
             ];
         }
         if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-            $patient = TemporaryInformation::where(['patient_id' => $role->roleable_id, 'doctor_id' => auth()->user()->doctor->id])->first();
-            $originalPatient = Patient::find($role->roleable_id);
+            // $patient = TemporaryInformation::where(['patient_id' => $role->roleable_id, 'doctor_id' => auth()->user()->doctor->id])->first();
+            $patient = $this->temporaries->where('patient_id', $this->id)->where('doctor_id', auth()->user()->doctor->id)->first();
+            $originalPatient = $this->patient;
             return [
                 'id' => $originalPatient->id,
                 'first_name' => $patient->first_name,
