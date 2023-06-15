@@ -32,6 +32,10 @@ class AppointmentController extends Controller
                     'case',
                     'case.teethRecords',
                     'record',
+                    'record.diagnosis',
+                    'record.operations',
+                    'record.diagnosis.teeth',
+                    'record.operations.teeth',
                 ])
                 ->get();
             return AppointmentResource::collection($appointments);
@@ -46,6 +50,10 @@ class AppointmentController extends Controller
                 'case',
                 'case.teethRecords',
                 'record',
+                'record.diagnosis',
+                'record.operations',
+                'record.diagnosis.teeth',
+                'record.operations.teeth',
             ])
             ->get();
         return AppointmentResource::collection($appointments);
