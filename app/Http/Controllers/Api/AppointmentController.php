@@ -48,7 +48,7 @@ class AppointmentController extends Controller
                 'record',
             ])
             ->get();
-        $role = auth()->user()->roles->where(['roleable_id' => 1]);
+        $role = auth()->user()->roles->where('roleable_id', 1);
         return $role;
         return AppointmentResource::collection($appointments);
     }
