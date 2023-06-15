@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\AccountingProfile;
+use App\Observers\AccountingProfileObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        AccountingProfile::observe(AccountingProfileObserver::class);
     }
 }

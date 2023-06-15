@@ -29,6 +29,7 @@ use App\Policies\DoctorInfoPolicy;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isEmpty;
@@ -86,12 +87,16 @@ class DoctorInfoController extends Controller
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
                 $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'office.owner', 'office.owner.user', 'patient'])->get();
-                return MyPatientCombinedThroughAccountingProfileResource::collection($accounts);
+                return MyPatientCombinedThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {
+                    return $accounts;
+                }));
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 // return MyPatientsResource::collection($roles);
             } else {
                 $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient'])->get();
-                return MyPatientSeparateThroughAccountingProfileResource::collection($accounts);
+                return MyPatientSeparateThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {
+                    return $accounts;
+                }));
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
                 // return MyPatientsResource::collection($roles);
             }
