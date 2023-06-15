@@ -34,6 +34,8 @@ class AppointmentController extends Controller
                     'case.teethRecords',
                     'record',
                     'record.diagnosis',
+                    'record.diagnosis.drugs',
+
                     'record.operations',
                     'record.diagnosis.teeth',
                     'record.operations.teeth',
@@ -53,6 +55,7 @@ class AppointmentController extends Controller
                 'case.teethRecords',
                 'record',
                 'record.diagnosis',
+                'record.diagnosis.drugs',
                 'record.operations',
                 'record.diagnosis.teeth',
                 'record.operations.teeth',
