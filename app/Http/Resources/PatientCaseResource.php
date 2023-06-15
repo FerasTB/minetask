@@ -17,12 +17,10 @@ class PatientCaseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $patient = Patient::find($this->patient_id);
-        $case = MedicalCase::find($this->case_id);
         return [
             'id' => $this->id,
-            'patient' => new PatientInfoForDoctorResource($patient),
-            'case' => new MedicalCaseResource($case),
+            'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
+            'case' => new MedicalCaseResource($this->whenLoaded('case')),
             'status' => PatientCaseStatus::getKey($this->status),
             'time_per_session' => $this->time_per_session,
             'number_of_sessions' => $this->number_of_sessions,
