@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\COAGeneralType;
 use App\Enums\COASubType;
 use App\Enums\COAType;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
 use App\Http\Resources\COAResource;
+use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\Office;
@@ -111,9 +113,6 @@ class COAController extends Controller
     public function coaOutcome(COA $coa)
     {
         $this->authorize('view', [$coa]);
-        if ($coa->sub_type && ($coa->sub_type == COASubType::Payable || $coa->sub_type == COASubType::Receivable)) {
-            return response('you can set initial balance for this coa type', 403);
-        }
         $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
         $totalPositive = $positiveDoubleEntries != null ?
             $positiveDoubleEntries->sum('amount') : 0;
@@ -126,6 +125,39 @@ class COAController extends Controller
         $negativeDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Negative)->get();
         $totalDirectNegative = $negativeDirectDoubleEntries != null ?
             $negativeDirectDoubleEntries->sum('total_price') : 0;
+        // coa payable or receivable cant have initial balance
+        if ($coa->sub_type && $coa->sub_type == COASubType::Payable) {
+            if ($coa->doctor != null) {
+                $subAccount = AccountingProfile::where(['doctor_id' => $coa->doctor->id, 'office_id' => $coa->office->id, 'type' => AccountingProfileType::SupplierAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            } else {
+                $subAccount = AccountingProfile::where(['office_id' => $coa->office->id, 'type' => AccountingProfileType::SupplierAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            }
+            $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
+            return response()->json([
+                'coa' => new COAResource($coa),
+                'total' => $total,
+            ]);
+        }
+        if ($coa->sub_type && $coa->sub_type == COASubType::Receivable) {
+            if ($coa->doctor != null) {
+                $subAccount = AccountingProfile::where(['doctor_id' => $coa->doctor->id, 'office_id' => $coa->office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            } else {
+                $subAccount = AccountingProfile::where(['office_id' => $coa->office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            }
+            $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
+            return response()->json([
+                'coa' => new COAResource($coa),
+                'total' => $total,
+            ]);
+        }
         $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $coa->initial_balance;
         return response()->json([
             'coa' => new COAResource($coa),
@@ -148,6 +180,33 @@ class COAController extends Controller
         $negativeDirectDoubleEntries = $coa->directDoubleEntries()->where('type', DoubleEntryType::Negative)->get();
         $totalDirectNegative = $negativeDirectDoubleEntries != null ?
             $negativeDirectDoubleEntries->sum('total_price') : 0;
+        // coa payable or receivable cant have initial balance
+        if ($coa->sub_type && $coa->sub_type == COASubType::Payable) {
+            if ($coa->doctor != null) {
+                $subAccount = AccountingProfile::where(['doctor_id' => $coa->doctor->id, 'office_id' => $coa->office->id, 'type' => AccountingProfileType::SupplierAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            } else {
+                $subAccount = AccountingProfile::where(['office_id' => $coa->office->id, 'type' => AccountingProfileType::SupplierAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            }
+            $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
+            return $total;
+        }
+        if ($coa->sub_type && $coa->sub_type == COASubType::Receivable) {
+            if ($coa->doctor != null) {
+                $subAccount = AccountingProfile::where(['doctor_id' => $coa->doctor->id, 'office_id' => $coa->office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            } else {
+                $subAccount = AccountingProfile::where(['office_id' => $coa->office->id, 'type' => AccountingProfileType::PatientAccount])->get();
+                $totalBalanceAccount = $subAccount != null ?
+                    $subAccount->sum('initial_balance') : 0;
+            }
+            $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
+            return $total;
+        }
         $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $coa->initial_balance;
         return $total;
     }

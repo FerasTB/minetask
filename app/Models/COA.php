@@ -27,6 +27,11 @@ class COA extends Model
         return $this->belongsTo(Office::class, 'office_id');
     }
 
+    public function group()
+    {
+        return $this->belongsTo(CoaGroup::class, 'group_id');
+    }
+
     public function services()
     {
         return $this->hasMany(MedicalService::class, 'COA_id');
