@@ -48,6 +48,8 @@ class AppointmentController extends Controller
                 'record',
             ])
             ->get();
+        $role = auth()->user()->roles->where(['roleable_id' => 5, 'roleable_type' => 'App\Models\Patient']);
+        return $role;
         return AppointmentResource::collection($appointments);
     }
 
