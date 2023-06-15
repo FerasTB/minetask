@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://marstaan.com', 'https://*.marstaan.com', 'https://clinic.marstaan.com', 'https://*.marstaan.com/*'],
+    'allowed_origins' => ['https://marstaan.com', 'https://*.marstaan.com', 'https://clinic.marstaan.com', 'https://*.marstaan.com/*', 'http://127.0.0.1:5173'],
 
     'allowed_origins_patterns' => ['/(*.marstaan)\.com'],
 
