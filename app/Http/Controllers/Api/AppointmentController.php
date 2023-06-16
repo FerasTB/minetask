@@ -90,7 +90,7 @@ class AppointmentController extends Controller
             'record.operations',
             'record.diagnosis.teeth',
             'record.operations.teeth',
-        ]);;
+        ]);
         return new AppointmentResource($appointment);
     }
 
