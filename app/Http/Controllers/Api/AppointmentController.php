@@ -77,20 +77,20 @@ class AppointmentController extends Controller
             $doctor = Doctor::find($request->doctor_id);
         }
         $appointment = $doctor->appointments()->create($fields);
-        $appointment = Appointment::find($appointment->id)->with([
-            'patient',
-            'doctor',
-            'office',
-            'case',
-            'case.case',
-            'case.teethRecords',
-            'record',
-            'record.diagnosis',
-            'record.diagnosis.drug',
-            'record.operations',
-            'record.diagnosis.teeth',
-            'record.operations.teeth',
-        ]);
+        // $appointment = Appointment::find($appointment->id)->with([
+        //     'patient',
+        //     'doctor',
+        //     'office',
+        //     'case',
+        //     'case.case',
+        //     'case.teethRecords',
+        //     'record',
+        //     'record.diagnosis',
+        //     'record.diagnosis.drug',
+        //     'record.operations',
+        //     'record.diagnosis.teeth',
+        //     'record.operations.teeth',
+        // ]);
         return new AppointmentResource($appointment);
     }
 
