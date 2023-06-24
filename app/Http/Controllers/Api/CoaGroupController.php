@@ -23,6 +23,7 @@ class CoaGroupController extends Controller
             $doctor->coaGroups()
                 ->where('office_id', $office->id)
                 ->with(['office', 'doctor', 'COAS'])
+                ->get()
         );
     }
 
