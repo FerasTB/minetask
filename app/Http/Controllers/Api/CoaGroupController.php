@@ -31,7 +31,7 @@ class CoaGroupController extends Controller
     {
         $this->authorize('officeOwner', [CoaGroup::class, $office]);
         return CoaGroupsResource::collection($office->coaGroups()
-            ->with('office', 'COAS')
+            ->with('office')
             ->get());
     }
 
