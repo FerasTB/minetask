@@ -21,7 +21,7 @@ class CoaGroupController extends Controller
         $doctor = auth()->user()->doctor;
         return CoaGroupsResource::collection($doctor->coaGroups()
             ->where('office_id', $office->id)
-            ->with(['office', 'doctor', 'COAS'])
+            ->with('office', 'doctor', 'COAS')
             ->get());
     }
 
@@ -29,7 +29,7 @@ class CoaGroupController extends Controller
     {
         $this->authorize('officeOwner', [CoaGroup::class, $office]);
         return CoaGroupsResource::collection($office->coaGroups()
-            ->with(['office', 'COAS'])
+            ->with('office', 'COAS')
             ->get());
     }
 
