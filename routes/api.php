@@ -70,7 +70,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('accounting/expenses/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'expensesProfile']);
     Route::post('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeSupplier']);
     Route::post('accounting/expense/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeExpenses']);
-    Route::apiResource('accounting/supplier/{supplier}/item', App\Http\Controllers\Api\SupplierItemController::class);
+    Route::apiResource('accounting/supplier/{office}/item', App\Http\Controllers\Api\SupplierItemController::class);
     Route::apiResource('list/complaint', App\Http\Controllers\Api\TeethComplaintListController::class);
     Route::apiResource('list/diagnosis', App\Http\Controllers\Api\DiagnosisListController::class);
     Route::apiResource('list/drug', App\Http\Controllers\Api\DrugListController::class);

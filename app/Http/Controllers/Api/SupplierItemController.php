@@ -6,27 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSupplierItemRequest;
 use App\Http\Resources\SupplierItemResource;
 use App\Models\AccountingProfile;
+use App\Models\COA;
+use App\Models\Office;
 use App\Models\SupplierItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SupplierItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(AccountingProfile $supplier)
+    public function index(Office $office)
     {
-        return SupplierItemResource::collection($supplier->supplierItem);
+        $this->authorize('inOffice', [SupplierItem::class, $office]);
+        $doctor = auth()->user()->doctor;
+        return SupplierItemResource::collection(
+            $doctor->supplierItem()
+                ->where('office_id', $office->id)
+                ->get()
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSupplierItemRequest $request, AccountingProfile $supplier)
+    public function store(StoreSupplierItemRequest $request, Office $office)
     {
         $fields = $request->validated();
-        $this->authorize('create', [SupplierItem::class, $supplier]);
-        $supplierItem = $supplier->supplierItem()->create($fields);
+        if ($request->doctor_id) {
+            $doctor = auth()->user()->doctor;
+            $this->authorize('createForDoctor', [SupplierItem::class, $doctor]);
+            $supplierItem = $doctor->supplierItem()->create($fields);
+            return new SupplierItemResource($supplierItem);
+        }
+        $this->authorize('createForOffice', [SupplierItem::class, $office]);
+        $supplierItem = $office->supplierItem()->create($fields);
         return new SupplierItemResource($supplierItem);
     }
 

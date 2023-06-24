@@ -65,4 +65,21 @@ class SupplierItemPolicy
     {
         //
     }
+
+    public function createForDoctor(User $user, Doctor $doctor): bool
+    {
+        return $user->doctor->id == $doctor->id;
+    }
+
+    public function createForOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
+    public function inOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
 }

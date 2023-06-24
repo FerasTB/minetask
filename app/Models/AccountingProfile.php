@@ -46,11 +46,6 @@ class AccountingProfile extends Model
         return $this->hasMany(InvoiceReceipt::class, 'accounting_profile_id');
     }
 
-    public function supplierItem()
-    {
-        return $this->hasMany(SupplierItem::class, 'COA_id');
-    }
-
     public function accountOutcome()
     {
         $positive = $this->invoices();

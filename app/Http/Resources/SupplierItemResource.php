@@ -17,8 +17,9 @@ class SupplierItemResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'COA' => new COAResource($this->COA),
-            'SupplierAccount' => $this->supplierAccount,
+            'COA' => new COAResource($this->whenLoaded('COA')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'office' => new DoctorResource($this->whenLoaded('office')),
         ];
     }
 }
