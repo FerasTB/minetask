@@ -15,4 +15,14 @@ class CoaGroup extends Model
     {
         return $this->hasMany(COA::class, 'group_id');
     }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
 }
