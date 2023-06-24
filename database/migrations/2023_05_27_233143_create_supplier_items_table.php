@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->constrained('doctors');
             // $table->foreignId('accounting_profile_id')->constrained('accounting_profiles')->onDelete('cascade');
             $table->string('name');
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
