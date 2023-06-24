@@ -2,7 +2,10 @@
 
 namespace App\Policies;
 
+use App\Enums\SubRole;
 use App\Models\CoaGroup;
+use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -62,5 +65,20 @@ class CoaGroupPolicy
     public function forceDelete(User $user, CoaGroup $coaGroup): bool
     {
         //
+    }
+
+    public function officeOwner(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        if ($role != null) {
+            return ($role->sub_role == SubRole::OfficeOwner);
+        }
+        return false;
+    }
+
+    public function inOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 }

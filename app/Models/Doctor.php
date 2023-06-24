@@ -86,6 +86,11 @@ class Doctor extends Model
         return $this->hasMany(COA::class, 'doctor_id');
     }
 
+    public function cogGroups()
+    {
+        return $this->hasMany(CoaGroup::class, 'doctor_id');
+    }
+
     // patient with appointment
     // public function trustPatients()
     // {

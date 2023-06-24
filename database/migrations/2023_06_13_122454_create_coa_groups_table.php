@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('set null');
             $table->foreignId('office_id')->nullable()->constrained('offices')->onDelete('set null');
             $table->string('name');
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }

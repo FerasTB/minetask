@@ -77,6 +77,11 @@ class Office extends Model
         return $this->hasMany(COA::class, 'office_id')->whereNull('doctor_id');
     }
 
+    public function cogGroups()
+    {
+        return $this->hasMany(CoaGroup::class, 'office_id')->whereNull('doctor_id');
+    }
+
     public function cash()
     {
         return $this->hasOne(COA::class, 'office_id')->where(['name' => COA::Cash, 'doctor_id' => null])->get();

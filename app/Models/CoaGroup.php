@@ -9,7 +9,7 @@ class CoaGroup extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'note', 'doctor_id', 'office_id'];
 
     public function COAS()
     {
