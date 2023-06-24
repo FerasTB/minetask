@@ -56,6 +56,6 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                 'TemporaryId' => $patient->id,
             ];
         }
-        return [];
+        return parent::toArray($request);
     }
 }
