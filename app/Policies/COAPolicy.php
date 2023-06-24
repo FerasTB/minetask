@@ -87,6 +87,17 @@ class COAPolicy
         return $role != null;
     }
 
+    public function updateForDoctor(User $user, COA $coa, Doctor $doctor): bool
+    {
+        return $coa->doctor->id == $doctor->id;
+    }
+
+    public function updateForOffice(User $user, COA $coa, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null && $role->sub_role == SubRole::OfficeOwner;
+    }
+
     public function inOffice(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();

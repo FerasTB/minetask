@@ -11,6 +11,7 @@ use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
+use App\Http\Requests\UpdateCoaRequest;
 use App\Http\Resources\COAResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -91,9 +92,20 @@ class COAController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, COA $cOA)
+    public function update(UpdateCoaRequest $request, COA $coa)
     {
-        //
+        if ($coa->doctor) {
+            $this->authorize('updateForDoctor', [$coa, auth()->user()->doctor]);
+            $fields = $request->validated();
+            $coa->update($fields);
+            $coa->load('group');
+            return new COAResource($coa);
+        }
+        $this->authorize('updateForOffice', [$coa, $coa->office]);
+        $fields = $request->validated();
+        $coa->update($fields);
+        $coa->load('group');
+        return new COAResource($coa);
     }
 
     public function setInitialBalance(SetInitialBalanceRequest $request, COA $coa)

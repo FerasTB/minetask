@@ -23,6 +23,7 @@ class COAResource extends JsonResource
             'name' => $this->name,
             'office' => new OfficeResource($this->whenLoaded('office')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'group' => new CoaGroupsResource($this->whenLoaded('group')),
             'note' => $this->note,
             'initial_balance' => $this->initial_balance,
             'sub_type' => COASubType::getKey($this->sub_type),

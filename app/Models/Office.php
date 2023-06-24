@@ -77,7 +77,7 @@ class Office extends Model
         return $this->hasMany(COA::class, 'office_id')->whereNull('doctor_id');
     }
 
-    public function cogGroups()
+    public function coaGroups()
     {
         return $this->hasMany(CoaGroup::class, 'office_id')->whereNull('doctor_id');
     }

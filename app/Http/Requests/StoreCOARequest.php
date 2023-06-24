@@ -29,6 +29,7 @@ class StoreCOARequest extends FormRequest
             'name' => 'required|string',
             'office_id' => 'required|integer',
             'doctor_id' => 'nullable|integer',
+            'group_id' => 'nullable|integer',
             'note' => 'nullable|string',
             'initial_balance' => 'nullable|integer',
             'type' => ['nullable', Rule::in(COAType::getKeys())],
