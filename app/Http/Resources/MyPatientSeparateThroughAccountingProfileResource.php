@@ -53,6 +53,6 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                 ];
             }
         }
-        return [];
+        return null;
     }
 }
