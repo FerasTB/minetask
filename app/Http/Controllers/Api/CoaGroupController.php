@@ -19,10 +19,11 @@ class CoaGroupController extends Controller
     {
         $this->authorize('inOffice', [CoaGroup::class, $office]);
         $doctor = auth()->user()->doctor;
-        return CoaGroupsResource::collection($doctor->coaGroups()
-            ->where('office_id', $office->id)
-            ->with('office', 'doctor', 'COAS')
-            ->get());
+        return CoaGroupsResource::collection(
+            $doctor->coaGroups()
+                ->where('office_id', $office->id)
+                ->with('office', 'doctor', 'COAS')
+        );
     }
 
     public function indexOwner(Office $office)
