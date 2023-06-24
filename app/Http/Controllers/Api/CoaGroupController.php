@@ -20,10 +20,7 @@ class CoaGroupController extends Controller
         $this->authorize('inOffice', [CoaGroup::class, $office]);
         $doctor = auth()->user()->doctor;
         return CoaGroupsResource::collection(
-            $doctor->coaGroups()
-                ->where('office_id', $office->id)
-                ->with('office', 'doctor')
-                ->get()
+            $doctor->coaGroups
         );
     }
 
