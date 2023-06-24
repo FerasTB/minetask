@@ -8,6 +8,7 @@ use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCoaAccountingProfileRequest;
+use App\Http\Requests\StoreExpensesAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Models\AccountingProfile;
@@ -68,6 +69,22 @@ class AccountingProfileController extends Controller
     }
 
     public function storeSupplier(StoreSupplierAccountingProfileRequest $request)
+    {
+        $fields = $request->validated();
+        $fields['type'] = AccountingProfileType::getValue($request->type);
+        if ($request->doctor_id) {
+            $doctor = Doctor::find($request->doctor_id);
+            $this->authorize('createForDoctor', [AccountingProfile::class, $doctor]);
+            $profile = $doctor->accountingProfiles()->create($fields);
+            return new AccountingProfileResource($profile);
+        }
+        $office = Office::find($request->office_id);
+        $this->authorize('createForOffice', [AccountingProfile::class, $office]);
+        $profile = $office->accountingProfiles()->create($fields);
+        return new AccountingProfileResource($profile);
+    }
+
+    public function storeExpenses(StoreExpensesAccountingProfileRequest $request)
     {
         $fields = $request->validated();
         $fields['type'] = AccountingProfileType::getValue($request->type);
