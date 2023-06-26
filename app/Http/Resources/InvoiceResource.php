@@ -22,6 +22,7 @@ class InvoiceResource extends JsonResource
             'office' => new OfficeResource($this->office),
             'doctor' => new DoctorResource($this->doctor),
             'items' => InvoiceItemsResource::collection($this->items),
+            'receipts' => $this->receipts,
             'created_at' => $this->created_at,
         ];
     }

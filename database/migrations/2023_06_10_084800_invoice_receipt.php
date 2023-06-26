@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('invoice_receipt', function (Blueprint $table) {
-            $table->foreignId('invoice')->nullable()->constrained('invoices')->onDelete('set null');
-            $table->foreignId('receipt')->nullable()->constrained('receipts')->onDelete('set null');
+            $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
+            $table->foreignId('receipt_id')->nullable()->constrained('receipts')->onDelete('set null');
             $table->integer('total_price');
             $table->timestamps();
         });

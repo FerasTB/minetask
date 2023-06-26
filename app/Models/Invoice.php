@@ -61,6 +61,7 @@ class Invoice extends Model
 
     public function receipts()
     {
-        return $this->belongsToMany('invoice_receipt');
+        return $this->belongsToMany(Receipt::class, 'invoice_receipt')
+            ->withPivot(['total_price']);
     }
 }

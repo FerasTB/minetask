@@ -6,13 +6,17 @@ use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddReceiptToInvoiceRequest;
 use App\Http\Requests\StorePatientReceiptRequest;
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\StoreSupplierReceiptRequest;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ReceiptResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
+use App\Models\Invoice;
+use App\Models\InvoiceReceipt;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\Receipt;
@@ -88,6 +92,10 @@ class ReceiptController extends Controller
     public function storeSupplierReceipt(StoreSupplierReceiptRequest $request)
     {
         $fields = $request->validated();
+        if ($request->invoice_id) {
+            $invoice = Invoice::findOrFail($request->invoice_id);
+            $this->authorize('myInvoice', [Receipt::class, $invoice]);
+        }
         $office = Office::findOrFail($request->office_id);
         if ($office->type == OfficeType::Combined) {
             $profile = AccountingProfile::where([
@@ -95,6 +103,7 @@ class ReceiptController extends Controller
                 'office_id' => $office->id, 'doctor_id' => null
             ])->first();
             $receipt = $profile->receipts()->create($fields);
+            $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'sub_type' => COASubType::Payable
@@ -106,6 +115,7 @@ class ReceiptController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
             $receipt = $profile->receipts()->create($fields);
+            $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $doctor = Doctor::find($request->doctor_id);
             $payable = COA::where([
                 'office_id' => $office->id,
@@ -156,5 +166,12 @@ class ReceiptController extends Controller
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $cash->doubleEntries()->create($doubleEntryFields);
         return new ReceiptResource($receipt);
+    }
+
+    public function addReceiptToInvoice(AddReceiptToInvoiceRequest $request, Receipt $receipt, Invoice $invoice)
+    {
+        $this->authorize('myInvoice', [Receipt::class, $invoice]);
+        $invoice = $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+        return new InvoiceResource($invoice);
     }
 }
