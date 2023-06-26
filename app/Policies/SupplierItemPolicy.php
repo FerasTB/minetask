@@ -4,6 +4,9 @@ namespace App\Policies;
 
 use App\Enums\OfficeType;
 use App\Models\AccountingProfile;
+use App\Models\Doctor;
+use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\SupplierItem;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -31,7 +34,7 @@ class SupplierItemPolicy
      */
     public function create(User $user, AccountingProfile $supplier): bool
     {
-        return $user->doctor && $supplier->doctor->id == $user->doctor->id
+        return $user->doctor && $supplier->doctor->id == $user->doctor->id;
     }
 
     /**
