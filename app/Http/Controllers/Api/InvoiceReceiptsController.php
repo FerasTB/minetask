@@ -55,8 +55,8 @@ class InvoiceReceiptsController extends Controller
     public function storeForPatient(StoreInvoiceReceiptsRequest $request, AccountingProfile $account)
     {
         $fields = $request->validated();
-        $doctor = Doctor::findOrFail($request->doctor_id);
-        $this->authorize('patientAccount', [InvoiceReceipt::class, $doctor, $account]);
+        // $doctor = Doctor::findOrFail($request->doctor_id);
+        $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
         $invoice = $account->invoiceReceipt()->create($fields);
         return new InvoiceReceiptsResource($invoice);
     }
