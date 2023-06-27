@@ -70,6 +70,6 @@ class InvoiceReceiptsPolicy
     public function patientAccount(User $user, Doctor $doctor, AccountingProfile $account): bool
     {
         return $account->type == AccountingProfileType::PatientAccount &&
-            $account->doctor && $account->doctor->id == $doctor->id;
+            $account->doctor->id == $doctor->id;
     }
 }
