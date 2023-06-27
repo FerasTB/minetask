@@ -128,6 +128,7 @@ class COAController extends Controller
         $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
         $totalPositive = $positiveDoubleEntries != null ?
             $positiveDoubleEntries->sum('amount') : 0;
+        return $totalPositive;
         $negativeDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Negative)->get();
         $totalNegative = $negativeDoubleEntries != null ?
             $negativeDoubleEntries->sum('amount') : 0;

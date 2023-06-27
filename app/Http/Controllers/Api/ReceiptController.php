@@ -172,6 +172,6 @@ class ReceiptController extends Controller
     {
         $this->authorize('myInvoice', [Receipt::class, $invoice]);
         $invoice = $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
-        return new InvoiceResource($invoice);
+        return $invoice;
     }
 }
