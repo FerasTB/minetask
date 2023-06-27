@@ -20,4 +20,9 @@ class InvoiceReceipt extends Model
     {
         return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
+
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class, 'invoice_receipt_id');
+    }
 }
