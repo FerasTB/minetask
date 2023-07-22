@@ -8,6 +8,7 @@ use App\Enums\OfficeType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceItemRequest;
 use App\Http\Requests\StorePatientInvoiceItemRequest;
+use App\Http\Requests\StorePatientInvoiceReceiptItemRequest;
 use App\Http\Requests\StoreSupplierInvoiceItemRequest;
 use App\Http\Resources\InvoiceItemsResource;
 use App\Http\Resources\InvoiceResource;
@@ -116,7 +117,7 @@ class InvoiceItemController extends Controller
         return new InvoiceResource($item);
     }
 
-    public function storePatientInvoiceReceiptItem(StorePatientInvoiceItemRequest $request, InvoiceReceipt $invoice)
+    public function storePatientInvoiceReceiptItem(StorePatientInvoiceReceiptItemRequest $request, InvoiceReceipt $invoice)
     {
         $fields = $request->validated();
         $item = $invoice->items()->create($fields);

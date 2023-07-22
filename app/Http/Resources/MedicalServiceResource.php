@@ -19,9 +19,9 @@ class MedicalServiceResource extends JsonResource
             'name' => $this->name,
             'cost' => $this->cost,
             'description' => $this->description,
-            'COA' => new COAResource($this->COA),
-            'doctor' => new DoctorResource($this->doctor),
-            'office' => new OfficeResource($this->office),
+            'COA' => new COAResource($this->whenLoaded('COA')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'office' => new OfficeResource($this->whenLoaded('office')),
         ];
     }
 }

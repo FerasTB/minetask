@@ -23,6 +23,6 @@ class MedicalService extends Model
 
     public function COA()
     {
-        return $this->belongsTo(Office::class, 'COA_id');
+        return $this->belongsTo(COA::class, 'COA_id');
     }
 }
