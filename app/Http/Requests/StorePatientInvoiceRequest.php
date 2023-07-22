@@ -24,6 +24,7 @@ class StorePatientInvoiceRequest extends FormRequest
         return [
             'note' => 'nullable|string',
             'date_of_invoice' => 'date|nullable',
+            'due_to_invoice' => 'nullable|date',
             'total_price' => 'integer|required',
             'doctor_id' => 'required|integer',
             'office_id' => 'required|integer',
