@@ -8,6 +8,7 @@ use App\Http\Resources\InvoiceReceiptsResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\InvoiceReceipt;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class InvoiceReceiptsController extends Controller
@@ -52,10 +53,10 @@ class InvoiceReceiptsController extends Controller
         //
     }
 
-    public function storeForPatient(StoreInvoiceReceiptsRequest $request, AccountingProfile $account)
+    public function storeForPatient(StoreInvoiceReceiptsRequest $request, Patient $patient)
     {
         $fields = $request->validated();
-        // $doctor = Doctor::findOrFail($request->doctor_id);
+        $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id]);
         // $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
         $invoice = $account->invoiceReceipt()->create($fields);
         return new InvoiceReceiptsResource($invoice);
