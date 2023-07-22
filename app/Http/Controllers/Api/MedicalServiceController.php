@@ -57,7 +57,7 @@ class MedicalServiceController extends Controller
 
     public function officeService(Office $office)
     {
-        $services = $office->services->with('COA');
+        $services = $office->services()->with('COA')->get();
         return MedicalServiceResource::collection($services);
     }
 }
