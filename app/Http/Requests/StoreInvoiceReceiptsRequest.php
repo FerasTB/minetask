@@ -26,6 +26,7 @@ class StoreInvoiceReceiptsRequest extends FormRequest
             'date_of_payment' => 'date|nullable',
             'total_price' => 'integer|required',
             'doctor_id' => 'required|integer',
+            'cash_coa' => 'required|integer',
         ];
     }
 }

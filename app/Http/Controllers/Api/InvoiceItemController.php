@@ -121,15 +121,11 @@ class InvoiceItemController extends Controller
     {
         $fields = $request->validated();
         $item = $invoice->items()->create($fields);
-        $cash_coa = COA::findOrFail($request->cash_coa);
         $serviceCoa = COA::findOrFail($request->service_coa);
-        $this->authorize('myCOA', [InvoiceItem::class, $cash_coa]);
         $this->authorize('myCOA', [InvoiceItem::class, $serviceCoa]);
-        $doubleEntryFields['COA_id'] = $cash_coa->id;
         $doubleEntryFields['invoice_item_id'] = $item->id;
         $doubleEntryFields['total_price'] = $item->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $cash_coa->doubleEntries()->create($doubleEntryFields);
         $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
         $serviceCoa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceItemsResource($item);

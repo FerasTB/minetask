@@ -28,7 +28,7 @@ class StorePatientInvoiceReceiptItemRequest extends FormRequest
             'total_price' => 'required|integer',
             'price_per_one' => 'required|integer',
             'service_coa' => 'required|integer',
-            'cash_coa' => 'required|integer',
+            // 'cash_coa' => 'required|integer',
         ];
     }
 }

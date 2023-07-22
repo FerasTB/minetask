@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\DoubleEntryType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceReceiptsRequest;
 use App\Http\Resources\InvoiceReceiptsResource;
 use App\Models\AccountingProfile;
+use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\InvoiceReceipt;
 use App\Models\Patient;
@@ -59,6 +61,13 @@ class InvoiceReceiptsController extends Controller
         $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id]);
         // $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
         $invoice = $account->invoiceReceipt()->create($fields);
+        $cash_coa = COA::findOrFail($request->cash_coa);
+        $this->authorize('myCOA', [InvoiceReceipt::class, $cash_coa]);
+        $doubleEntryFields['COA_id'] = $cash_coa->id;
+        $doubleEntryFields['invoice_id'] = $invoice->id;
+        $doubleEntryFields['total_price'] = $invoice->total_price;
+        $doubleEntryFields['type'] = DoubleEntryType::Positive;
+        $cash_coa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceReceiptsResource($invoice);
     }
 }
