@@ -58,7 +58,7 @@ class InvoiceReceiptsController extends Controller
     public function storeForPatient(StoreInvoiceReceiptsRequest $request, Patient $patient)
     {
         $fields = $request->validated();
-        $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id]);
+        $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
         $invoice = $account->invoiceReceipt()->create($fields);
         $cash_coa = COA::findOrFail($request->cash_coa);
