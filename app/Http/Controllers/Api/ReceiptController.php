@@ -171,7 +171,7 @@ class ReceiptController extends Controller
     public function addReceiptToInvoice(AddReceiptToInvoiceRequest $request, Receipt $receipt, Invoice $invoice)
     {
         $this->authorize('myInvoice', [Receipt::class, $invoice]);
-        $invoice = $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+        $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
         return $invoice;
     }
 }
