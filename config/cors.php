@@ -22,7 +22,8 @@ return [
     // 'allowed_origins' => ['https://marstaan.com', 'https://*.marstaan.com', 'https://clinic.marstaan.com', 'https://*.marstaan.com/*', 'http://127.0.0.1:5173', 'https://clinic.marstaan.com/*', 'https://boring-payne.212-227-188-105.plesk.page', 'https://boring-payne.212-227-188-105.plesk.page/*', 'https://clinic.marstaan.com/auth/login'],
     'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => ['/(*.marstaan)\.com'],
+    // 'allowed_origins_patterns' => ['/(*.marstaan)\.com'],
+    'allowed_origins_patterns' => ['*'],
 
     'allowed_headers' => ['*'],
 
