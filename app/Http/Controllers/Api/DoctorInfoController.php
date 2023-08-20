@@ -97,12 +97,13 @@ class DoctorInfoController extends Controller
                 // return MyPatientsResource::collection($roles);
             } else {
                 $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient'])->get();
-                return $accounts; // here
-                if ($accounts != []) {
-                    return MyPatientSeparateThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {
-                        return $accounts;
-                    }));
-                }
+                // return $accounts;
+                // if ($accounts != []) {
+                //     return MyPatientSeparateThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {
+                //         return $accounts;
+                //     }));
+                // }
+                return MyPatientSeparateThroughAccountingProfileResource::collection($accounts); //here
                 return response()->noContent();
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->get();
                 // return MyPatientsResource::collection($roles);
