@@ -53,6 +53,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                 ];
             }
         }
-        return parent::toArray($request);
+        // return parent::toArray($request);
+        return ['here'];
     }
 }
