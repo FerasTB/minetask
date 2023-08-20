@@ -126,9 +126,10 @@ class COAController extends Controller
     {
         $this->authorize('view', [$coa]);
         $positiveDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Positive)->get();
+        return $positiveDoubleEntries; //here  
         $totalPositive = $positiveDoubleEntries != null ?
             $positiveDoubleEntries->sum('amount') : 0;
-        return $totalPositive;
+        // return $totalPositive;
         $negativeDoubleEntries = $coa->doubleEntries()->where('type', DoubleEntryType::Negative)->get();
         $totalNegative = $negativeDoubleEntries != null ?
             $negativeDoubleEntries->sum('amount') : 0;
