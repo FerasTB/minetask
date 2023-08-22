@@ -94,6 +94,7 @@ class TeethRecordController extends Controller
                 'patient_id' => $patient->id,
                 'doctor_id' => $doctor->id,
             ]);
+            $fields['appointment_id'] = $appointment->id;
         }
         $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('create', [Record::class, $case]);
