@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AppointmentStatus;
 use App\Enums\PatientCaseStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentFirstStep;
@@ -93,6 +94,7 @@ class TeethRecordController extends Controller
                 'taken_date' => '2007-07-07',
                 'patient_id' => $patient->id,
                 'doctor_id' => $doctor->id,
+                'status' => AppointmentStatus::Done,
             ]);
             $fields['appointment_id'] = $appointment->id;
         }
