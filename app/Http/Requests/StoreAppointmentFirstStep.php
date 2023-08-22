@@ -22,7 +22,7 @@ class StoreAppointmentFirstStep extends FormRequest
     public function rules(): array
     {
         return [
-            'appointment_id' => 'required|integer',
+            'appointment_id' => 'nullable|integer',
             'case_id' => 'required|integer',
             // 'office_id' => 'required|integer',
             'patient_id' => 'required|integer',

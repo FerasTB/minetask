@@ -82,7 +82,9 @@ class TeethRecordController extends Controller
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
         $case = MedicalCase::find($request->case_id);
-        $appointment = Appointment::findOrFail($request->appointment_id);
+        if ($request->appointment_id) {
+            $appointment = Appointment::findOrFail($request->appointment_id);
+        }
         $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('create', [Record::class, $case]);
         if ($patientCase) {
