@@ -105,9 +105,11 @@ class TeethRecordController extends Controller
                     'description' => $diagnosis->description,
                 ]);
             }
-            $appointment->update([
-                'patientCase_id' => $patientCase->id,
-            ]);
+            if ($request->appointment_id) {
+                $appointment->update([
+                    'patientCase_id' => $patientCase->id,
+                ]);
+            }
             return response()->json([
                 'patientCase_id' => $patientCase->id,
                 'closable' => $case->case_name != Doctor::DefaultCase,
@@ -130,9 +132,11 @@ class TeethRecordController extends Controller
                 'description' => $diagnosis->description,
             ]);
         }
-        $appointment->update([
-            'patientCase_id' => $patientCase->id,
-        ]);
+        if ($request->appointment_id) {
+            $appointment->update([
+                'patientCase_id' => $patientCase->id,
+            ]);
+        }
         return response()->json([
             'patientCase_id' => $patientCase->id,
             'closable' => $case->case_name != Doctor::DefaultCase,
