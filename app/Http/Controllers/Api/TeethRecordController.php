@@ -86,7 +86,7 @@ class TeethRecordController extends Controller
             $appointment = Appointment::findOrFail($request->appointment_id);
         } else {
             $office = $case->office;
-            $appointment = $office->create([
+            $appointment = $office->appointments()->create([
                 'start_time' => '03:00:00',
                 'end_time' => '04:0:00',
                 'taken_date' => '2007-7-7',
