@@ -95,6 +95,7 @@ class TeethRecordController extends Controller
                 'patient_id' => $patient->id,
                 'doctor_id' => $doctor->id,
                 'status' => AppointmentStatus::Done,
+                'step' => 4,
             ]);
             $fields['appointment_id'] = $appointment->id;
         }
