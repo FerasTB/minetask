@@ -43,6 +43,11 @@ class Office extends Model
         return $this->hasMany(MedicalCase::class, 'office_id');
     }
 
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'office_id');
+    }
+
     public function vacations()
     {
         return $this->hasMany(Vacation::class, 'office_id');

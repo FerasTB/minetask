@@ -84,6 +84,15 @@ class TeethRecordController extends Controller
         $case = MedicalCase::find($request->case_id);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
+        } else {
+            $office = $case->office;
+            $appointment = $office->create([
+                'start_time' => '03:00:00',
+                'end_time' => '04:0:00',
+                'taken_date' => '2007-7-7',
+                'patient_id' => $patient->id,
+                'doctor_id' => auth()->user()->doctor->id,
+            ]);
         }
         $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('create', [Record::class, $case]);
@@ -105,11 +114,9 @@ class TeethRecordController extends Controller
                     'description' => $diagnosis->description,
                 ]);
             }
-            if ($request->appointment_id) {
-                $appointment->update([
-                    'patientCase_id' => $patientCase->id,
-                ]);
-            }
+            $appointment->update([
+                'patientCase_id' => $patientCase->id,
+            ]);
             return response()->json([
                 'patientCase_id' => $patientCase->id,
                 'closable' => $case->case_name != Doctor::DefaultCase,
@@ -132,11 +139,9 @@ class TeethRecordController extends Controller
                 'description' => $diagnosis->description,
             ]);
         }
-        if ($request->appointment_id) {
-            $appointment->update([
-                'patientCase_id' => $patientCase->id,
-            ]);
-        }
+        $appointment->update([
+            'patientCase_id' => $patientCase->id,
+        ]);
         return response()->json([
             'patientCase_id' => $patientCase->id,
             'closable' => $case->case_name != Doctor::DefaultCase,
