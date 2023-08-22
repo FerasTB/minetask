@@ -86,12 +86,13 @@ class TeethRecordController extends Controller
             $appointment = Appointment::findOrFail($request->appointment_id);
         } else {
             $office = $case->office;
+            $doctor = auth()->user()->doctor;
             $appointment = $office->appointments()->create([
                 'start_time' => '03:00:00',
-                'end_time' => '04:0:00',
-                'taken_date' => '2007-7-7',
+                'end_time' => '04:00:00',
+                'taken_date' => '2007-07-07',
                 'patient_id' => $patient->id,
-                'doctor_id' => auth()->user()->doctor->id,
+                'doctor_id' => $doctor->id,
             ]);
         }
         $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
