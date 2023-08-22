@@ -23,7 +23,6 @@ class UpdateAfterTreatmentRequest extends FormRequest
     {
         return [
             'after_treatment_instruction' => 'required|string',
-
         ];
     }
 }
