@@ -16,6 +16,16 @@ class SupplierItem extends Model
         return $this->belongsTo(COA::class, 'COA_id');
     }
 
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
+
     public function supplierAccount()
     {
         return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');

@@ -24,6 +24,7 @@ class SupplierItemController extends Controller
         return SupplierItemResource::collection(
             $doctor->supplierItem()
                 ->where('office_id', $office->id)
+                ->with(['doctor', 'office', 'COA'])
                 ->get()
         );
     }
