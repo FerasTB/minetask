@@ -9,7 +9,7 @@ class SupplierItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['accounting_profile_id', 'name', 'COA_id'];
+    protected $fillable = ['accounting_profile_id', 'name', 'COA_id', 'office_id'];
 
     public function COA()
     {

@@ -34,6 +34,7 @@ class SupplierItemController extends Controller
     public function store(StoreSupplierItemRequest $request, Office $office)
     {
         $fields = $request->validated();
+        $fields['office_id'] = $office->id;
         if ($request->doctor_id) {
             $doctor = auth()->user()->doctor;
             $this->authorize('createForDoctor', [SupplierItem::class, $doctor]);
