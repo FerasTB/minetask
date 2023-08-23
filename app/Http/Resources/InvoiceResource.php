@@ -19,9 +19,9 @@ class InvoiceResource extends JsonResource
             'note' => $this->note,
             'date_of_invoice' => $this->date_of_invoice,
             'total_price' => $this->total_price,
-            'office' => new OfficeResource($this->office),
-            'doctor' => new DoctorResource($this->doctor),
-            'items' => InvoiceItemsResource::collection($this->items),
+            'office' => new OfficeResource($this->whenLoaded('office')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
             'receipts' => $this->receipts,
             'created_at' => $this->created_at,
         ];
