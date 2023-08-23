@@ -92,30 +92,31 @@ class ReceiptController extends Controller
     public function storeSupplierReceipt(StoreSupplierReceiptRequest $request)
     {
         $fields = $request->validated();
-        if ($request->invoice_id) {
-            $invoice = Invoice::findOrFail($request->invoice_id);
-            $this->authorize('myInvoice', [Receipt::class, $invoice]);
-        }
+        // if ($request->invoice_id) {
+        //     $invoice = Invoice::findOrFail($request->invoice_id);
+        //     $this->authorize('myInvoice', [Receipt::class, $invoice]);
+        // }
         $office = Office::findOrFail($request->office_id);
+        $profile = AccountingProfile::findOrFail($request->supplier_account_id);
         if ($office->type == OfficeType::Combined) {
-            $profile = AccountingProfile::where([
-                'supplier_name' => $request->supplier_name,
-                'office_id' => $office->id, 'doctor_id' => null
-            ])->first();
+            // $profile = AccountingProfile::where([
+            //     'supplier_name' => $request->supplier_name,
+            //     'office_id' => $office->id, 'doctor_id' => null
+            // ])->first();
             $receipt = $profile->receipts()->create($fields);
-            $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+            // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'sub_type' => COASubType::Payable
             ]);
             $cash = COA::findOrFail($request->cash_coa);
         } else {
-            $profile = AccountingProfile::where([
-                'supplier_name' => $request->supplier_name,
-                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
-            ])->first();
+            // $profile = AccountingProfile::where([
+            //     'supplier_name' => $request->supplier_name,
+            //     'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+            // ])->first();
             $receipt = $profile->receipts()->create($fields);
-            $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+            // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $doctor = Doctor::find($request->doctor_id);
             $payable = COA::where([
                 'office_id' => $office->id,
