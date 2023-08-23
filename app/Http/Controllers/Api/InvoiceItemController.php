@@ -114,7 +114,7 @@ class InvoiceItemController extends Controller
         $payable->doubleEntries()->create($doubleEntryFields);
         $expensesCoa = COA::findOrFail($request->item_coa);
         $expensesCoa->doubleEntries()->create($doubleEntryFields);
-        return new InvoiceResource($item->invoice);
+        return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items'])->first());
     }
 
     public function storePatientInvoiceReceiptItem(StorePatientInvoiceReceiptItemRequest $request, InvoiceReceipt $invoice)
