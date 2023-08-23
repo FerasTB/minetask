@@ -108,7 +108,7 @@ class ReceiptController extends Controller
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'sub_type' => COASubType::Payable
-            ]);
+            ])->first();
             $cash = COA::findOrFail($request->cash_coa);
         } else {
             // $profile = AccountingProfile::where([
@@ -121,7 +121,7 @@ class ReceiptController extends Controller
             $payable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
-            ]);
+            ])->first();
             $cash = COA::findOrFail($request->cash_coa);
         }
         $doubleEntryFields['receipt_id'] = $receipt->id;
