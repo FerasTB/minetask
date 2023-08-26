@@ -106,4 +106,9 @@ class Office extends Model
     {
         return $this->hasOne(COA::class, 'office_id')->where(['name' => COA::Payable, 'doctor_id' => null])->get();
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'office_id');
+    }
 }

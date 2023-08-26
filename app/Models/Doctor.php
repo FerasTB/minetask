@@ -132,4 +132,9 @@ class Doctor extends Model
     {
         return $this->hasMany(DirectDoubleEntryInvoice::class, 'doctor_id');
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'doctor_id');
+    }
 }
