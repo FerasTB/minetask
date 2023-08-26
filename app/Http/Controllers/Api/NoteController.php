@@ -18,7 +18,7 @@ class NoteController extends Controller
      */
     public function index(Office $office)
     {
-        $this->authorize('inOffice', [COA::class, $office]);
+        $this->authorize('inOffice', [Note::class, $office]);
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             return NoteResource::collection(
@@ -40,14 +40,14 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request, Office $office)
     {
         $fields = $request->validated();
-        $this->authorize('inOffice', [COA::class, $office]);
+        $this->authorize('inOffice', [Note::class, $office]);
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);
-            $this->authorize('createForDoctor', [COA::class, $doctor]);
+            $this->authorize('createForDoctor', [Note::class, $doctor]);
             $note = $office->notes()->create($fields);
             return new NoteResource($note);
         }
-        $this->authorize('officeOwner', [COA::class, $office]);
+        $this->authorize('officeOwner', [Note::class, $office]);
         $note = $office->notes()->create($fields);
         return new NoteResource($note);
     }
