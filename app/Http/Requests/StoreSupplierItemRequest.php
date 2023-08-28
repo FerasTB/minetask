@@ -26,7 +26,7 @@ class StoreSupplierItemRequest extends FormRequest
             'doctor_id' => 'nullable|integer',
             'name' => 'required|string',
             'description' => 'nullable|string',
-            'cost' => 'required|integer',
+            'cost' => 'nullable|integer',
         ];
     }
 }
