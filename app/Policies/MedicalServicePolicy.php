@@ -44,7 +44,7 @@ class MedicalServicePolicy
      */
     public function update(User $user, MedicalService $medicalService): bool
     {
-        //
+        return $medicalService->doctor->id == $user->doctor->id;
     }
 
     /**

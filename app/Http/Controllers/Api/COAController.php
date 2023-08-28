@@ -67,7 +67,7 @@ class COAController extends Controller
             $fields['type'] = COAType::getValue($request->type);
         }
         if ($request->sub_type) {
-            $fields['sub_type'] = COAType::getValue($request->sub_type);
+            $fields['sub_type'] = COASubType::getValue($request->sub_type);
         }
         if ($request->doctor_id) {
             $doctor = Doctor::find($request->doctor_id);

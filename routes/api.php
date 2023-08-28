@@ -69,7 +69,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'supplierProfile']);
     Route::get('accounting/expenses/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'expensesProfile']);
     Route::post('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeSupplier']);
-    Route::post('accounting/expense/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeExpenses']);
+    // Route::post('accounting/expense/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeExpenses']);
     Route::post('accounting/receipt/{receipt}/invoice/{invoice}', [App\Http\Controllers\Api\ReceiptController::class, 'addReceiptToInvoice']);
     Route::apiResource('accounting/supplier/{office}/item', App\Http\Controllers\Api\SupplierItemController::class);
     Route::apiResource('list/complaint', App\Http\Controllers\Api\TeethComplaintListController::class);
@@ -90,4 +90,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice_receipt/account/{patient}', [App\Http\Controllers\Api\InvoiceReceiptsController::class, 'storeForPatient']);
     Route::post('invoice_receipt/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceReceiptItem']);
     Route::apiResource('office/{office}/note', App\Http\Controllers\Api\NoteController::class);
+    Route::post('accounting/expense/profile', [App\Http\Controllers\Api\ExpenseController::class, 'storeExpenseAccount']);
 });

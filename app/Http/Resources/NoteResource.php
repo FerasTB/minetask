@@ -20,6 +20,7 @@ class NoteResource extends JsonResource
             'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'office' => new OfficeResource($this->whenLoaded('office')),
+            'created_at' => $this->created_at,
         ];
     }
 }

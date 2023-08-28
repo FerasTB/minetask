@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSupplierItemRequest;
+use App\Http\Requests\UpdateSupplierItemRequest;
 use App\Http\Resources\SupplierItemResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -58,9 +59,18 @@ class SupplierItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SupplierItem $supplierItem)
+    public function update(UpdateSupplierItemRequest $request, Office $office, SupplierItem $item)
     {
-        //
+        $fields = $request->validated();
+        if ($request->doctor_id) {
+            $doctor = auth()->user()->doctor;
+            $this->authorize('updateForDoctor', [$item, $doctor]);
+            $item->update($fields);
+            return new SupplierItemResource($item);
+        }
+        $this->authorize('updateForOffice', [$item, $office]);
+        $item->update($fields);
+        return new SupplierItemResource($item);
     }
 
     /**

@@ -45,10 +45,16 @@ class NoteController extends Controller
             $doctor = Doctor::find($request->doctor_id);
             $this->authorize('createForDoctor', [Note::class, $doctor]);
             $note = $office->notes()->create($fields);
+            $note->load('patient');
+            $note->load('doctor');
+            $note->load('office');
             return new NoteResource($note);
         }
         $this->authorize('officeOwner', [Note::class, $office]);
         $note = $office->notes()->create($fields);
+        $note->load('patient');
+        $note->load('doctor');
+        $note->load('office');
         return new NoteResource($note);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\OfficeType;
+use App\Enums\SubRole;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -84,5 +85,16 @@ class SupplierItemPolicy
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
         return $role != null;
+    }
+
+    public function updateForDoctor(User $user, SupplierItem $item, Doctor $doctor): bool
+    {
+        return $item->doctor->id == $doctor->id;
+    }
+
+    public function updateForOffice(User $user, SupplierItem $item, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null && $role->sub_role == SubRole::OfficeOwner;
     }
 }

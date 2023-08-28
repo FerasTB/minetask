@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMedicalServiceRequest;
+use App\Http\Requests\UpdateMedicalServiceRequest;
 use App\Http\Resources\MedicalServiceResource;
 use App\Models\MedicalService;
 use App\Models\Office;
@@ -42,9 +43,12 @@ class MedicalServiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MedicalService $medicalService)
+    public function update(UpdateMedicalServiceRequest $request, MedicalService $service)
     {
-        //
+        $fields = $request->validated();
+        $this->authorize('update', $service);
+        $service->update($fields);
+        return new MedicalServiceResource($service);
     }
 
     /**
