@@ -17,4 +17,5 @@ final class MaritalStatus extends Enum
     const Single = 2;
     const Divorced = 3;
     const Engaged = 4;
+    const NotSelected = null;
 }
