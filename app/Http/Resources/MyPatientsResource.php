@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\MaritalStatus;
 use App\Models\Patient;
 use App\Models\TemporaryInformation;
 use Illuminate\Http\Request;
@@ -28,6 +29,11 @@ class MyPatientsResource extends JsonResource
                 'birth_date' => $patient->birth_date,
                 'note' => $patient->note,
                 'gender' => $patient->gender,
+                'marital' => MaritalStatus::getKey($patient->marital),
+                'mother_name' => $patient->mother_name,
+                'father_name' => $patient->father_name,
+                'created_at' => $patient->created_at,
+
                 'status' => 'Approve'
             ];
         }
@@ -43,6 +49,11 @@ class MyPatientsResource extends JsonResource
                 'birth_date' => $patient->birth_date,
                 'gender' => $originalPatient->gender,
                 'note' => $patient->note,
+                'marital' => MaritalStatus::getKey($patient->marital),
+                'mother_name' => $patient->mother_name,
+                'father_name' => $patient->father_name,
+                'created_at' => $patient->created_at,
+
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
             ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\MaritalStatus;
 use App\Enums\OfficeType;
 use App\Enums\ReportType;
 use App\Enums\Role;
@@ -36,6 +37,9 @@ class PatientInfoController extends Controller
     public function store(StorePatientRequest $request)
     {
         $fields = $request->validated();
+        if ($request->marital) {
+            $fields['marital'] = MaritalStatus::getValue($request->marital);
+        }
         if (auth()->user()->role == Role::Patient) {
             $patient = Patient::where('phone', $request->phone)->first();
             if ($patient || auth()->user()->patient) {

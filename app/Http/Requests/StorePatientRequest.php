@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\Gender;
+use App\Enums\MaritalStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,6 +26,9 @@ class StorePatientRequest extends FormRequest
     {
         return [
             'first_name' => 'string|required',
+            'father_name' => 'string|nullable',
+            'marital' => ['nullable', Rule::in(MaritalStatus::getKeys())],
+            'mother_name' => 'string|nullable',
             'last_name' => 'string|required',
             'phone' => 'integer|required',
             'email' => 'email|nullable',
