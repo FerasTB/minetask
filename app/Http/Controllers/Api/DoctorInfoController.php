@@ -132,8 +132,8 @@ class DoctorInfoController extends Controller
             ->where('medical_cases.office_id', $office->id)
             ->groupBy('drug_name')
             ->get();
-        // return $drugs;
-        return DrugPatientIndexResource::collection($drugs);
+        return $drugs;
+        // return DrugPatientIndexResource::collection($drugs);
         // return Drug::whereHas(['diagnosis.record.PatientCase.case.office' => function (Builder $query) use ($office) {
         //     $query->where('id', $office->id);
         // }])
