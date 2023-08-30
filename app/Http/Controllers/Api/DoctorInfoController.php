@@ -130,7 +130,7 @@ class DoctorInfoController extends Controller
             ->where('patient_cases.patient_id', $patient->id)
             ->where('medical_cases.doctor_id', auth()->user()->doctor->id)
             ->where('medical_cases.office_id', $office->id)
-            ->groupBy('drug_name')
+            // ->groupBy('drug_name')
             ->get();
         return $drugs;
         // return DrugPatientIndexResource::collection($drugs);
