@@ -22,7 +22,7 @@ class DrugPatientIndexResource extends JsonResource
             'portion' => $this->portion,
             'frequency' => $this->frequency,
             'note' => $this->note,
-            'diagnosis' => new DiagnosisResource($this->whenLoaded('diagnosis')),
+            'diagnosis' => $this->description,
             'created_at' => $this->created_at,
             // 'effect' => $this->effect,
         ];
