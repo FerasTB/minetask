@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Diagnosis;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,8 @@ class DrugPatientIndexResource extends JsonResource
             'portion' => $this->portion,
             'frequency' => $this->frequency,
             'note' => $this->note,
+            'diagnosis' => new DiagnosisResource($this->whenLoaded('diagnosis')),
+            'created_at' => $this->created_at,
             // 'effect' => $this->effect,
         ];
     }
