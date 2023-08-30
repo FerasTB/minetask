@@ -69,12 +69,14 @@ class InvoiceController extends Controller
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
             ])->first();
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $invoice = $profile->invoices()->create($fields);
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $invoice = $profile->invoices()->create($fields);
         }
         return new PatientInvoiceResource($invoice);
@@ -84,7 +86,34 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+        $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         $invoice = $profile->invoices()->create($fields);
         return new PatientInvoiceResource($invoice);
+    }
+
+    public static function patientBalance(int $id, int $thisTransaction)
+    {
+        $patient = AccountingProfile::findOrFail($id);
+        $invoices = $patient->invoices()->get();
+        $totalPositive = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $patient->receipts()->get();
+        $totalNegative = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $patient->initial_balance;
+        return $total;
+    }
+
+    public static function supplierBalance(int $id, int $thisTransaction)
+    {
+        $supplier = AccountingProfile::findOrFail($id);
+        $invoices = $supplier->invoices()->get();
+        $totalNegative = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $supplier->receipts()->get();
+        $totalPositive = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        return $total;
     }
 }

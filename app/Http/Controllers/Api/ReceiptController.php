@@ -98,6 +98,7 @@ class ReceiptController extends Controller
         // }
         $office = Office::findOrFail($request->office_id);
         $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+        $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         if ($office->type == OfficeType::Combined) {
             // $profile = AccountingProfile::where([
             //     'supplier_name' => $request->supplier_name,
@@ -141,6 +142,7 @@ class ReceiptController extends Controller
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => null
             ])->first();
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $receipt = $profile->receipts()->create($fields);
             $receivable = COA::where([
                 'office_id' => $office->id,
@@ -152,6 +154,7 @@ class ReceiptController extends Controller
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $receipt = $profile->receipts()->create($fields);
             $doctor = Doctor::find($request->doctor_id);
             $receivable = COA::where([
@@ -174,5 +177,31 @@ class ReceiptController extends Controller
         $this->authorize('myInvoice', [Receipt::class, $invoice]);
         $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
         return $invoice;
+    }
+
+    public static function patientBalance(int $id, int $thisTransaction)
+    {
+        $patient = AccountingProfile::findOrFail($id);
+        $invoices = $patient->invoices()->get();
+        $totalPositive = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $patient->receipts()->get();
+        $totalNegative = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $patient->initial_balance;
+        return $total;
+    }
+
+    public static function supplierBalance(int $id, int $thisTransaction)
+    {
+        $supplier = AccountingProfile::findOrFail($id);
+        $invoices = $supplier->invoices()->get();
+        $totalNegative = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $supplier->receipts()->get();
+        $totalPositive = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
+        return $total;
     }
 }

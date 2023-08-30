@@ -60,6 +60,7 @@ class InvoiceReceiptsController extends Controller
         $fields = $request->validated();
         $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id])->first();
         // $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
+        $fields['running_balance'] = $this->patientBalance($account->id, $fields['total_price']);
         $invoice = $account->invoiceReceipt()->create($fields);
         $cash_coa = COA::findOrFail($request->cash_coa);
         $this->authorize('myCOA', [InvoiceReceipt::class, $cash_coa]);
@@ -69,5 +70,18 @@ class InvoiceReceiptsController extends Controller
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $cash_coa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceReceiptsResource($invoice);
+    }
+
+    public static function patientBalance(int $id, int $thisTransaction)
+    {
+        $patient = AccountingProfile::findOrFail($id);
+        $invoices = $patient->invoices()->get();
+        $totalPositive = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $patient->receipts()->get();
+        $totalNegative = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative + $patient->initial_balance;
+        return $total;
     }
 }

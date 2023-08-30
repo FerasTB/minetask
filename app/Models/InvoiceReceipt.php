@@ -9,7 +9,7 @@ class InvoiceReceipt extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['accounting_profile_id', 'doctor_id', 'total_price', 'date_of_payment', 'note'];
+    protected $fillable = ['accounting_profile_id', 'doctor_id', 'total_price', 'date_of_payment', 'note', 'running_balance'];
 
     public function doctor()
     {

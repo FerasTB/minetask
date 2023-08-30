@@ -21,6 +21,7 @@ class ReceiptResource extends JsonResource
             'date_of_payment' => $this->note,
             'invoice' => new PatientInvoiceResource($this->invoice),
             'doctor' => new DoctorResource($this->doctor),
+            'running_balance' => $this->running_balance,
             'created_at' => $this->created_at,
         ];
     }
