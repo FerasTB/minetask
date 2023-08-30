@@ -21,7 +21,7 @@ class DrugPatientIndexResource extends JsonResource
             'portion' => $this->portion,
             'frequency' => $this->frequency,
             'note' => $this->note,
-            'effect' => $this->effect,
+            // 'effect' => $this->effect,
         ];
     }
 }
