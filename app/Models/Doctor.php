@@ -137,4 +137,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Note::class, 'doctor_id');
     }
+
+    public function transactionPrefix()
+    {
+        return $this->hasMany(TransactionPrefix::class, 'doctor_id');
+    }
 }

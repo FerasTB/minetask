@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
@@ -14,6 +15,7 @@ use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\TransactionPrefix;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -63,6 +65,7 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientInvoice])->first();
         if ($office->type == OfficeType::Combined) {
             $owner = User::findOrFail($office->owner->user_id);
             $profile = AccountingProfile::where([
@@ -70,6 +73,8 @@ class InvoiceController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['invoice_number'] = $transactionNumber->transactionNumber + 1;
+            $transactionNumber->update(['transactionNumber' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
         } else {
             $profile = AccountingProfile::where([
@@ -77,6 +82,8 @@ class InvoiceController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['invoice_number'] = $transactionNumber->transactionNumber + 1;
+            $transactionNumber->update(['transactionNumber' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
         }
         return new PatientInvoiceResource($invoice);

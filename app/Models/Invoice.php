@@ -70,6 +70,7 @@ class Invoice extends Model
             ->withPivot(['total_price']);
     }
 
+
     // public function setInvoiceNumberAttribute()
     // {
     //     if ($this->patient != null) {

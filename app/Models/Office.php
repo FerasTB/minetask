@@ -111,4 +111,9 @@ class Office extends Model
     {
         return $this->hasMany(Note::class, 'office_id');
     }
+
+    public function transactionPrefix()
+    {
+        return $this->hasMany(TransactionPrefix::class, 'office_id');
+    }
 }

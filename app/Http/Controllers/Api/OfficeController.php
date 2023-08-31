@@ -9,6 +9,7 @@ use App\Enums\HasRolePropertyType;
 use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Enums\SubRole;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddDoctorToOfficeRequest;
 use App\Http\Requests\AddEmployeeToOfficeRequest;
@@ -87,6 +88,14 @@ class OfficeController extends Controller
             'type' => COAType::OwnerWithdraw,
             'general_type' => COAGeneralType::Equity,
         ]);
+        $office->transactionPrefix()->create([
+            'type' => TransactionType::PaymentVoucher,
+            'prefix' => 'PVOC',
+        ]);
+        $office->transactionPrefix()->create([
+            'type' => TransactionType::SupplierInvoice,
+            'prefix' => 'SINV',
+        ]);
         $doctor = auth()->user()->doctor;
         $doctor->cases()->create([
             'case_name' => Doctor::DefaultCase,
@@ -125,6 +134,26 @@ class OfficeController extends Controller
                 'name' => COA::OwnerWithDraw,
                 'type' => COAType::OwnerWithdraw,
                 'general_type' => COAGeneralType::Equity,
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PatientInvoice,
+                'prefix' => 'PINV',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PatientReceipt,
+                'prefix' => 'PREC',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PaymentVoucher,
+                'prefix' => 'PVOC',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::SupplierInvoice,
+                'prefix' => 'SINV',
                 'office_id' => $office->id,
             ]);
         }
