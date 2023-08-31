@@ -64,4 +64,27 @@ class Invoice extends Model
         return $this->belongsToMany(Receipt::class, 'invoice_receipt')
             ->withPivot(['total_price']);
     }
+
+    public function setInvoiceNumberAttribute()
+    {
+        if ($this->patient != null) {
+            $this->attributes['invoice_number'] = Invoice::whereHas('office', function ($query) {
+                return $query->where('id', '=', $this->office->id);
+            })
+                ->whereHas('doctor', function ($query) {
+                    return $query->where('id', '=', $this->doctor->id);
+                })
+                ->has('patient')
+                ->max('invoice_number') + 1;
+        } else {
+            $this->attributes['invoice_number'] = Invoice::whereHas('office', function ($query) {
+                return $query->where('id', '=', $this->office->id);
+            })
+                ->whereHas('doctor', function ($query) {
+                    return $query->where('id', '=', $this->doctor->id);
+                })
+                ->doesntHave('patient')
+                ->max('invoice_number') + 1;
+        }
+    }
 }
