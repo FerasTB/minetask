@@ -69,7 +69,7 @@ class Invoice extends Model
     {
         if ($this->patient != null) {
             $this->attributes['invoice_number'] = Invoice::with(['office', 'doctor'])
-                ->where('office.id', $this->office->id)
+                ->where('office.id', $this->office->attributes['id'])
                 ->where('doctor.id', $this->doctor->id)
                 ->has('patient')
                 ->max('invoice_number') + 1;
@@ -83,7 +83,7 @@ class Invoice extends Model
             //     ->doesntHave('patient')
             //     ->max('invoice_number') + 1;
             $this->attributes['invoice_number'] = Invoice::with(['office', 'doctor'])
-                ->where('office.id', $this->office->id)
+                ->where('office.id', $this->office->attributes['id'])
                 ->where('doctor.id', $this->doctor->id)
                 ->doesntHave('patient')
                 ->max('invoice_number') + 1;
