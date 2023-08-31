@@ -98,6 +98,6 @@ class Invoice extends Model
 
     public function getInvoiceNumberAttribute()
     {
-        return str_pad($this->invoice_number, 5, '0', STR_PAD_LEFT);
+        return str_pad($this->attributes['invoice_number'], 5, '0', STR_PAD_LEFT);
     }
 }
