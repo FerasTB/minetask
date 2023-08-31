@@ -6,6 +6,7 @@ use App\Enums\TransactionType;
 use App\Models\TransactionPrefix;
 use App\Http\Requests\StoreTransactionPrefixRequest;
 use App\Http\Requests\UpdateTransactionPrefixRequest;
+use App\Http\Resources\TransactionPrefixResource;
 use App\Models\Doctor;
 use App\Models\Office;
 
@@ -14,9 +15,13 @@ class TransactionPrefixController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Office $office)
     {
-        //
+        $this->authorize('inOffice', [TransactionPrefix::class, $office]);
+        return TransactionPrefixResource::collection(TransactionPrefix::where([
+            'doctor_id' => auth()->user()->doctor->id,
+            'office_id' => $office->id,
+        ])->get());
     }
 
     /**

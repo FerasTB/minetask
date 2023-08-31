@@ -20,6 +20,7 @@ class DirectDoubleEntryInvoiceResource extends JsonResource
             'total_price' => $this->total_price,
             'note' => $this->note,
             'date_of_transaction' => $this->date_of_transaction,
+            'receipt_number' => $this->receipt_number,
             'direct_double_entry' => DirectDoubleEntryResource::collection($this->directDoubleEntries),
         ];
     }

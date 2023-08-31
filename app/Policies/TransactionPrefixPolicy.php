@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\TransactionPrefix;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -62,5 +64,11 @@ class TransactionPrefixPolicy
     public function forceDelete(User $user, TransactionPrefix $transactionPrefix): bool
     {
         //
+    }
+
+    public function inOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 }

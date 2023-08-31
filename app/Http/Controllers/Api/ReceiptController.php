@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddReceiptToInvoiceRequest;
 use App\Http\Requests\StorePatientReceiptRequest;
@@ -20,6 +21,7 @@ use App\Models\InvoiceReceipt;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\Receipt;
+use App\Models\TransactionPrefix;
 use Illuminate\Http\Request;
 
 class ReceiptController extends Controller
@@ -98,13 +100,16 @@ class ReceiptController extends Controller
         // }
         $office = Office::findOrFail($request->office_id);
         $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         if ($office->type == OfficeType::Combined) {
             // $profile = AccountingProfile::where([
             //     'supplier_name' => $request->supplier_name,
             //     'office_id' => $office->id, 'doctor_id' => null
             // ])->first();
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
             $receipt = $profile->receipts()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $payable = COA::where([
                 'office_id' => $office->id,
@@ -116,7 +121,9 @@ class ReceiptController extends Controller
             //     'supplier_name' => $request->supplier_name,
             //     'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             // ])->first();
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
             $receipt = $profile->receipts()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
             $doctor = Doctor::find($request->doctor_id);
             $payable = COA::where([
@@ -137,13 +144,16 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientReceipt])->first();
         if ($office->type == OfficeType::Combined) {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => null
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
             $receipt = $profile->receipts()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             $receivable = COA::where([
                 'office_id' => $office->id,
                 'doctor_id' => null, 'sub_type' => COASubType::Receivable
@@ -155,7 +165,9 @@ class ReceiptController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
             $receipt = $profile->receipts()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             $doctor = Doctor::find($request->doctor_id);
             $receivable = COA::where([
                 'office_id' => $office->id,

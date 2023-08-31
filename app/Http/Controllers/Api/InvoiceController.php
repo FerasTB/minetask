@@ -74,8 +74,8 @@ class InvoiceController extends Controller
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
@@ -83,8 +83,8 @@ class InvoiceController extends Controller
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         }
         return new PatientInvoiceResource($invoice);
     }
@@ -94,7 +94,10 @@ class InvoiceController extends Controller
         $fields = $request->validated();
         $profile = AccountingProfile::findOrFail($request->supplier_account_id);
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
+        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         $invoice = $profile->invoices()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         return new PatientInvoiceResource($invoice);
     }
 

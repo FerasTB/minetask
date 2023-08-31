@@ -92,4 +92,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('office/{office}/note', App\Http\Controllers\Api\NoteController::class);
     Route::post('accounting/expense/profile', [App\Http\Controllers\Api\ExpenseController::class, 'storeExpenseAccount']);
     Route::post('add/prefix/office/{office}/doctor/{doctor}', [App\Http\Controllers\TransactionPrefixController::class, 'temprary']);
+    Route::get('get/prefix/office/{office}', [App\Http\Controllers\TransactionPrefixController::class, 'index']);
 });

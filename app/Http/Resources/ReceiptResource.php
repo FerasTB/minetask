@@ -23,6 +23,7 @@ class ReceiptResource extends JsonResource
             'doctor' => new DoctorResource($this->doctor),
             'running_balance' => $this->running_balance,
             'created_at' => $this->created_at,
+            'receipt_number' => $this->receipt_number,
         ];
     }
 }

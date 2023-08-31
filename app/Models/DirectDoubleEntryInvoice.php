@@ -9,7 +9,7 @@ class DirectDoubleEntryInvoice extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['office_id', 'doctor_id', 'total_price', 'date_of_transaction', 'note'];
+    protected $fillable = ['receipt_number', 'office_id', 'doctor_id', 'total_price', 'date_of_transaction', 'note'];
 
     public function directDoubleEntries()
     {
