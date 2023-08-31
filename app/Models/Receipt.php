@@ -45,4 +45,9 @@ class Receipt extends Model
         return $this->belongsToMany(Invoice::class, 'invoice_receipt')
             ->withPivot(['total_price']);
     }
+
+    public function getReceiptNumberAttribute()
+    {
+        return str_pad($this->receipt_number, 5, '0', STR_PAD_LEFT);
+    }
 }

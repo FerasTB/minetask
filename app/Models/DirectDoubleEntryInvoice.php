@@ -25,4 +25,9 @@ class DirectDoubleEntryInvoice extends Model
     {
         return $this->belongsTo(Office::class, 'office_id');
     }
+
+    public function getReceiptNumberAttribute()
+    {
+        return str_pad($this->receipt_number, 5, '0', STR_PAD_LEFT);
+    }
 }

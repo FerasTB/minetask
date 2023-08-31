@@ -95,4 +95,9 @@ class Invoice extends Model
     //             ->max('invoice_number') + 1;
     //     }
     // }
+
+    public function getInvoiceNumberAttribute()
+    {
+        return str_pad($this->invoice_number, 5, '0', STR_PAD_LEFT);
+    }
 }
