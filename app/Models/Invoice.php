@@ -54,6 +54,11 @@ class Invoice extends Model
         );
     }
 
+    public function account()
+    {
+        return $this->belongsTo(AccountingProfile::class, 'account_profile_id');
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');
@@ -82,8 +87,8 @@ class Invoice extends Model
             //     })
             //     ->doesntHave('patient')
             //     ->max('invoice_number') + 1;
-            $this->attributes['invoice_number'] = Invoice::with(['office', 'doctor'])
-                ->where('office.id', $this->office->attributes['id'])
+            $this->attributes['invoice_number'] = Invoice::with(['account.office', 'account.doctor'])
+                ->where('account.office.id', $this->account->office->id)
                 ->where('doctor.id', $this->doctor->id)
                 ->doesntHave('patient')
                 ->max('invoice_number') + 1;
