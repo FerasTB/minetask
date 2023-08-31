@@ -81,5 +81,6 @@ class TransactionPrefixController extends Controller
             'prefix' => 'SINV',
             'office_id' => $office->id,
         ]);
+        return response('Done', 201);
     }
 }
