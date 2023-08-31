@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\DoubleEntryType;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInvoiceReceiptsRequest;
 use App\Http\Resources\InvoiceReceiptsResource;
@@ -11,6 +12,7 @@ use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\InvoiceReceipt;
 use App\Models\Patient;
+use App\Models\TransactionPrefix;
 use Illuminate\Http\Request;
 
 class InvoiceReceiptsController extends Controller
@@ -59,9 +61,12 @@ class InvoiceReceiptsController extends Controller
     {
         $fields = $request->validated();
         $account = AccountingProfile::where(['doctor_id' => $request->doctor_id, 'patient_id' => $patient->id])->first();
+        $transactionNumber = TransactionPrefix::where(['office_id' => $account->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientInvoice])->first();
         // $this->authorize('patientAccount', [InvoiceReceipt::class, $account]);
         $fields['running_balance'] = $this->patientBalance($account->id, $fields['total_price']);
+        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         $invoice = $account->invoiceReceipt()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         $cash_coa = COA::findOrFail($request->cash_coa);
         $this->authorize('myCOA', [InvoiceReceipt::class, $cash_coa]);
         $doubleEntryFields['COA_id'] = $cash_coa->id;

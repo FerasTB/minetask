@@ -24,6 +24,7 @@ class InvoiceReceiptsResource extends JsonResource
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
             'running_balance' => $this->running_balance,
+            'invoice_number' => $this->invoice_number,
             'created_at' => $this->created_at,
         ];
     }
