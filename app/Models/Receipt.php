@@ -48,6 +48,6 @@ class Receipt extends Model
 
     public function getReceiptNumberAttribute()
     {
-        return str_pad($this->receipt_number, 5, '0', STR_PAD_LEFT);
+        return str_pad($this->attributes['receipt_number'], 5, '0', STR_PAD_LEFT);
     }
 }
