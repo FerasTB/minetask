@@ -70,28 +70,28 @@ class Invoice extends Model
             ->withPivot(['total_price']);
     }
 
-    public function setInvoiceNumberAttribute()
-    {
-        if ($this->patient != null) {
-            $this->attributes['invoice_number'] = Invoice::with(['office', 'doctor'])
-                ->where('office.id', $this->office->attributes['id'])
-                ->where('doctor.id', $this->doctor->id)
-                ->has('patient')
-                ->max('invoice_number') + 1;
-        } else {
-            // $this->attributes['invoice_number'] = Invoice::whereHas('office', function ($query) {
-            //     return $query->where('id', '=', $this->office->id);
-            // })
-            //     ->whereHas('doctor', function ($query) {
-            //         return $query->where('id', '=', $this->doctor->id);
-            //     })
-            //     ->doesntHave('patient')
-            //     ->max('invoice_number') + 1;
-            $this->attributes['invoice_number'] = Invoice::with(['account.office', 'account.doctor'])
-                ->where('account.office.id', $this->account->office->id)
-                ->where('doctor.id', $this->doctor->id)
-                ->doesntHave('patient')
-                ->max('invoice_number') + 1;
-        }
-    }
+    // public function setInvoiceNumberAttribute()
+    // {
+    //     if ($this->patient != null) {
+    //         $this->attributes['invoice_number'] = Invoice::with(['office', 'doctor'])
+    //             ->where('office.id', $this->office->attributes['id'])
+    //             ->where('doctor.id', $this->doctor->id)
+    //             ->has('patient')
+    //             ->max('invoice_number') + 1;
+    //     } else {
+    //         // $this->attributes['invoice_number'] = Invoice::whereHas('office', function ($query) {
+    //         //     return $query->where('id', '=', $this->office->id);
+    //         // })
+    //         //     ->whereHas('doctor', function ($query) {
+    //         //         return $query->where('id', '=', $this->doctor->id);
+    //         //     })
+    //         //     ->doesntHave('patient')
+    //         //     ->max('invoice_number') + 1;
+    //         $this->attributes['invoice_number'] = Invoice::with(['account.office', 'account.doctor'])
+    //             ->where('account.office.id', $this->account->office->id)
+    //             ->where('doctor.id', $this->doctor->id)
+    //             ->doesntHave('patient')
+    //             ->max('invoice_number') + 1;
+    //     }
+    // }
 }
