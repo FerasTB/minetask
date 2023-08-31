@@ -73,8 +73,8 @@ class InvoiceController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
-            $fields['invoice_number'] = $transactionNumber->transactionNumber + 1;
-            $transactionNumber->update(['transactionNumber' => $fields['invoice_number']]);
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
         } else {
             $profile = AccountingProfile::where([
@@ -82,8 +82,8 @@ class InvoiceController extends Controller
                 'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
-            $fields['invoice_number'] = $transactionNumber->transactionNumber + 1;
-            $transactionNumber->update(['transactionNumber' => $fields['invoice_number']]);
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
             $invoice = $profile->invoices()->create($fields);
         }
         return new PatientInvoiceResource($invoice);
