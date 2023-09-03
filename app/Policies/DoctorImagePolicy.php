@@ -78,6 +78,6 @@ class DoctorImagePolicy
     {
         $officeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
         $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
-        return $role != null && $officeRole != null && $user->doctor && $record->doctor->id == $user->doctor->id;
+        return $role != null && $officeRole != null && $user->doctor && $record->PatientCase->doctor->id == $user->doctor->id;
     }
 }
