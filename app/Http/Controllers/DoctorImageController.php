@@ -41,7 +41,7 @@ class DoctorImageController extends Controller
                     'doctor/' . $office->id . '/' . $doctor->id . '/' . $patient->id . '/' . $record->id,
                     $name,
                 );
-                $image = $doctor->doctorImage->create($fields);
+                $image = $doctor->doctorImage()->create($fields);
                 return new DoctorImageResource($image);
             }
             $this->authorize('inOfficeAndHavePatient', [DoctorImage::class, $patient, $office]);
@@ -49,7 +49,7 @@ class DoctorImageController extends Controller
                 'doctor/' . $office->id . '/' . $doctor->id . '/' . $patient->id,
                 $name,
             );
-            $image = $doctor->doctorImage->create($fields);
+            $image = $doctor->doctorImage()->create($fields);
             return new DoctorImageResource($image);
         }
     }
