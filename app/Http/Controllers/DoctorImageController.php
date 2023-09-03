@@ -29,6 +29,7 @@ class DoctorImageController extends Controller
         $fields = $request->validated();
         $doctor = auth()->user()->doctor;
         $patient = Patient::findOrFail($request->patient_id);
+        $fields['office_id'] = $office->id;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             // $extension = $file->extension();
