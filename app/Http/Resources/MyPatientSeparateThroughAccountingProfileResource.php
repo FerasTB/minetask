@@ -37,7 +37,8 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'mother_name' => $patient->mother_name,
                     'father_name' => $patient->father_name,
                     'created_at' => $patient->created_at,
-                    'status' => 'Approve'
+                    'status' => 'Approve',
+                    'image' => DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
                 ];
             }
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
@@ -57,13 +58,13 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'mother_name' => $patient->mother_name,
                     'father_name' => $patient->father_name,
                     'created_at' => $patient->created_at,
-
                     'status' => 'WithoutApprove',
                     'TemporaryId' => $patient->id,
+                    'image' => DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
                 ];
             }
         }
         // return parent::toArray($request);
-        return ['here'];
+        return [];
     }
 }

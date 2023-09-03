@@ -84,4 +84,9 @@ class Patient extends Model
     {
         return $this->hasMany(Note::class, 'patient_id');
     }
+
+    public function doctorImage()
+    {
+        return $this->hasMany(DoctorImage::class, 'patient_id');
+    }
 }

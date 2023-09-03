@@ -33,6 +33,7 @@ class TeethRecordResource extends JsonResource
             'appointment' => $appointment ? new AppointmentResource($appointment) : "no appointment",
             'diagnosis' => new DiagnosisResource($this->diagnosis),
             'operations' => OperationResource::collection($this->operations),
+            'image' => DoctorImageResource::collection($this->doctorImage),
         ];
     }
 }

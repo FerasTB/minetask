@@ -33,7 +33,7 @@ class MyPatientsResource extends JsonResource
                 'mother_name' => $patient->mother_name,
                 'father_name' => $patient->father_name,
                 'created_at' => $patient->created_at,
-
+                'image' => DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
                 'status' => 'Approve'
             ];
         }
@@ -53,9 +53,9 @@ class MyPatientsResource extends JsonResource
                 'mother_name' => $patient->mother_name,
                 'father_name' => $patient->father_name,
                 'created_at' => $patient->created_at,
-
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
+                'image' => DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
             ];
         }
         return [];

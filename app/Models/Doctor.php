@@ -142,4 +142,9 @@ class Doctor extends Model
     {
         return $this->hasMany(TransactionPrefix::class, 'doctor_id');
     }
+
+    public function doctorImage()
+    {
+        return $this->hasMany(DoctorImage::class, 'doctor_id');
+    }
 }

@@ -116,4 +116,9 @@ class Office extends Model
     {
         return $this->hasMany(TransactionPrefix::class, 'office_id');
     }
+
+    public function doctorImage()
+    {
+        return $this->hasMany(DoctorImage::class, 'office_id');
+    }
 }

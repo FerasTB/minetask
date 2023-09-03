@@ -36,4 +36,9 @@ class TeethRecord extends Model
     {
         return $this->hasMany(Operation::class, 'record_id');
     }
+
+    public function doctorImage()
+    {
+        return $this->hasMany(DoctorImage::class, 'teeth_record_id');
+    }
 }
