@@ -43,7 +43,6 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
                     'image' => DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
-
                 ];
             }
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {

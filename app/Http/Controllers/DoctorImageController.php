@@ -10,6 +10,7 @@ use App\Http\Resources\DoctorInfoResource;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\TeethRecord;
+use Illuminate\Support\Carbon;
 
 class DoctorImageController extends Controller
 {
@@ -32,8 +33,11 @@ class DoctorImageController extends Controller
         $fields['office_id'] = $office->id;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
+            if (!$request->has('name')) {
+                $fields['name'] = $file->getClientOriginalName();
+            }
             // $extension = $file->extension();
-            $name = $file->getClientOriginalName();
+            $name = Carbon::now();
             if ($request->has('teeth_record_id')) {
                 $record = TeethRecord::findOrFail($request->teeth_record_id);
                 $this->authorize('inOfficeAndHavePatientAndRecord', [DoctorImage::class, $patient, $office, $record]);
