@@ -94,5 +94,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('add/prefix/office/{office}/doctor/{doctor}', [App\Http\Controllers\TransactionPrefixController::class, 'temprary']);
     Route::get('get/prefix/office/{office}', [App\Http\Controllers\TransactionPrefixController::class, 'index']);
     Route::post('doctor/image/office/{office}', [App\Http\Controllers\DoctorImageController::class, 'store']);
-    Route::get('doctor/image/{image}', [App\Http\Controllers\DoctorImageController::class, 'view']);
+    Route::get('doctor/image/{image}', [App\Http\Controllers\DoctorImageController::class, 'show']);
 });
