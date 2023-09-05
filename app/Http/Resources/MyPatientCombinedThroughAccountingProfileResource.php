@@ -42,7 +42,9 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'father_name' => $patient->father_name,
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
-                    'image' => DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
+                    'image' => $patient->doctorImage != null ?
+                        DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                        : "no image",
                 ];
             }
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
@@ -64,8 +66,9 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'WithoutApprove',
                     'TemporaryId' => $patient->id,
-                    'image' => DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get()),
-
+                    'image' => $originalPatient->doctorImage != null ?
+                        DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                        : "no image",
                 ];
             }
         }

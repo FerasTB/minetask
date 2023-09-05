@@ -34,8 +34,8 @@ class AccountingProfileResource extends JsonResource
             'supplier_name' => $this->supplier_name,
             'initial_balance' => $this->initial_balance,
             'type' => $this->type,
-            'invoice' => InvoiceResource::collection($this->invoices),
-            'receipts' => ReceiptResource::collection($this->receipts),
+            'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
+            'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
             'office_id' => $this->office_id,
             'total' => AccountingProfileController::accountOutcomeInt($this->id)
         ];
