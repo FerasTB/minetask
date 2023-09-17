@@ -45,6 +45,7 @@ class AuthController extends Controller
             ]);
             if ($request->role == Role::Patient) {
                 $patient = Patient::where('phone', $request->phone)->first();
+                return $patient;
                 if ($patient) {
                     $patient->update([
                         'user_id' => $user->id,
