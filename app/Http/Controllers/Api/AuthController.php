@@ -43,9 +43,8 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => Role::getValue($request->role),
             ]);
-            if ($request->role == Role::Patient) {
+            if (Role::getValue($request->role) == Role::Patient) {
                 $patient = Patient::where('phone', $request->phone)->first();
-                return $patient;
                 if ($patient) {
                     $patient->update([
                         'user_id' => $user->id,
