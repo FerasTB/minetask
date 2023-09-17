@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +43,14 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => Role::getValue($request->role),
             ]);
+            if ($request->role == Role::Patient) {
+                $patient = Patient::where('phone', $request->phone)->first();
+                if ($patient != null) {
+                    $patient->update([
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
         } else {
             $user = User::create([
                 'phone' => $request->phone,

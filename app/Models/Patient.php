@@ -13,7 +13,7 @@ class Patient extends Model
 
     protected $with = ['temporaries'];
 
-    protected $fillable = ['mother_name', 'father_name', 'marital', 'note', 'birth_date', 'email', 'phone', 'last_name', 'first_name', 'gender'];
+    protected $fillable = ['user_id', 'mother_name', 'father_name', 'marital', 'note', 'birth_date', 'email', 'phone', 'last_name', 'first_name', 'gender'];
 
     public function user()
     {
