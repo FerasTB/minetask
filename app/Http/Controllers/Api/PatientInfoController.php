@@ -10,6 +10,7 @@ use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
+use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\MedicalInformationResource;
 use App\Http\Resources\MyDoctorThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
@@ -23,6 +24,7 @@ use App\Models\Patient;
 use App\Models\TemporaryInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PatientInfoController extends Controller
 {
@@ -198,5 +200,21 @@ class PatientInfoController extends Controller
         $patient = auth()->user()->patient;
         $accounts = AccountingProfile::where(['patient_id' => $patient->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient', 'doctor'])->get();
         return MyDoctorThroughAccountingProfileResource::collection($accounts);
+    }
+
+    public function patientsDrug(Office $office, Patient $patient)
+    {
+        $this->authorize('viewRecord', Patient::class);
+        $drugs = DB::table('drugs')
+            ->join('diagnoses', 'diagnoses.id', '=', 'drugs.diagnosis_id')
+            ->join('teeth_records', 'teeth_records.id', '=', 'diagnoses.record_id')
+            ->join('patient_cases', 'patient_cases.id', '=', 'teeth_records.patientCase_id')
+            ->join('medical_cases', 'medical_cases.id', '=', 'patient_cases.case_id')
+            ->join('patients', 'patients.id', '=', 'patient_cases.patient_id')
+            ->join('doctors', 'doctors.id', '=', 'medical_cases.doctor_id')
+            ->join('offices', 'offices.id', '=', 'medical_cases.office_id')
+            ->where('patient_cases.patient_id', $patient->id)
+            ->get();
+        return DrugPatientIndexResource::collection($drugs);
     }
 }
