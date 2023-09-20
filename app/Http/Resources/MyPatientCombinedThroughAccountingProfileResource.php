@@ -23,7 +23,6 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
         // $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $this->office->owner->user_id])->first();
         $role = auth()->user()->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
         if ($role) {
-
             $ownerUser = $this->office->owner->user;
             $ownerDoctor = $ownerUser->doctor;
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
@@ -43,7 +42,7 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
                     'image' => $patient->doctorImage != null ?
-                        DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                        DoctorImageResource::collection($patient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
                         : "no image",
                 ];
             }
@@ -67,7 +66,7 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'status' => 'WithoutApprove',
                     'TemporaryId' => $patient->id,
                     'image' => $originalPatient->doctorImage != null ?
-                        DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                        DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
                         : "no image",
                 ];
             }

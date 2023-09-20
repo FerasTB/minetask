@@ -27,6 +27,7 @@ class AppointmentController extends Controller
             $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])
                 ->with([
                     'patient',
+                    'patient.doctorImage',
                     'doctor',
                     'office',
                     'case',
@@ -35,7 +36,6 @@ class AppointmentController extends Controller
                     'record',
                     'record.diagnosis',
                     'record.diagnosis.drug',
-
                     'record.operations',
                     'record.diagnosis.teeth',
                     'record.operations.teeth',
@@ -48,6 +48,7 @@ class AppointmentController extends Controller
         $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])
             ->with([
                 'patient',
+                'patient.doctorImage',
                 'doctor',
                 'office',
                 'case',
@@ -91,6 +92,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::find($appointment->id);
         $appointment->load(
             'patient',
+            'patient.doctorImage',
             'doctor',
             'office',
             'case',

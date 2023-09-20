@@ -86,7 +86,7 @@ class DoctorInfoController extends Controller
                 $this->authorize('inOffice', [Doctor::class, $office]);
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
-                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'office.owner', 'office.owner.user', 'patient'])->get();
+                $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage'])->get();
                 // if ($accounts != []) {
                 //     return MyPatientCombinedThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {
                 //         return $accounts;
@@ -97,7 +97,7 @@ class DoctorInfoController extends Controller
                 // $roles = HasRole::where(['roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->get();
                 // return MyPatientsResource::collection($roles);
             } else {
-                $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient'])->get();
+                $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient', 'patient.doctorImage'])->get();
                 // return $accounts;
                 // if ($accounts != []) {
                 //     return MyPatientSeparateThroughAccountingProfileResource::collection(Cache::remember('patient', 60 * 60 * 24, function () use ($accounts) {

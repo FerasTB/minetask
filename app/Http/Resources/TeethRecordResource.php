@@ -17,22 +17,16 @@ class TeethRecordResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $case = PatientCase::find($this->patientCase_id);
-        if ($this->appointment_id) {
-            $appointment = Appointment::find($this->appointment_id);
-        } else {
-            $appointment = false;
-        }
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'patientCase' => new PatientCaseResource($case),
+            'patientCase' => new PatientCaseResource($this->PatientCase),
             'number_of_teeth' => $this->number_of_teeth,
             'after_treatment_instruction' => $this->after_treatment_instruction,
             'anesthesia_type' => $this->anesthesia_type,
-            'appointment' => $appointment ? new AppointmentResource($appointment) : "no appointment",
+            'appointment' => $this->appointment != null ? new AppointmentResource($this->appointment) : "no appointment",
             'diagnosis' => new DiagnosisResource($this->diagnosis),
-            'operations' => OperationResource::collection($this->operations),
+            'operations' => OperationResource::collection($this->whenLoaded('operations')),
             'image' => DoctorImageResource::collection($this->doctorImage),
         ];
     }
