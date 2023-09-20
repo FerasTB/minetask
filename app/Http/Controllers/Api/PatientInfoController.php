@@ -11,8 +11,10 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Resources\MedicalInformationResource;
+use App\Http\Resources\MyDoctorThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\TeethRecordResource;
+use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
@@ -188,5 +190,13 @@ class PatientInfoController extends Controller
         $this->authorize('viewRecord', Patient::class);
         $patient = auth()->user()->patient;
         return TeethRecordResource::collection($patient->teethRecords);
+    }
+
+    public function patientsDoctor()
+    {
+        $this->authorize('viewRecord', Patient::class);
+        $patient = auth()->user()->patient;
+        $accounts = AccountingProfile::where(['patient_id' => $patient->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient', 'doctor'])->get();
+        return MyDoctorThroughAccountingProfileResource::collection($accounts);
     }
 }
