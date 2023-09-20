@@ -95,4 +95,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('get/prefix/office/{office}', [App\Http\Controllers\TransactionPrefixController::class, 'index']);
     Route::post('doctor/image/office/{office}', [App\Http\Controllers\DoctorImageController::class, 'store']);
     Route::get('doctor/image/{image}', [App\Http\Controllers\DoctorImageController::class, 'show']);
+    Route::get('app/patient/appointment', [App\Http\Controllers\Api\AppointmentController::class, 'indexForPatient']);
 });

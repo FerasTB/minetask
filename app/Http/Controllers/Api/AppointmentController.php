@@ -64,6 +64,18 @@ class AppointmentController extends Controller
         return AppointmentResource::collection($appointments);
     }
 
+    public function indexForPatient(Request $request)
+    {
+        $this->authorize('viewPatient', [Appointment::class]);
+        return AppointmentResource::collection(auth()->user()->patient->appointments()
+            ->with([
+                'patient',
+                'doctor',
+                'office',
+            ])
+            ->get());
+    }
+
     /**
      * Store a newly created resource in storage.
      */

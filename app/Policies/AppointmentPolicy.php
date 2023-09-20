@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\Appointment;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -65,5 +66,10 @@ class AppointmentPolicy
     public function forceDelete(User $user, Appointment $appointment): bool
     {
         //
+    }
+
+    public function viewPatient(User $user): bool
+    {
+        return $user->role == Role::Patient && $user->patient;
     }
 }
