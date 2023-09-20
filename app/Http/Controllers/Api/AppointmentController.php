@@ -69,7 +69,6 @@ class AppointmentController extends Controller
         $this->authorize('viewPatient', [Appointment::class]);
         return AppointmentResource::collection(auth()->user()->patient->appointments()
             ->with([
-                'patient',
                 'doctor',
                 'office',
             ])

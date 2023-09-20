@@ -64,4 +64,9 @@ class PatientPolicy
     {
         //
     }
+
+    public function viewRecord(User $user): bool
+    {
+        return $user->role == Role::Patient && $user->patient;
+    }
 }

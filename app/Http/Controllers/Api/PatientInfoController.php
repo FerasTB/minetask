@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Resources\MedicalInformationResource;
 use App\Http\Resources\MyPatientsResource;
+use App\Http\Resources\TeethRecordResource;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
@@ -180,5 +181,12 @@ class PatientInfoController extends Controller
         } else {
             return response('medical info not found', 404);
         }
+    }
+
+    public function patientsRecord()
+    {
+        $this->authorize('viewRecord', Patient::class);
+        $patient = auth()->user()->patient;
+        return TeethRecordResource::collection($patient->teethRecords);
     }
 }
