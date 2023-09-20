@@ -202,7 +202,7 @@ class PatientInfoController extends Controller
         return MyDoctorThroughAccountingProfileResource::collection($accounts);
     }
 
-    public function patientsDrug(Office $office, Patient $patient)
+    public function patientsDrug()
     {
         $this->authorize('viewRecord', Patient::class);
         $drugs = DB::table('drugs')
@@ -213,7 +213,7 @@ class PatientInfoController extends Controller
             ->join('patients', 'patients.id', '=', 'patient_cases.patient_id')
             ->join('doctors', 'doctors.id', '=', 'medical_cases.doctor_id')
             ->join('offices', 'offices.id', '=', 'medical_cases.office_id')
-            ->where('patient_cases.patient_id', $patient->id)
+            ->where('patient_cases.patient_id', auth()->user()->patient->id)
             ->get();
         return DrugPatientIndexResource::collection($drugs);
     }
