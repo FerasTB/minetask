@@ -11,6 +11,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientInfoForPatientRequest;
 use App\Http\Requests\StorePatientRequest;
+use App\Http\Requests\UpdatePatientInfoForPatientRequest;
 use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\MedicalInformationResource;
 use App\Http\Resources\MyDoctorThroughAccountingProfileResource;
@@ -236,7 +237,7 @@ class PatientInfoController extends Controller
         return response()->json($patientInfo);
     }
 
-    public function updatePatientsInfo(StorePatientInfoForPatientRequest $request)
+    public function updatePatientsInfo(UpdatePatientInfoForPatientRequest $request)
     {
         $this->authorize('updatePatientInfo');
         $fields = $request->validated();
