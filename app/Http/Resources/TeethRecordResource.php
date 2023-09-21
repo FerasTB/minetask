@@ -21,6 +21,7 @@ class TeethRecordResource extends JsonResource
             'id' => $this->id,
             'description' => $this->description,
             'patientCase' => new PatientCaseResource($this->PatientCase),
+            'doctor' => new DoctorResource($this->PatientCase->case->doctor),
             'number_of_teeth' => $this->number_of_teeth,
             'after_treatment_instruction' => $this->after_treatment_instruction,
             'anesthesia_type' => $this->anesthesia_type,
