@@ -9,6 +9,7 @@ use App\Enums\OfficeType;
 use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePatientInfoForPatientRequest;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\MedicalInformationResource;
@@ -216,5 +217,34 @@ class PatientInfoController extends Controller
             ->where('patient_cases.patient_id', auth()->user()->patient->id)
             ->get();
         return DrugPatientIndexResource::collection($drugs);
+    }
+
+    public function patientsInfo(StorePatientInfoForPatientRequest $request)
+    {
+        $fields = $request->validated();
+        if ($request->marital) {
+            $fields['marital'] = MaritalStatus::getValue($request->marital);
+        }
+        $patient = Patient::where('phone', $request->phone)->first();
+        if ($patient || auth()->user()->patient) {
+            return response()->noContent();
+        }
+        $patientInfo = auth()->user()->patient()->create($fields);
+        $patientTeethReport = $patientInfo->report()->create([
+            'report_type' => ReportType::TeethReport,
+        ]);
+        return response()->json($patientInfo);
+    }
+
+    public function updatePatientsInfo(StorePatientInfoForPatientRequest $request)
+    {
+        $this->authorize('updatePatientInfo');
+        $fields = $request->validated();
+        $patient = auth()->user()->patient;
+        if ($request->marital) {
+            $fields['marital'] = MaritalStatus::getValue($request->marital);
+        }
+        $patient->update($fields);
+        return response()->json($patient);
     }
 }

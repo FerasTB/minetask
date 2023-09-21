@@ -69,4 +69,9 @@ class PatientPolicy
     {
         return $user->role == Role::Patient && $user->patient;
     }
+
+    public function updatePatientInfo(User $user): bool
+    {
+        return $user->patient;
+    }
 }

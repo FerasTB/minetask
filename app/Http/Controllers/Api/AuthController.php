@@ -32,6 +32,7 @@ class AuthController extends Controller
             'status' => 'alright',
             'user' => new UserResource($user),
             'token' => $token,
+            'completed' => $user->patient != null || $user->doctor != null,
         ]);
     }
     public function register(RegisterRequest $request)
