@@ -9,9 +9,12 @@ use App\Enums\OfficeType;
 use App\Enums\ReportType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SetInitialBalanceForPatientRequest;
+use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StorePatientInfoForPatientRequest;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientInfoForPatientRequest;
+use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\MedicalInformationResource;
 use App\Http\Resources\MyDoctorThroughAccountingProfileResource;
@@ -247,5 +250,21 @@ class PatientInfoController extends Controller
         }
         $patient->update($fields);
         return response()->json($patient);
+    }
+
+    public function setInitialBalance(SetInitialBalanceForPatientRequest $request, Office $office, Patient $patient)
+    {
+        $fields = $request->validated();
+        $this->authorize('setInitialBalance', [$patient, $office]);
+        $accounting = AccountingProfile::where([
+            'doctor_id' => auth()->user()->doctor->id,
+            'office_id' => $request->office_id,
+            'patient_id' => $patient->id,
+        ])->first();
+        if ($accounting->initial_balance != 0 || $accounting == null) {
+            return response('the initial balance only can be set once', 403);
+        }
+        $accounting->update($fields);
+        return new AccountingProfileResource($accounting);
     }
 }

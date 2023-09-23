@@ -3,8 +3,11 @@
 namespace App\Policies;
 
 use App\Enums\Role;
+use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\Patient;
 use App\Models\User;
+use Dotenv\Store\File\Paths;
 use Illuminate\Auth\Access\Response;
 
 class PatientPolicy
@@ -73,5 +76,12 @@ class PatientPolicy
     public function updatePatientInfo(User $user): bool
     {
         return $user->patient;
+    }
+
+    public function setInitialBalance(User $user, Patient $patient, Office $office): bool
+    {
+        $OfficeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        $patientRole = $user->roles->where('roleable_id', $patient->id)->where('roleable_type', 'App\Models\Patient')->first();
+        return $OfficeRole != null && $patientRole != null;
     }
 }
