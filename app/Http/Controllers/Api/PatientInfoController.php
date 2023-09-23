@@ -258,7 +258,7 @@ class PatientInfoController extends Controller
         $this->authorize('setInitialBalance', [$patient, $office]);
         $accounting = AccountingProfile::where([
             'doctor_id' => auth()->user()->doctor->id,
-            'office_id' => $request->office_id,
+            'office_id' => $office->id,
             'patient_id' => $patient->id,
         ])->first();
         if ($accounting->initial_balance != 0 || $accounting == null) {
