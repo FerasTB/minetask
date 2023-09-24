@@ -77,7 +77,7 @@ class RoleController extends Controller
 
     public function assignRole(Role $role)
     {
-        abort_unless(auth()->user()->hasRole($role), 404);
+        abort_unless(!auth()->user()->hasRole($role), 404);
 
         $role = ModelHasRole::create([
             'role_id' => $role->id,
