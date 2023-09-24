@@ -90,6 +90,6 @@ class User extends Authenticatable implements FilamentUser
 
     public function hasRole(Role $role)
     {
-        return $this->allRoles()->wherePivot('role_id', '=', $role->id) != null;
+        return $this->allRoles()->wherePivot('role_id', '=', $role->id) != [];
     }
 }
