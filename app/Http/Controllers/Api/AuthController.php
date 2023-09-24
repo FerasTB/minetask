@@ -49,7 +49,7 @@ class AuthController extends Controller
             $role = ModelHasRole::create([
                 'role_id' => ModelsRole::Patient,
                 'roleable_id' => auth()->id(),
-                'roleable_type' => 'App\Models\Office',
+                'roleable_type' => 'App\Models\User',
             ]);
             if (Role::getValue($request->role) == Role::Patient) {
                 $patient = Patient::where('phone', $request->phone)->first();
@@ -67,7 +67,7 @@ class AuthController extends Controller
             $role = ModelHasRole::create([
                 'role_id' => ModelsRole::Patient,
                 'roleable_id' => auth()->id(),
-                'roleable_type' => 'App\Models\Office',
+                'roleable_type' => 'App\Models\User',
             ]);
         }
         $token = $user->createToken("medcare_app")->plainTextToken;
