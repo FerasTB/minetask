@@ -81,7 +81,7 @@ class RoleController extends Controller
         $role = ModelHasRole::create([
             'role_id' => $role->id,
             'roleable_id' => auth()->id(),
-            'roleable_type' => 'App\Models\Office',
+            'roleable_type' => 'App\Models\User',
         ]);
 
         return response('Done', 200);
