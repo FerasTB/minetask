@@ -85,7 +85,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function allRoles()
     {
-        return $this->morphToMany(Role::class, 'roleable');
+        return $this->morphToMany(Role::class, 'roleable', 'roles', 'roleable_id');
     }
 
     public function hasRole(Role $role)
