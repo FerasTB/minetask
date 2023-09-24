@@ -19,8 +19,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'phone' => $this->phone,
             'role' => Role::getKey($this->role),
-            // 'current_role' => $this->currentRole->name,
-            // 'roles' => RoleResource::collection($this->allRoles),
+            'current_role' => $this->currentRole->name,
+            'roles' => RoleResource::collection($this->allRoles),
             'created_at' => $this->created_at,
         ];
     }
