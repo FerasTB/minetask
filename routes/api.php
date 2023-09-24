@@ -105,4 +105,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('app/patient/update/info', [App\Http\Controllers\Api\PatientInfoController::class, 'updatePatientsInfo']);
     Route::get('/switch-role/{role}', [RoleController::class, 'switchRole']);
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
+    Route::get('/role', [RoleController::class, 'index']);
 });
