@@ -67,7 +67,7 @@ class RoleController extends Controller
 
     public function switchRole(Role $role)
     {
-        return auth()->user()->hasRole($role);
+        // return auth()->user()->hasRole($role);
         abort_unless(auth()->user()->hasRole($role), 404);
 
         auth()->user()->update(['current_role_id' => $role->id]);
