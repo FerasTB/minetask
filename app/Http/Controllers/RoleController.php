@@ -65,7 +65,7 @@ class RoleController extends Controller
         //
     }
 
-    public function __invoke(Role $role)
+    public function switchRole(Role $role)
     {
         abort_unless(auth()->user()->hasRole($role), 404);
 
