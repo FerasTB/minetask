@@ -93,7 +93,7 @@ class User extends Authenticatable implements FilamentUser
         return User::whereHas(
             'allRoles',
             function ($query) use ($role) {
-                $query->where('id', $role->id);
+                $query->where('role_id', $role->id);
             }
         )->first() != null;
     }
