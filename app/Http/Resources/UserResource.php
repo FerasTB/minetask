@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'role' => Role::getKey($this->role),
             // 'current_role' => $this->currentRole->name,
-            'roles' => RoleResource::collection($this->allRoles),
+            // 'roles' => RoleResource::collection($this->allRoles),
             'created_at' => $this->created_at,
         ];
     }
