@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -102,4 +103,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('app/patient/drug', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsDrug']);
     Route::post('app/patient/complete/info', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsInfo']);
     Route::put('app/patient/update/info', [App\Http\Controllers\Api\PatientInfoController::class, 'updatePatientsInfo']);
+    Route::get('/switch-role/{role}', RoleController::class);
+    Route::get('/assign-role/{role}', RoleController::class, 'assignRole');
 });

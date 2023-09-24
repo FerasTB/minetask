@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\ModelHasRole;
 use App\Models\Patient;
+use App\Models\Role as ModelsRole;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +46,11 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => Role::getValue($request->role),
             ]);
+            $role = ModelHasRole::create([
+                'role_id' => ModelsRole::Patient,
+                'roleable_id' => auth()->id(),
+                'roleable_type' => 'App\Models\Office',
+            ]);
             if (Role::getValue($request->role) == Role::Patient) {
                 $patient = Patient::where('phone', $request->phone)->first();
                 if ($patient) {
@@ -56,6 +63,11 @@ class AuthController extends Controller
             $user = User::create([
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
+            ]);
+            $role = ModelHasRole::create([
+                'role_id' => ModelsRole::Patient,
+                'roleable_id' => auth()->id(),
+                'roleable_type' => 'App\Models\Office',
             ]);
         }
         $token = $user->createToken("medcare_app")->plainTextToken;

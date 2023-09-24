@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,6 +29,7 @@ class User extends Authenticatable implements FilamentUser
         'infoable_type',
         'role',
         'phone',
+        'current_role_id',
     ];
 
     /**
@@ -49,7 +51,7 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
     ];
 
-    protected $with = ['roles'];
+    protected $with = ['roles', 'allRoles'];
 
     // public function infoable(): MorphTo
     // {
@@ -74,5 +76,20 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessFilament(): bool
     {
         return str_ends_with($this->email, '@marstaan.com') && $this->hasVerifiedEmail();
+    }
+
+    public function currentRole(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'current_role_id');
+    }
+
+    public function allRoles()
+    {
+        return $this->morphToMany(Role::class, 'roleable');
+    }
+
+    public function hasRole(Role $role)
+    {
+        return $this->allRoles()->wherePivot('role_id', '=', $role->id) != null;
     }
 }
