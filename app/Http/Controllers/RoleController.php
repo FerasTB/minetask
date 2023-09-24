@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Filament\Resources\UserResource;
 use App\Models\Role;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use App\Http\Resources\UserResource;
 use App\Models\ModelHasRole;
 
 class RoleController extends Controller
