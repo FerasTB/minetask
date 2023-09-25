@@ -13,7 +13,7 @@ class Doctor extends Model
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
 
-    protected   $fillable = ['first_name', 'last_name', 'practicing_from'];
+    protected   $fillable = ['first_name', 'last_name', 'practicing_from', 'dental_lab_id'];
 
     const DefaultCase = 'خدمات عامة';
 
