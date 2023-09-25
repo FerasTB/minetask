@@ -62,6 +62,12 @@ class AccountingProfilePolicy
         return $role != null && $role2 != null;
     }
 
+    public function createNotExistDoctorAccountForLab(User $user, DentalLab $lab, Doctor $doctor): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $doctor->dental_lab_id == $lab->id && $role != null;
+    }
+
     public function inOffice(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();

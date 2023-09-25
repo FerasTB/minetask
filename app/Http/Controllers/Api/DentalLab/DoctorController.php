@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\DentalLab;
 
 use App\Enums\AccountingProfileType;
+use App\Filament\Resources\DoctorResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDentalLabDoctorAccountingProfileRequest;
+use App\Http\Requests\StoreDoctorForDentalLabRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Models\DentalLab;
@@ -21,5 +23,21 @@ class DoctorController extends Controller
             ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
             ->with('doctor', 'office', 'lab')->get();
         return DentalLabAccountingProfileResource::collection($accounts);
+    }
+
+    public function labDoctor(DentalLab $lab)
+    {
+        $this->authorize('inLab', $lab);
+        $accounts = $lab->doctors;
+        return DoctorResource::collection($accounts);
+    }
+
+    public function storeDoctor(StoreDoctorForDentalLabRequest $request, DentalLab $lab)
+    {
+        $this->authorize('inLab', $lab);
+        $fields = $request->validated();
+        $fields['dental_lab_id'] = $lab->id;
+        $doctor = $lab->doctors()->create($fields);
+        return new DoctorResource($doctor);
     }
 }

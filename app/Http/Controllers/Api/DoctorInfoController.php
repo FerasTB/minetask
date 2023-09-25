@@ -41,7 +41,7 @@ class DoctorInfoController extends Controller
      */
     public function index()
     {
-        $doctors = Doctor::all();
+        $doctors = Doctor::whereNull('dental_lab_id')->get();
         return DoctorInfoResource::collection($doctors);
     }
 

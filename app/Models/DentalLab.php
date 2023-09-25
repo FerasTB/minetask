@@ -26,12 +26,25 @@ class DentalLab extends Model
         return $this->hasMany(AccountingProfile::class, 'dental_lab_id');
     }
 
+    public function doctors()
+    {
+        return $this->hasMany(Doctor::class, 'dental_lab_id');
+    }
+
     public function hasDoctorAccount(Doctor $doctor, Office $office)
     {
         return AccountingProfile::where([
             'dental_lab_id' => $this->id,
             'doctor_id' => $doctor->id,
             'office_id' => $office->id,
+        ])->first() != null;
+    }
+
+    public function hasNotExistDoctorAccount(Doctor $doctor)
+    {
+        return AccountingProfile::where([
+            'dental_lab_id' => $this->id,
+            'doctor_id' => $doctor->id,
         ])->first() != null;
     }
 }

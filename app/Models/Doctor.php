@@ -22,6 +22,11 @@ class Doctor extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function lab()
+    {
+        return $this->belongsTo(DentalLab::class, 'dental_lab_id');
+    }
+
     public function patients()
     {
         return $this->hasMany(Patient::class, 'doctor_id');
