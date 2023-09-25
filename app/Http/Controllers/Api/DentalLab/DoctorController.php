@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api\DentalLab;
 
 use App\Enums\AccountingProfileType;
-use App\Filament\Resources\DoctorResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDentalLabDoctorAccountingProfileRequest;
 use App\Http\Requests\StoreDoctorForDentalLabRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DentalLabAccountingProfileResource;
+use App\Http\Resources\DoctorResource;
 use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\Office;
