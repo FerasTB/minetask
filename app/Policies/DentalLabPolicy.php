@@ -30,7 +30,7 @@ class DentalLabPolicy
      */
     public function create(User $user): bool
     {
-        return ($user->currentRole == Role::DentalLabDoctor && $user->doctor);
+        return ($user->currentRole->id == Role::DentalLabDoctor && $user->doctor);
     }
 
     /**

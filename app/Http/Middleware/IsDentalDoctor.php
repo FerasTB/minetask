@@ -16,7 +16,7 @@ class IsDentalDoctor
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user()->currentRole == Role::DentalLabDoctor) {
+        if (auth()->user()->currentRole->id == Role::DentalLabDoctor) {
             return response('access not allow', 403);
         }
         return $next($request);
