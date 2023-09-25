@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\SubRole;
 use App\Models\AccountingProfile;
+use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -45,6 +46,12 @@ class AccountingProfilePolicy
     public function createForOffice(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
+    public function createForLab(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
         return $role != null;
     }
 

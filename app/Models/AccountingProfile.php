@@ -9,7 +9,7 @@ class AccountingProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['doctor_id', 'type', 'office_id', 'supplier_name', 'note', 'initial_balance', 'COA_id', 'patient_id'];
+    protected $fillable = ['dental_lab_id', 'doctor_id', 'type', 'office_id', 'supplier_name', 'note', 'initial_balance', 'COA_id', 'patient_id'];
 
     public function doctor()
     {
@@ -24,6 +24,11 @@ class AccountingProfile extends Model
     public function office()
     {
         return $this->belongsTo(Office::class, 'office_id');
+    }
+
+    public function lab()
+    {
+        return $this->belongsTo(DentalLab::class, 'dental_lab_id');
     }
 
     public function COA()

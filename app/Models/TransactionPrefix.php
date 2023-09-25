@@ -9,7 +9,7 @@ class TransactionPrefix extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['prefix', 'type', 'last_transaction_number', 'doctor_id', 'office_id'];
+    protected $fillable = ['dental_lab_id', 'prefix', 'type', 'last_transaction_number', 'doctor_id', 'office_id'];
 
     public function doctor()
     {

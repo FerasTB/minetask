@@ -11,10 +11,8 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class SubRole extends Enum
+final class DentalLabType extends Enum
 {
-    const OfficeOwner = 1;
-    const DoctorInOffice = 2;
-    const OfficeSecretary = 3;
-    const DentalLabOwner = 4;
+    const Draft = 1;
+    const Real = 2;
 }

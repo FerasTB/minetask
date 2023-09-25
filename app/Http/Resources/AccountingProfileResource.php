@@ -31,6 +31,7 @@ class AccountingProfileResource extends JsonResource
             'id' => $this->id,
             'patient' => new MyPatientsResource($role),
             'doctor' => new DoctorResource($doctor),
+            'lab' => new DentalLabResource($this->lab),
             'supplier_name' => $this->supplier_name,
             'initial_balance' => $this->initial_balance,
             'type' => $this->type,
