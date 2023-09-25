@@ -8,6 +8,7 @@ use App\Http\Requests\StoreDentalLabDoctorAccountingProfileRequest;
 use App\Http\Requests\StoreDentalLabSupplierAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
+use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\Office;
@@ -35,6 +36,7 @@ class AccountingProfileController extends Controller
         $fields['type'] = AccountingProfileType::getValue($request->type);
         abort_unless(!$lab->hasDoctorAccount($doctor, $office), 403);
         $account = $lab->accountingProfiles()->create($fields);
-        return new AccountingProfileResource($account);
+        $account->load(['doctor', 'office', 'lab']);
+        return new DentalLabAccountingProfileResource($account);
     }
 }

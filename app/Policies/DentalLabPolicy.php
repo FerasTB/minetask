@@ -3,12 +3,20 @@
 namespace App\Policies;
 
 use App\Models\DentalLab;
+use App\Models\HasRole;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 class DentalLabPolicy
 {
+
+    public function inLab(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

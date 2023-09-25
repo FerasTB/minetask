@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
+use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -113,4 +114,5 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
     Route::post('dental/lab/supplier/create', [AccountingProfileController::class, 'storeSupplier']);
     Route::post('dental/lab/{lab}/doctor/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForDoctor']);
+    Route::post('dental/lab/my-doctor', [DoctorController::class, 'allDoctor']);
 });
