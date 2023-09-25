@@ -13,7 +13,9 @@ use App\Models\DentalLab;
 use App\Http\Requests\StoreDentalLabRequest;
 use App\Http\Requests\UpdateDentalLabRequest;
 use App\Http\Resources\DentalLabResource;
+use App\Http\Resources\DentalLabThroughHasRoleResource;
 use App\Models\COA;
+use App\Models\HasRole;
 
 class DentalLabController extends Controller
 {
@@ -22,7 +24,13 @@ class DentalLabController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+        $labs = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\DentalLab', 'sub_role' => SubRole::DentalLabOwner])->with('roleable')->get();
+        if ($labs != []) {
+            return DentalLabThroughHasRoleResource::collection($labs);
+        } else {
+            return response()->noContent();
+        }
     }
 
     /**
