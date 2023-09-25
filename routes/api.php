@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('patient/{patient}/medical_info', [App\Http\Controllers\Api\PatientInfoController::class, 'showMedicalInformation']);
     Route::get('office/coa', [App\Http\Controllers\Api\COAController::class, 'indexOwner']);
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
+    Route::get('doctor/{doctor}/office', [App\Http\Controllers\Api\OfficeController::class, 'doctorOffice']);
     Route::get('my_offices', [App\Http\Controllers\Api\OfficeController::class, 'MyOffices']);
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
     Route::apiResource('appointment', App\Http\Controllers\Api\AppointmentController::class);
