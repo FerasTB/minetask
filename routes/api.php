@@ -114,5 +114,5 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
     Route::post('dental/lab/supplier/create', [AccountingProfileController::class, 'storeSupplier']);
     Route::post('dental/lab/{lab}/doctor/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForDoctor']);
-    Route::post('dental/lab/my-doctor', [DoctorController::class, 'allDoctor']);
+    Route::post('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
 });
