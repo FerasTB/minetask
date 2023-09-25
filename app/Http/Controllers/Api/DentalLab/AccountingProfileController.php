@@ -33,7 +33,7 @@ class AccountingProfileController extends Controller
         $fields['dental_lab_id'] = $lab->id;
         $fields['doctor_id'] = $doctor->id;
         $fields['type'] = AccountingProfileType::getValue($request->type);
-        abort_unless($lab->hasDoctorAccount($doctor, $office), 403);
+        abort_unless(!$lab->hasDoctorAccount($doctor, $office), 403);
         $account = $lab->accountingProfiles()->create($fields);
         return new AccountingProfileResource($account);
     }
