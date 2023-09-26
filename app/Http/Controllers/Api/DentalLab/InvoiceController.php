@@ -31,33 +31,33 @@ class InvoiceController extends Controller
         return new DentalLabInvoiceForDoctorResource($invoice);
     }
 
-    public function storePatientInvoiceItem(StorePatientInvoiceItemRequest $request, Invoice $invoice)
-    {
-        $fields = $request->validated();
-        $item = $invoice->items()->create($fields);
-        $office = $invoice->office;
-        if ($office->type == OfficeType::Combined) {
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Receivable
-            ])->first();
-        } else {
-            $doctor = $invoice->doctor;
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
-            ])->first();
-        }
-        $doubleEntryFields['COA_id'] = $receivable->id;
-        $doubleEntryFields['invoice_item_id'] = $item->id;
-        $doubleEntryFields['total_price'] = $item->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $receivable->doubleEntries()->create($doubleEntryFields);
-        $serviceCoa = COA::findOrFail($request->service_coa);
-        $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
-        $serviceCoa->doubleEntries()->create($doubleEntryFields);
-        return new InvoiceItemsResource($item);
-    }
+    // public function storePatientInvoiceItem(StorePatientInvoiceItemRequest $request, Invoice $invoice)
+    // {
+    //     $fields = $request->validated();
+    //     $item = $invoice->items()->create($fields);
+    //     $office = $invoice->office;
+    //     if ($office->type == OfficeType::Combined) {
+    //         $receivable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => null, 'sub_type' => COASubType::Receivable
+    //         ])->first();
+    //     } else {
+    //         $doctor = $invoice->doctor;
+    //         $receivable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
+    //         ])->first();
+    //     }
+    //     $doubleEntryFields['COA_id'] = $receivable->id;
+    //     $doubleEntryFields['invoice_item_id'] = $item->id;
+    //     $doubleEntryFields['total_price'] = $item->total_price;
+    //     $doubleEntryFields['type'] = DoubleEntryType::Positive;
+    //     $receivable->doubleEntries()->create($doubleEntryFields);
+    //     $serviceCoa = COA::findOrFail($request->service_coa);
+    //     $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
+    //     $serviceCoa->doubleEntries()->create($doubleEntryFields);
+    //     return new InvoiceItemsResource($item);
+    // }
 
     public static function doctorBalance(int $id, int $thisTransaction)
     {
