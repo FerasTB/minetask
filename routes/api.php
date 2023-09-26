@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
+use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
@@ -119,4 +120,6 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
     Route::get('dental/lab/{lab}/only-me-doctor', [DoctorController::class, 'labDoctor']);
     Route::post('dental/lab/{lab}/doctor/create', [DoctorController::class, 'storeDoctor']);
+    Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
+    Route::get('dental/lab/{lab}/service', DentalLabServiceController::class, 'labService');
 });

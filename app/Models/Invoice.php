@@ -40,6 +40,20 @@ class Invoice extends Model
         );
     }
 
+    public function lab()
+    {
+        return $this->belongsToThrough(
+            DentalLab::class,
+            AccountingProfile::class,
+            null,
+            '',
+            [
+                AccountingProfile::class => 'accounting_profile_id',
+                DentalLab::class => 'dental_lab_id'
+            ]
+        );
+    }
+
     public function office()
     {
         return $this->belongsToThrough(
