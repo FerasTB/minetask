@@ -121,5 +121,5 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::get('dental/lab/{lab}/only-me-doctor', [DoctorController::class, 'labDoctor']);
     Route::post('dental/lab/{lab}/doctor/create', [DoctorController::class, 'storeDoctor']);
     Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
-    Route::get('dental/lab/{lab}/all/service', DentalLabServiceController::class, 'labService');
+    Route::get('dental/lab/{lab}/all/service', [DentalLabServiceController::class, 'labService']);
 });
