@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class DentalLabService extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'description', 'cost', 'dental_lab_id', 'COA_id'];
+
+
+    public function lab()
+    {
+        return $this->belongsTo(DentalLab::class, 'dental_lab_id');
+    }
 }

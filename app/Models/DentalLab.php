@@ -47,4 +47,9 @@ class DentalLab extends Model
             'doctor_id' => $doctor->id,
         ])->first() != null;
     }
+
+    public function services()
+    {
+        return $this->hasMany(DentalLabService::class, 'dental_lab_id');
+    }
 }
