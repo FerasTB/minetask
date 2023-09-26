@@ -16,20 +16,20 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function storeDoctorInvoice(StoreDentalLabInvoiceForDoctorRequest $request, AccountingProfile $profile)
-    {
-        $fields = $request->validated();
-        $this->authorize('createDentalLabInvoiceForDoctor', [
-            $profile,
-        ]);
-        // $profile = AccountingProfile::findOrFail($request->supplier_account_id);
-        $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
-        $transactionNumber = TransactionPrefix::where(['lab_id' => $profile->office->id, 'type' => TransactionType::PatientInvoice])->first();
-        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-        $invoice = $profile->invoices()->create($fields);
-        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
-        return new DentalLabInvoiceForDoctorResource($invoice);
-    }
+    // public function storeDoctorInvoice(StoreDentalLabInvoiceForDoctorRequest $request, AccountingProfile $profile)
+    // {
+    //     $fields = $request->validated();
+    //     $this->authorize('createDentalLabInvoiceForDoctor', [
+    //         $profile,
+    //     ]);
+    //     // $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+    //     $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
+    //     $transactionNumber = TransactionPrefix::where(['lab_id' => $profile->office->id, 'type' => TransactionType::PatientInvoice])->first();
+    //     $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+    //     $invoice = $profile->invoices()->create($fields);
+    //     $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+    //     return new DentalLabInvoiceForDoctorResource($invoice);
+    // }
 
     // public function storePatientInvoiceItem(StorePatientInvoiceItemRequest $request, Invoice $invoice)
     // {
@@ -59,16 +59,16 @@ class InvoiceController extends Controller
     //     return new InvoiceItemsResource($item);
     // }
 
-    public static function doctorBalance(int $id, int $thisTransaction)
-    {
-        $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
-        $totalNegative = $invoices != null ?
-            $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
-        $totalPositive = $receipts != null ?
-            $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
-        return $total;
-    }
+    // public static function doctorBalance(int $id, int $thisTransaction)
+    // {
+    //     $supplier = AccountingProfile::findOrFail($id);
+    //     $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+    //     $totalNegative = $invoices != null ?
+    //         $invoices->sum('total_price') : 0;
+    //     $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
+    //     $totalPositive = $receipts != null ?
+    //         $receipts->sum('total_price') : 0;
+    //     $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+    //     return $total;
+    // }
 }
