@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\SubRole;
 use App\Models\COA;
+use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -52,6 +53,15 @@ class COAPolicy
         return $coa->doctor_id == $user->doctor->id;
     }
 
+    public function updateBalanceForLab(User $user, COA $coa): bool
+    {
+        if ($coa->doctor_id == null) {
+            $role = HasRole::where(['roleable_id' => $coa->dental_lab_id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+            return $role != null && $role->sub_role == SubRole::DentalLabOwner;
+        }
+        return $coa->doctor_id == $user->doctor->id;
+    }
+
     /**
      * Determine whether the user can delete the model.
      */
@@ -87,9 +97,21 @@ class COAPolicy
         return $role != null;
     }
 
+    public function createForLab(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
     public function updateForDoctor(User $user, COA $coa, Doctor $doctor): bool
     {
         return $coa->doctor->id == $doctor->id;
+    }
+
+    public function updateForLab(User $user, COA $coa, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null && $role->sub_role == SubRole::DentalLabOwner;
     }
 
     public function updateForOffice(User $user, COA $coa, Office $office): bool
@@ -108,5 +130,11 @@ class COAPolicy
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
         return $role != null && $role->sub_role == SubRole::OfficeOwner;
+    }
+
+    public function labOwner(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null && $role->sub_role == SubRole::DentalLabOwner;
     }
 }
