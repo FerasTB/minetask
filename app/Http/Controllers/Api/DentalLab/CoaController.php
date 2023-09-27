@@ -88,14 +88,14 @@ class CoaController extends Controller
             $negativeDirectDoubleEntries->sum('total_price') : 0;
         // coa payable or receivable cant have initial balance
         if ($coa->sub_type && $coa->sub_type == COASubType::Payable) {
-            $subAccount = AccountingProfile::where(['dental_lab_id' => $coa->office->id, 'type' => AccountingProfileType::DentalLabSupplierAccount])->get();
+            $subAccount = AccountingProfile::where(['dental_lab_id' => $coa->lab->id, 'type' => AccountingProfileType::DentalLabSupplierAccount])->get();
             $totalBalanceAccount = $subAccount != null ?
                 $subAccount->sum('initial_balance') : 0;
             $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
             return $total;
         }
         if ($coa->sub_type && $coa->sub_type == COASubType::Receivable) {
-            $subAccount = AccountingProfile::where(['dental_lab_id' => $coa->office->id, 'type' => AccountingProfileType::DentalLabDoctorAccount])->get();
+            $subAccount = AccountingProfile::where(['dental_lab_id' => $coa->lab->id, 'type' => AccountingProfileType::DentalLabDoctorAccount])->get();
             $totalBalanceAccount = $subAccount != null ?
                 $subAccount->sum('initial_balance') : 0;
             $total = $totalPositive + $totalDirectPositive - $totalNegative - $totalDirectNegative + $totalBalanceAccount;
