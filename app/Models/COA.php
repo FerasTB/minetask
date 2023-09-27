@@ -42,6 +42,11 @@ class COA extends Model
         return $this->hasMany(MedicalService::class, 'COA_id');
     }
 
+    public function dentalLabServices()
+    {
+        return $this->hasMany(DentalLabService::class, 'COA_id');
+    }
+
     public function doubleEntries()
     {
         return $this->hasMany(DoubleEntry::class, 'COA_id');

@@ -16,4 +16,9 @@ class DentalLabService extends Model
     {
         return $this->belongsTo(DentalLab::class, 'dental_lab_id');
     }
+
+    public function COA()
+    {
+        return $this->belongsTo(COA::class, 'COA_id');
+    }
 }
