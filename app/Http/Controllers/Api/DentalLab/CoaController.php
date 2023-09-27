@@ -57,7 +57,7 @@ class CoaController extends Controller
         return new DentalLabCOAResource($coa);
     }
 
-    public function setInitialBalance(SetInitialBalanceRequest $request, COA $coa)
+    public function setInitialBalance(SetInitialBalanceRequest $request, DentalLab $lab, COA $coa)
     {
         if ($coa->sub_type && ($coa->sub_type == COASubType::Payable || $coa->sub_type == COASubType::Receivable)) {
             return response('you can set initial balance for this coa type', 403);
