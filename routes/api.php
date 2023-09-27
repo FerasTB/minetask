@@ -123,6 +123,6 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/{lab}/doctor/create', [DoctorController::class, 'storeDoctor']);
     Route::apiResource('dental/lab/{lab}/coa', CoaController::class);
     Route::put('dental/lab/{lab}/coa/{coa}/initial', [CoaController::class, 'setInitialBalance']);
-    // Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
+    Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
     // Route::get('dental/lab/{lab}/all/service', [DentalLabServiceController::class, 'labService']);
 });

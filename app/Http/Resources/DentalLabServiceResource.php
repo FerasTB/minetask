@@ -19,7 +19,7 @@ class DentalLabServiceResource extends JsonResource
             'name' => $this->name,
             'cost' => $this->cost,
             'description' => $this->description,
-            'COA' => new COAResource($this->whenLoaded('COA')),
+            'COA' => new DentalLabCOAResource($this->whenLoaded('COA')),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),
         ];
     }
