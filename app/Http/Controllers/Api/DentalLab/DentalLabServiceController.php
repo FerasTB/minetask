@@ -17,7 +17,7 @@ class DentalLabServiceController extends Controller
      */
     public function index(DentalLab $lab)
     {
-        return DentalLabServiceResource::collection($lab->service()->with('COA')->get());
+        return DentalLabServiceResource::collection($lab->services()->with('COA')->get());
     }
 
     /**
