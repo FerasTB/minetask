@@ -49,9 +49,9 @@ class CoaController extends Controller
         return new COAResource($coa);
     }
 
-    public function update(UpdateCoaRequest $request, COA $coa)
+    public function update(UpdateCoaRequest $request, DentalLab $lab, COA $coa)
     {
-        $this->authorize('updateForOffice', [$coa, $coa->office]);
+        $this->authorize('updateForLab', [$coa, $coa->lab]);
         $fields = $request->validated();
         $coa->update($fields);
         return new DentalLabCOAResource($coa);
