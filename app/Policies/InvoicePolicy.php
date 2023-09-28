@@ -19,8 +19,7 @@ class InvoicePolicy
         } else {
             $role = null;
         }
-        $doctor = $profile->doctor;
-        return $role != null && $lab && $doctor->dental_lab_id == $lab->id;
+        return $role != null && $lab;
     }
 
     /**
