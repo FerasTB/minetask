@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\DentalLab;
 
 use App\Enums\AccountingProfileType;
+use App\Enums\TransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDentalLabDoctorAccountingProfileRequest;
 use App\Http\Requests\StoreDentalLabNotExistDoctorAccountingProfileRequest;
