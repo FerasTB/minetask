@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\DentalLab\CoaController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
 use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
+use App\Http\Controllers\Api\DentalLab\InvoiceController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -124,5 +125,6 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab/{lab}/coa', CoaController::class);
     Route::put('dental/lab/{lab}/coa/{coa}/initial', [CoaController::class, 'setInitialBalance']);
     Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
-    // Route::get('dental/lab/{lab}/all/service', [DentalLabServiceController::class, 'labService']);
+    Route::post('dental/lab/invoice/doctor/{profile}', [InvoiceController::class, 'storeDoctorInvoice']);
+    Route::post('dental/lab/invoice/doctor/{invoice}/item', [InvoiceController::class, 'storeDoctorInvoiceItem']);
 });

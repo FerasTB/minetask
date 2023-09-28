@@ -10,9 +10,11 @@ use App\Http\Requests\StoreDentalLabSupplierAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DentalLabAccountingProfileResource;
+use App\Models\AccountingProfile;
 use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\Office;
+use Filament\Widgets\AccountWidget;
 use Illuminate\Http\Request;
 
 class AccountingProfileController extends Controller
@@ -52,5 +54,11 @@ class AccountingProfileController extends Controller
         $account = $lab->accountingProfiles()->create($fields);
         $account->load(['doctor', 'lab']);
         return new DentalLabAccountingProfileResource($account);
+    }
+
+    public static function isNotExistDoctor(int $id)
+    {
+        $profile = AccountingProfile::findOrFail($id);
+        return $profile->doctor->dental_lab_id != null;
     }
 }

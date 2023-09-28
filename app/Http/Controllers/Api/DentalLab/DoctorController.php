@@ -21,7 +21,7 @@ class DoctorController extends Controller
         $this->authorize('inLab', $lab);
         $accounts = $lab->accountingProfiles()
             ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
-            ->with('doctor', 'office', 'lab')->get();
+            ->with('doctor', 'office', 'lab', 'invoices', 'receipts')->get();
         return DentalLabAccountingProfileResource::collection($accounts);
     }
 
