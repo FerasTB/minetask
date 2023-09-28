@@ -27,7 +27,7 @@ class InvoiceController extends Controller
         $this->authorize('createDentalLabInvoiceForDoctor', [
             Invoice::class, $profile,
         ]);
-        $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
+        $fields['running_balance'] = AccountingProfileController::doctorBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PatientInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         if (!AccountingProfileController::isNotExistDoctor($profile->id)) {
@@ -57,18 +57,5 @@ class InvoiceController extends Controller
         $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
         $serviceCoa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceItemsResource($item);
-    }
-
-    public static function doctorBalance(int $id, int $thisTransaction)
-    {
-        $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
-        $totalNegative = $invoices != null ?
-            $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
-        $totalPositive = $receipts != null ?
-            $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
-        return $total;
     }
 }

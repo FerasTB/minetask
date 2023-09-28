@@ -22,7 +22,7 @@ class ReceiptController extends Controller
         $fields = $request->validated();
         abort_unless($profile->lab != null && $profile->doctor->dental_lab_id != null, 403);
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PatientReceipt])->first();
-        $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
+        $fields['running_balance'] = AccountingProfileController::doctorBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
         $receipt = $profile->receipts()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);

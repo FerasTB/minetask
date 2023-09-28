@@ -61,4 +61,17 @@ class AccountingProfileController extends Controller
         $profile = AccountingProfile::findOrFail($id);
         return $profile->doctor->dental_lab_id != null;
     }
+
+    public static function doctorBalance(int $id, int $thisTransaction)
+    {
+        $supplier = AccountingProfile::findOrFail($id);
+        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+        $totalNegative = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
+        $totalPositive = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        return $total;
+    }
 }
