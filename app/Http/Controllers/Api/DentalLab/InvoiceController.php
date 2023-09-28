@@ -45,7 +45,7 @@ class InvoiceController extends Controller
         $item = $invoice->items()->create($fields);
         $lab = $invoice->lab;
         $receivable = COA::where([
-            'office_id' => $lab->id,
+            'dental_lab_id' => $lab->id,
             'sub_type' => COASubType::Receivable
         ])->first();
         $serviceCoa = COA::findOrFail($request->service_coa);

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DentalLab\DentalLabController;
 use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\Api\DentalLab\InvoiceController;
+use App\Http\Controllers\Api\DentalLab\ReceiptController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -127,4 +128,5 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
     Route::post('dental/lab/invoice/doctor/{profile}', [InvoiceController::class, 'storeDoctorInvoice']);
     Route::post('dental/lab/invoice/doctor/{invoice}/item', [InvoiceController::class, 'storeDoctorInvoiceItem']);
+    Route::post('dental/lab/receipt/doctor/{profile}', [ReceiptController::class, 'storeDoctorReceipt']);
 });
