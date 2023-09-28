@@ -14,12 +14,11 @@ class InvoicePolicy
     public function createDentalLabInvoiceForDoctor(User $user, AccountingProfile $profile): bool
     {
         $lab = $profile->lab;
+        $role = null;
         if ($lab) {
             $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
-        } else {
-            $role = null;
         }
-        return $role != null && $lab;
+        return $role != null;
     }
 
     /**
