@@ -41,7 +41,7 @@ class InvoiceController extends Controller
     public function storeDoctorInvoiceItem(StorePatientInvoiceItemRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
-        abort_unless($invoice->account->lab != null, 403);
+        abort_unless($invoice->lab != null, 403);
         $item = $invoice->items()->create($fields);
         $lab = $invoice->lab;
         $receivable = COA::where([
