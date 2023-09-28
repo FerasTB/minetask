@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             Invoice::class, $profile,
         ]);
         $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
-        $transactionNumber = TransactionPrefix::where(['lab_id' => $profile->lab->id, 'type' => TransactionType::PatientInvoice])->first();
+        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PatientInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         if (!AccountingProfileController::isNotExistDoctor($profile->id)) {
             $fields['status'] = TransactionStatus::Draft;
