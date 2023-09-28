@@ -25,7 +25,7 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $this->authorize('createDentalLabInvoiceForDoctor', [
-            $profile,
+            Invoice::class, $profile,
         ]);
         $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['lab_id' => $profile->lab->id, 'type' => TransactionType::PatientInvoice])->first();
