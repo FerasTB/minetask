@@ -37,7 +37,8 @@ class InvoiceController extends Controller
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         $doctor = $profile->doctor;
-        $doctor->notify(new InvoiceCreated($invoice));
+        $type = 'InvoiceFromLab';
+        $doctor->notify(new InvoiceCreated($invoice, $type));
         return new DentalLabInvoiceForDoctorResource($invoice);
     }
 
