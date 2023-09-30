@@ -11,6 +11,7 @@ use App\Http\Requests\StoreCoaAccountingProfileRequest;
 use App\Http\Requests\StoreExpensesAccountingProfileRequest;
 use App\Http\Requests\StoreSupplierAccountingProfileRequest;
 use App\Http\Resources\AccountingProfileResource;
+use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -172,6 +173,21 @@ class AccountingProfileController extends Controller
             $accounts->load(['invoices', 'invoices.items', 'receipts']);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::ExpensesAccount);
         }
+    }
+
+    public function labProfile(Office $office)
+    {
+        $this->authorize('inOffice', [AccountingProfile::class, $office]);
+        // if ($office->type == OfficeType::Separate) {
+        $doctor = auth()->user()->doctor;
+        $accounts = $doctor->accountingProfiles()->where('type', AccountingProfileType::DentalLabDoctorAccount)->get();
+        $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab']);
+        return DentalLabAccountingProfileResource::collection($accounts);
+        // } else {
+        //     $accounts = $office->accountingProfiles;
+        //     $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab']);
+        //     return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::DentalLabDoctorAccount);
+        // }
     }
 
     public function setInitialBalance(SetInitialBalanceRequest $request, AccountingProfile $accounting)

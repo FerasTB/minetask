@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\DentalLab;
 use App\Models\HasRole;
+use App\Models\Office;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -39,6 +40,12 @@ class DentalLabPolicy
     public function create(User $user): bool
     {
         return ($user->currentRole->id == Role::DentalLabDoctor && $user->doctor);
+    }
+
+    public function createForDoctor(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 
     /**

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COAGeneralType;
+use App\Enums\COASubType;
+use App\Enums\COAType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDentalLabInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PatientInvoiceResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -99,6 +104,26 @@ class InvoiceController extends Controller
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         return new PatientInvoiceResource($invoice);
+    }
+
+    public function acceptDentalLabInvoice(StoreDentalLabInvoiceRequest $request, Invoice $invoice)
+    {
+        $fields = $request->validated();
+        $this->authorize('acceptDentalLabInvoice', [$invoice]);
+        $expensesCoa = COA::findOrFail($request->coa);
+        $payable = COA::where([
+            'office_id' => $invoice->office->id,
+            'doctor_id' => $invoice->doctor->id, 'sub_type' => COASubType::Payable
+        ])->first();
+        abort_unless($payable != null && $expensesCoa != null, 403);
+        abort_unless($expensesCoa->doctor->id != auth()->user()->decoct->id, 403);
+        abort_unless($expensesCoa->type == COAGeneralType::Expenses, 403);
+        $doubleEntryFields['invoice_id'] = $invoice->id;
+        $doubleEntryFields['total_price'] = $invoice->total_price;
+        $doubleEntryFields['type'] = DoubleEntryType::Positive;
+        $payable->doubleEntries()->create($doubleEntryFields);
+        $expensesCoa->doubleEntries()->create($doubleEntryFields);
+        return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
     }
 
     public static function patientBalance(int $id, int $thisTransaction)

@@ -21,6 +21,12 @@ class InvoicePolicy
         return $role != null;
     }
 
+    public function acceptDentalLabInvoice(User $user, Invoice $invoice): bool
+    {
+        $role = HasRole::where(['roleable_id' => $invoice->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null && $invoice->doctor && auth()->user()->doctor;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

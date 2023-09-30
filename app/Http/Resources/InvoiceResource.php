@@ -21,6 +21,7 @@ class InvoiceResource extends JsonResource
             'total_price' => $this->total_price,
             'office' => new OfficeResource($this->whenLoaded('office')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'lab' => new DentalLabResource($this->whenLoaded('lab')),
             'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
             'receipts' => $this->receipts,
             'running_balance' => $this->running_balance,

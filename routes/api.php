@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\Api\DentalLab\InvoiceController;
 use App\Http\Controllers\Api\DentalLab\ReceiptController;
+use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('account/{accounting}/balance', [App\Http\Controllers\Api\AccountingProfileController::class, 'accountOutcome']);
     Route::get('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'supplierProfile']);
     Route::get('accounting/expenses/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'expensesProfile']);
+    Route::get('office/{office}/accounting/lab/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'labProfile']);
     Route::post('accounting/supplier/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeSupplier']);
     // Route::post('accounting/expense/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'storeExpenses']);
     Route::post('accounting/receipt/{receipt}/invoice/{invoice}', [App\Http\Controllers\Api\ReceiptController::class, 'addReceiptToInvoice']);
@@ -114,6 +116,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/switch-role/{role}', [RoleController::class, 'switchRole']);
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
     Route::get('/role', [RoleController::class, 'index']);
+    Route::post('/office/{office}/accounting/lab/profile', [DentalLabControlle::class, 'store']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
