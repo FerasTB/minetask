@@ -16,6 +16,7 @@ use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\MyPatientThroughAccountingProfileResource;
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
@@ -214,6 +215,6 @@ class DoctorInfoController extends Controller
     public function unreadNotification()
     {
         $doctor = auth()->user()->doctor;
-        return $doctor->unreadNotifications->data;
-    }
+        return NotificationResource::collection($doctor->unreadNotifications);
+    
 }
