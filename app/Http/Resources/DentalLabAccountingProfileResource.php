@@ -26,6 +26,7 @@ class DentalLabAccountingProfileResource extends JsonResource
             'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
             'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
             'office' => new OfficeResource($this->whenLoaded('office')),
+            'new' => $this->whenLoaded('receipts') != [] || $this->whenLoaded('invoices') != [] ? true : false,
             'total' => AccountingProfileController::accountOutcomeInt($this->id)
         ];
     }
