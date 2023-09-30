@@ -118,7 +118,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
     Route::get('/role', [RoleController::class, 'index']);
     Route::post('/office/{office}/accounting/lab/profile', [DentalLabControlle::class, 'store']);
-    Route::post('/doctor/unread/notification', [DoctorInfoController::class, 'unreadNotification']);
+    Route::get('/doctor/unread/notification', [DoctorInfoController::class, 'unreadNotification']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
