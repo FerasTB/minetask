@@ -34,7 +34,7 @@ class DentalLabControlle extends Controller
         ]);
         $account = $lab->accountingProfiles()->create([
             'office_id' => $office->id,
-            'doctor_id' => auth()->user()->doctor,
+            'doctor_id' => auth()->user()->doctor->id,
             'COA_id' => $request->coa_id,
             'initial_balance' => $request->initial_balance != null ? $request->initial_balance : 0,
             'note' => $request->note,
