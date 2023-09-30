@@ -210,4 +210,10 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return TeethRecordResource::collection($doctor->teethRecords)->where('patientCase.case.id', $case);
     }
+
+    public function unreadNotification()
+    {
+        $doctor = auth()->user()->doctor;
+        return $doctor->unreadNotifications;
+    }
 }
