@@ -216,5 +216,5 @@ class DoctorInfoController extends Controller
     {
         $doctor = auth()->user()->doctor;
         return NotificationResource::collection($doctor->unreadNotifications);
-    
+    }
 }
