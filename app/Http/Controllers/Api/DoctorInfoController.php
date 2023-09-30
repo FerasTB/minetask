@@ -214,6 +214,6 @@ class DoctorInfoController extends Controller
     public function unreadNotification()
     {
         $doctor = auth()->user()->doctor;
-        return $doctor->unreadNotifications;
+        return $doctor->unreadNotifications->data;
     }
 }
