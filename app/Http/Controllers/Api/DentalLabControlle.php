@@ -36,7 +36,7 @@ class DentalLabControlle extends Controller
             'office_id' => $office->id,
             'doctor_id' => auth()->user()->doctor,
             'COA_id' => $request->coa_id,
-            'initial_balance' => $request->initial_balance,
+            'initial_balance' => $request->initial_balance != null ? $request->initial_balance : 0,
             'note' => $request->note,
             'type' => AccountingProfileType::DentalLabDoctorAccount,
         ]);
