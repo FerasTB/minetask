@@ -17,6 +17,7 @@ use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Invoice;
 use App\Models\TransactionPrefix;
+use App\Notifications\InvoiceCreated;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -35,6 +36,8 @@ class InvoiceController extends Controller
         }
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        $doctor = $profile->doctor;
+        $doctor->notify(new InvoiceCreated($invoice));
         return new DentalLabInvoiceForDoctorResource($invoice);
     }
 
