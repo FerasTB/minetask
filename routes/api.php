@@ -98,6 +98,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('receipt/patient/{patient}', [App\Http\Controllers\Api\ReceiptController::class, 'storePatientReceipt']);
     Route::post('invoice/patient/{patient}', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoice']);
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);
+    Route::post('invoice/lap/accept/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'acceptDentalLabInvoice']);
+    Route::post('invoice/lab/{profile}', [App\Http\Controllers\Api\InvoiceController::class, 'storeDentalLabInvoice']);
+    Route::post('invoice/lab/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storeDentalLabInvoiceItem']);
     Route::post('receipt/supplier', [App\Http\Controllers\Api\ReceiptController::class, 'storeSupplierReceipt']);
     Route::post('invoice/supplier', [App\Http\Controllers\Api\InvoiceController::class, 'storeSupplierInvoice']);
     Route::post('invoice/supplier/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storeSupplierInvoiceItem']);

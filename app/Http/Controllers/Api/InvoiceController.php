@@ -11,6 +11,8 @@ use App\Enums\OfficeType;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AcceptDentalLabInvoiceForDoctorRequest;
+use App\Http\Requests\StoreDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
@@ -108,7 +110,7 @@ class InvoiceController extends Controller
         return new PatientInvoiceResource($invoice);
     }
 
-    public function storeDentalLabInvoice(StoreDentalLabInvoiceRequest $request, AccountingProfile $profile)
+    public function storeDentalLabInvoice(StoreDentalLabInvoiceForDoctorRequest $request, AccountingProfile $profile)
     {
         $fields = $request->validated();
         $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile]);
@@ -120,7 +122,7 @@ class InvoiceController extends Controller
         return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
     }
 
-    public function acceptDentalLabInvoice(StoreDentalLabInvoiceRequest $request, Invoice $invoice)
+    public function acceptDentalLabInvoice(AcceptDentalLabInvoiceForDoctorRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
         $this->authorize('acceptDentalLabInvoice', [$invoice]);

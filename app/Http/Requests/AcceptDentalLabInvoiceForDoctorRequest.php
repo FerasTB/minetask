@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDentalLabInvoiceRequest extends FormRequest
+class AcceptDentalLabInvoiceForDoctorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class StoreDentalLabInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'coa' => 'required|integer',
             'note' => 'nullable|string',
-            'date_of_invoice' => 'date|nullable',
-            'total_price' => 'integer|required',
         ];
     }
 }
