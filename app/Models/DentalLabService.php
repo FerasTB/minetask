@@ -9,7 +9,7 @@ class DentalLabService extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'cost', 'dental_lab_id', 'COA_id'];
+    protected $fillable = ['percentage', 'name', 'description', 'cost', 'dental_lab_id', 'COA_id'];
 
 
     public function lab()

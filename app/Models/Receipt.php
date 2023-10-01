@@ -60,6 +60,11 @@ class Receipt extends Model
             ->withPivot(['total_price']);
     }
 
+    public function account()
+    {
+        return $this->belongsTo(AccountingProfile::class, 'account_profile_id');
+    }
+
     public function getReceiptNumberAttribute()
     {
         return str_pad($this->attributes['receipt_number'], 5, '0', STR_PAD_LEFT);

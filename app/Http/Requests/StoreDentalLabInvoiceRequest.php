@@ -23,6 +23,7 @@ class StoreDentalLabInvoiceRequest extends FormRequest
     {
         return [
             'coa' => 'required|integer',
+            'note' => 'nullable|string',
         ];
     }
 }

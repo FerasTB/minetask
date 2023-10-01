@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\COAGeneralType;
 use App\Enums\COASubType;
 use App\Enums\COAType;
+use App\Enums\DentalDoctorTransaction;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Enums\TransactionStatus;
@@ -131,6 +132,23 @@ class InvoiceController extends Controller
         abort_unless($payable != null && $expensesCoa != null, 403);
         abort_unless($expensesCoa->doctor->id != auth()->user()->decoct->id, 403);
         abort_unless($expensesCoa->type == COAGeneralType::Expenses, 403);
+        $account = $invoice->account;
+        $fields['running_balance'] = $this->labBalance($account->id, $fields['total_price']);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $account->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
+        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+        $fields['total_price'] = $invoice->total_price;
+        $percherInvoice = $account->invoices()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        foreach ($invoice->items as $item) {
+            $percherInvoice->items->create([
+                'name' => $item->name,
+                'description' => $item->description,
+                'amount' => $item->amount,
+                'total_price' => $item->total_price,
+                'price_per_one' => $item->price_per_one,
+            ]);
+        }
         $doubleEntryFields['invoice_id'] = $invoice->id;
         $doubleEntryFields['total_price'] = $invoice->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
@@ -171,10 +189,10 @@ class InvoiceController extends Controller
     public static function labBalance(int $id, int $thisTransaction)
     {
         $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+        $invoices = $supplier->invoices()->whereIn('type', DentalDoctorTransaction::getValues())->get();
         $totalNegative = $invoices != null ?
             $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
+        $receipts = $supplier->receipts()->whereIn('type', DentalDoctorTransaction::getValues())->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
         $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
