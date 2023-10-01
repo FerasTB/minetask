@@ -13,8 +13,8 @@ use BenSampo\Enum\Enum;
  */
 final class TransactionType extends Enum
 {
-    const PatientInvoice = 1;
-    const PatientReceipt = 2;
+    const PatientInvoice = 1; // sell invoice
+    const PatientReceipt = 2; // reset voucher
     const PaymentVoucher = 3;
-    const SupplierInvoice = 4;
+    const SupplierInvoice = 4; // percher invoice
 }

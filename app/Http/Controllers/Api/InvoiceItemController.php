@@ -117,6 +117,32 @@ class InvoiceItemController extends Controller
         return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items'])->first());
     }
 
+    public function storeDentalLabInvoiceItem(StoreSupplierInvoiceItemRequest $request, Invoice $invoice)
+    {
+        $fields = $request->validated();
+        $item = $invoice->items()->create($fields);
+        $office = $invoice->office;
+        if ($office->type == OfficeType::Combined) {
+            $payable = COA::where([
+                'office_id' => $office->id,
+                'doctor_id' => null, 'sub_type' => COASubType::Payable
+            ])->first();
+        } else {
+            $doctor = auth()->user()->doctor;
+            $payable = COA::where([
+                'office_id' => $office->id,
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+            ])->first();
+        }
+        $doubleEntryFields['invoice_item_id'] = $item->id;
+        $doubleEntryFields['total_price'] = $item->total_price;
+        $doubleEntryFields['type'] = DoubleEntryType::Positive;
+        $payable->doubleEntries()->create($doubleEntryFields);
+        $expensesCoa = COA::findOrFail($request->item_coa);
+        $expensesCoa->doubleEntries()->create($doubleEntryFields);
+        return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items', 'lab'])->first());
+    }
+
     public function storePatientInvoiceReceiptItem(StorePatientInvoiceReceiptItemRequest $request, InvoiceReceipt $invoice)
     {
         $fields = $request->validated();

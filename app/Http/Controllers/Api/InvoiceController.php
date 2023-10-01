@@ -7,6 +7,7 @@ use App\Enums\COASubType;
 use App\Enums\COAType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
+use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
@@ -106,6 +107,18 @@ class InvoiceController extends Controller
         return new PatientInvoiceResource($invoice);
     }
 
+    public function storeDentalLabInvoice(StoreDentalLabInvoiceRequest $request, AccountingProfile $profile)
+    {
+        $fields = $request->validated();
+        $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile]);
+        $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
+        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+        $invoice = $profile->invoices()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
+    }
+
     public function acceptDentalLabInvoice(StoreDentalLabInvoiceRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
@@ -123,6 +136,9 @@ class InvoiceController extends Controller
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $payable->doubleEntries()->create($doubleEntryFields);
         $expensesCoa->doubleEntries()->create($doubleEntryFields);
+        $invoice->update([
+            'status' => TransactionStatus::Approved,
+        ]);
         return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
     }
 
@@ -146,6 +162,19 @@ class InvoiceController extends Controller
         $totalNegative = $invoices != null ?
             $invoices->sum('total_price') : 0;
         $receipts = $supplier->receipts()->get();
+        $totalPositive = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        return $total;
+    }
+
+    public static function labBalance(int $id, int $thisTransaction)
+    {
+        $supplier = AccountingProfile::findOrFail($id);
+        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+        $totalNegative = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
         $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;

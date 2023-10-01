@@ -25,6 +25,7 @@ class UpdateDentalLabServiceRequest extends FormRequest
             'cost' => 'nullable|integer',
             'description' => 'nullable|string',
             'name' => 'required|string',
+            'percentage' => 'nullable|integer',
         ];
     }
 }

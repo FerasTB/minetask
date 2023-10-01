@@ -16,6 +16,8 @@ class COA extends Model
     const Receivable =  "Receivable";
     const Capital =  "Capital";
     const OwnerWithDraw =  "OwnerWithDraw";
+    const Inventory =  "Inventory";
+    const COGS =  "Cost of Goods sold";
 
     public function doctor()
     {

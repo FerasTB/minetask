@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
+use App\Enums\SubRole;
+use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
+use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddReceiptToInvoiceRequest;
+use App\Http\Requests\StoreDentalLabReceiptForDoctorRequest;
 use App\Http\Requests\StorePatientReceiptRequest;
 use App\Http\Requests\StoreReceiptRequest;
 use App\Http\Requests\StoreSupplierReceiptRequest;
@@ -16,11 +21,13 @@ use App\Http\Resources\ReceiptResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
+use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceReceipt;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\Receipt;
+use App\Models\Role;
 use App\Models\TransactionPrefix;
 use Illuminate\Http\Request;
 
@@ -140,6 +147,45 @@ class ReceiptController extends Controller
         return new ReceiptResource($receipt);
     }
 
+    public function storeDentalLabReceipt(StoreDentalLabReceiptForDoctorRequest $request, AccountingProfile $profile)
+    {
+        $fields = $request->validated();
+        abort_unless($profile->type == AccountingProfileType::DentalLabDoctorAccount, 403);
+        $this->authorize('createReceiptForDentalLab', [Receipt::class, $profile]);
+        $office = $profile->office;
+        $cash = COA::findOrFail($request->cash_coa);
+        abort_unless($cash->sub_type == COASubType::Cash && $cash->office_id == $profile->office_id, 403);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => $profile->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
+        $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
+        $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $role = HasRole::where(['roleable_id' => $profile->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => auth()->id()])->first();
+        if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
+            $fields['status'] = TransactionStatus::Approved;
+        } else {
+            $fields['status'] = TransactionStatus::Draft;
+        }
+        $receipt = $profile->receipts()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+        if ($profile->office->type == OfficeType::Combined) {
+            $payable = COA::where([
+                'office_id' => $profile->office->id,
+                'doctor_id' => null, 'sub_type' => COASubType::Payable
+            ])->first();
+        } else {
+            $doctor = $profile->doctor;
+            $payable = COA::where([
+                'office_id' => $office->id,
+                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+            ])->first();
+        }
+        $doubleEntryFields['receipt_id'] = $receipt->id;
+        $doubleEntryFields['total_price'] = $receipt->total_price;
+        $doubleEntryFields['type'] = DoubleEntryType::Negative;
+        $payable->doubleEntries()->create($doubleEntryFields);
+        $cash->doubleEntries()->create($doubleEntryFields);
+        return new ReceiptResource($receipt);
+    }
+
     public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
     {
         $fields = $request->validated();
@@ -214,6 +260,19 @@ class ReceiptController extends Controller
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
         $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
+        return $total;
+    }
+
+    public static function labBalance(int $id, int $thisTransaction)
+    {
+        $supplier = AccountingProfile::findOrFail($id);
+        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+        $totalNegative = $invoices != null ?
+            $invoices->sum('total_price') : 0;
+        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
+        $totalPositive = $receipts != null ?
+            $receipts->sum('total_price') : 0;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
         return $total;
     }
 }

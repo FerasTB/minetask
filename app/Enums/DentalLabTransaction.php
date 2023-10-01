@@ -11,11 +11,10 @@ use BenSampo\Enum\Enum;
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class COASubType extends Enum
+final class DentalLabTransaction extends Enum
 {
-    const Cash = 1;
-    const Receivable = 2;
-    const Payable = 3;
-    const Inventory = 3;
-    const NoSubType = null;
+    const PaymentVoucher = 1;
+    const ResetVoucher = 2;
+    const SellInvoice = 3;
+    const PercherInvoice = 4;
 }

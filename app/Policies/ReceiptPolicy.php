@@ -2,8 +2,11 @@
 
 namespace App\Policies;
 
+use App\Models\AccountingProfile;
+use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\Receipt;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -68,5 +71,17 @@ class ReceiptPolicy
     public function myInvoice(User $user, Invoice $invoice): bool
     {
         return $user->doctor && $user->doctor->id == $invoice->doctor->id;
+    }
+
+    public function createReceiptForDentalLab(User $user, AccountingProfile $profile): bool
+    {
+        $role = HasRole::where(['roleable_id' => $profile->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $user->doctor && $user->doctor->id == $profile->doctor->id && $role != null && $user->currentRole->id == Role::DentalDoctor;
+    }
+
+    public function acceptDoctorReceipt(User $user, Receipt $receipt): bool
+    {
+        $role = HasRole::where(['roleable_id' => $receipt->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null;
     }
 }

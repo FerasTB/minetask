@@ -77,6 +77,17 @@ class DentalLabController extends Controller
             'type' => COAType::OwnerWithdraw,
             'general_type' => COAGeneralType::Equity,
         ]);
+        $lab->COAS()->create([
+            'name' => COA::Inventory,
+            'type' => COAType::Current,
+            'general_type' => COAGeneralType::Asset,
+            'sub_type' => COASubType::Inventory,
+        ]);
+        $lab->COAS()->create([
+            'name' => COA::COGS,
+            'type' => COAType::COGS,
+            'general_type' => COAGeneralType::Expenses,
+        ]);
         $lab->transactionPrefix()->create([
             'type' => TransactionType::PaymentVoucher,
             'prefix' => 'PVOC',
@@ -123,5 +134,20 @@ class DentalLabController extends Controller
     public function destroy(DentalLab $dentalLab)
     {
         //
+    }
+
+    public function addInventory(DentalLab $lab)
+    {
+        $lab->COAS()->create([
+            'name' => COA::Inventory,
+            'type' => COAType::Current,
+            'general_type' => COAGeneralType::Asset,
+            'sub_type' => COASubType::Inventory,
+        ]);
+        $lab->COAS()->create([
+            'name' => COA::COGS,
+            'type' => COAType::COGS,
+            'general_type' => COAGeneralType::Expenses,
+        ]);
     }
 }

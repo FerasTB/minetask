@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DentalLab\DentalLabController;
 use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\Api\DentalLab\InvoiceController;
+use App\Http\Controllers\Api\DentalLab\InvoiceItemController;
 use App\Http\Controllers\Api\DentalLab\ReceiptController;
 use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\Api\DoctorInfoController;
@@ -124,7 +125,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
+    Route::get('dental/lab/{lab}/add/inventory', [DentalLabController::class, 'addInventory']);
     Route::post('dental/lab/supplier/create', [AccountingProfileController::class, 'storeSupplier']);
+    Route::post('dental/lab/supplier/{profile}/create/invoice', [InvoiceController::class, 'storeSupplierInvoice']);
+    Route::post('dental/lab/supplier/create/invoice/{invoice}/item', [InvoiceItemController::class, 'storeSupplierInvoiceItem']);
+    Route::post('dental/lab/supplier/{profile}/create/receipt', [ReceiptController::class, 'storeSupplierReceipt']);
     Route::post('dental/lab/{lab}/doctor/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForDoctor']);
     Route::post('dental/lab/{lab}/doctor/not-exist/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForNotExistDoctor']);
     Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
@@ -136,4 +141,5 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/invoice/doctor/{profile}', [InvoiceController::class, 'storeDoctorInvoice']);
     Route::post('dental/lab/invoice/doctor/{invoice}/item', [InvoiceController::class, 'storeDoctorInvoiceItem']);
     Route::post('dental/lab/receipt/doctor/{profile}', [ReceiptController::class, 'storeDoctorReceipt']);
+    Route::post('dental/lab/accept/receipt/{receipt}', [ReceiptController::class, 'acceptDoctorReceipt']);
 });

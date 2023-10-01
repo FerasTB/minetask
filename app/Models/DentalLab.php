@@ -9,7 +9,7 @@ class DentalLab extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type', 'end_time', 'start_time', 'number', 'address', 'image', 'name'];
+    protected $fillable = ['percentage', 'type', 'end_time', 'start_time', 'number', 'address', 'image', 'name'];
 
     public function COAS()
     {

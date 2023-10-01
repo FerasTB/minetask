@@ -28,6 +28,7 @@ class StorePatientInvoiceItemRequest extends FormRequest
             'total_price' => 'required|integer',
             'price_per_one' => 'required|integer',
             'service_coa' => 'required|integer',
+            'service_percentage' => 'required|integer',
             // 'cash_coa' => 'required|integer',
         ];
     }
