@@ -27,7 +27,7 @@ class StoreDentalLabSupplierAccountingProfileRequest extends FormRequest
             'lab_id' => 'required|integer',
             'note' => 'nullable|string',
             'initial_balance' => 'nullable|integer',
-            'type' => ['required', Rule::in(['SupplierAccount'])],
+            'type' => ['required', Rule::in(['DentalLabDoctorAccount'])],
         ];
     }
 }
