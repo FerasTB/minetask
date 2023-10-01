@@ -217,4 +217,21 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return NotificationResource::collection($doctor->unreadNotifications);
     }
+
+    public function markAsRead(Request $request)
+    {
+        $doctor = auth()->user()->doctor;
+        $doctor->unreadNotifications
+            ->when($request->id, function ($query) use ($request) {
+                return $query->where('id', $request->id);
+            })
+            ->markAsRead();
+        return response()->noContent();
+    }
+
+    public function allNotification()
+    {
+        $doctor = auth()->user()->doctor;
+        return NotificationResource::collection($doctor->notifications);
+    }
 }
