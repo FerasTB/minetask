@@ -50,7 +50,7 @@ class InvoiceCreated extends Notification
     {
         return [
             'invoice_id' => $this->invoice->id,
-            'office_id' => $this->invoice->office->id,
+            'office_id' => $this->invoice->office != null ? $this->invoice->office->id : null,
             'lab' => $this->invoice->lab->id,
             'type' => $this->type,
         ];
