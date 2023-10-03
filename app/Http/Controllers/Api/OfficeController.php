@@ -183,7 +183,7 @@ class OfficeController extends Controller
         $this->authorize('officeOwner', $office);
         $fields = $request->validated();
         $office->update($fields);
-        return response()->json($office);
+        return new OfficeResource($office);
     }
 
     /**
