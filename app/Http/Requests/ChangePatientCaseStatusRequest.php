@@ -14,7 +14,7 @@ class ChangePatientCaseStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->role == Role::Doctor;
+        return true;
     }
 
     /**
@@ -25,7 +25,7 @@ class ChangePatientCaseStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', PatientCaseStatus::getKeys()],
+            'status' => ['required', Rule::in(PatientCaseStatus::getKeys())],
         ];
     }
 }
