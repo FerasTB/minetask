@@ -23,6 +23,7 @@ class StoreDentalLabInvoiceForDoctorRequest extends FormRequest
     {
         return [
             'note' => 'nullable|string',
+            'invoice_id' => 'nullable|integer',
             'date_of_invoice' => 'date|nullable',
             'due_to_invoice' => 'date|nullable',
             'total_price' => 'integer|required',

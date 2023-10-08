@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\DentalLab;
 
 use App\Enums\COASubType;
+use App\Enums\DentalLabTransaction;
 use App\Enums\DoubleEntryType;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
@@ -93,16 +94,18 @@ class ReceiptController extends Controller
         return new ReceiptResource($receipt);
     }
 
-    public function doctorBalance(int $id, int $thisTransaction)
+    public static function doctorBalance(int $id, int $thisTransaction)
     {
         $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
-        $totalNegative = $invoices != null ?
+        $invoices = $supplier->invoices()->whereIn('type', DentalLabTransaction::getValues())
+            ->whereNot('status', TransactionStatus::Canceled)
+            ->get();
+        $totalPositive = $invoices != null ?
             $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
-        $totalPositive = $receipts != null ?
+        $receipts = $supplier->receipts()->whereIn('type', DentalLabTransaction::getValues())->get();
+        $totalNegative = $receipts != null ?
             $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
         return $total;
     }
 

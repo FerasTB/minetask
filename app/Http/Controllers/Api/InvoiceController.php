@@ -114,6 +114,13 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile]);
+        if ($request->invoice_id) {
+            $invoice = Invoice::findOrFail($request->invoice_id);
+            $this->authorize('acceptDentalLabInvoice', [$invoice]);
+            $invoice->update([
+                'status' => TransactionStatus::Approved,
+            ]);
+        }
         $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
