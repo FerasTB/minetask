@@ -117,6 +117,8 @@ class InvoiceController extends Controller
         $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+        $fields['status'] = TransactionStatus::Approved;
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
@@ -203,7 +205,9 @@ class InvoiceController extends Controller
         $invoices = $supplier->invoices()->whereIn('type', DentalDoctorTransaction::getValues())->get();
         $totalNegative = $invoices != null ?
             $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->whereIn('type', DentalDoctorTransaction::getValues())->get();
+        $receipts = $supplier->receipts()->whereIn('type', DentalDoctorTransaction::getValues())
+            ->whereNot('status', TransactionStatus::Canceled)
+            ->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
         $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;

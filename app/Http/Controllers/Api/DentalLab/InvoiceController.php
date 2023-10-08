@@ -88,7 +88,9 @@ class InvoiceController extends Controller
     public static function doctorBalance(int $id, int $thisTransaction)
     {
         $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->whereIn('type', DentalLabTransaction::getValues())->get();
+        $invoices = $supplier->invoices()->whereIn('type', DentalLabTransaction::getValues())
+            ->whereNot('status', TransactionStatus::Canceled)
+            ->get();
         $totalPositive = $invoices != null ?
             $invoices->sum('total_price') : 0;
         $receipts = $supplier->receipts()->whereIn('type', DentalLabTransaction::getValues())->get();
