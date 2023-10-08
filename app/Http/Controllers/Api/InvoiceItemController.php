@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\COAGeneralType;
 use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
@@ -120,7 +121,6 @@ class InvoiceItemController extends Controller
     public function storeDentalLabInvoiceItem(StoreSupplierInvoiceItemRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
-        $item = $invoice->items()->create($fields);
         $office = $invoice->office;
         if ($office->type == OfficeType::Combined) {
             $payable = COA::where([
@@ -134,11 +134,15 @@ class InvoiceItemController extends Controller
                 'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
             ])->first();
         }
+        $expensesCoa = COA::findOrFail($request->item_coa);
+        abort_unless($payable != null && $expensesCoa != null, 403);
+        abort_unless($expensesCoa->doctor->id != auth()->user()->decoct->id, 403);
+        abort_unless($expensesCoa->type == COAGeneralType::Expenses, 403);
+        $item = $invoice->items()->create($fields);
         $doubleEntryFields['invoice_item_id'] = $item->id;
         $doubleEntryFields['total_price'] = $item->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
         $payable->doubleEntries()->create($doubleEntryFields);
-        $expensesCoa = COA::findOrFail($request->item_coa);
         $expensesCoa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items', 'lab'])->first());
     }
