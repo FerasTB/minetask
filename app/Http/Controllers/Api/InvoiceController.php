@@ -128,7 +128,8 @@ class InvoiceController extends Controller
         $fields['status'] = TransactionStatus::Approved;
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
-        return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab']));
+        $invoice->load(['doctor', 'office', 'items', 'lab']);
+        return new InvoiceResource($invoice);
     }
 
     public function acceptDentalLabInvoice(AcceptDentalLabInvoiceForDoctorRequest $request, Invoice $invoice)
