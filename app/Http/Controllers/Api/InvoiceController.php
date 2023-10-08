@@ -116,7 +116,7 @@ class InvoiceController extends Controller
         $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile]);
         if ($request->invoice_id) {
             $invoice2 = Invoice::findOrFail($request->invoice_id);
-            $this->authorize('acceptDentalLabInvoice', [$invoice]);
+            $this->authorize('acceptDentalLabInvoice', [$invoice2]);
             $invoice2->update([
                 'status' => TransactionStatus::Approved,
             ]);
