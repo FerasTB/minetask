@@ -136,7 +136,7 @@ class InvoiceItemController extends Controller
         }
         $expensesCoa = COA::findOrFail($request->item_coa);
         abort_unless($payable != null && $expensesCoa != null, 403);
-        abort_unless($expensesCoa->doctor->id != auth()->user()->doctor->id, 403);
+        abort_unless($expensesCoa->doctor->id == auth()->user()->doctor->id, 403);
         abort_unless($expensesCoa->general_type == COAGeneralType::Expenses, 403);
         $item = $invoice->items()->create($fields);
         $doubleEntryFields['invoice_item_id'] = $item->id;
