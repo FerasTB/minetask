@@ -99,6 +99,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice/patient/{patient}', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoice']);
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);
     Route::post('invoice/lap/accept/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'acceptDentalLabInvoice']);
+    Route::get('invoice/lap/reject/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'rejectDentalLabInvoice']);
     Route::post('invoice/lab/{profile}', [App\Http\Controllers\Api\InvoiceController::class, 'storeDentalLabInvoice']);
     Route::post('invoice/lab/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storeDentalLabInvoiceItem']);
     Route::post('receipt/supplier', [App\Http\Controllers\Api\ReceiptController::class, 'storeSupplierReceipt']);

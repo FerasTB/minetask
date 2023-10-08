@@ -162,6 +162,15 @@ class InvoiceController extends Controller
         return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
     }
 
+    public function rejectDentalLabInvoice(Invoice $invoice)
+    {
+        $this->authorize('acceptDentalLabInvoice', [$invoice]);
+        $invoice->update([
+            'status' => TransactionStatus::Rejected,
+        ]);
+        return new InvoiceResource($invoice->with(['doctor', 'office', 'items', 'lab'])->first());
+    }
+
     public static function patientBalance(int $id, int $thisTransaction)
     {
         $patient = AccountingProfile::findOrFail($id);

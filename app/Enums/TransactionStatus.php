@@ -15,4 +15,5 @@ final class TransactionStatus extends Enum
 {
     const Approved = 1;
     const Draft = 2;
+    const Rejected = 3;
 }
