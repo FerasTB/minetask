@@ -30,7 +30,7 @@ class InvoicePolicy
     public function storeDentalLabInvoiceForDoctor(User $user, AccountingProfile $profile): bool
     {
         $role = HasRole::where(['roleable_id' => $profile->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return $role != null && $profile->doctor->id == auth()->user()->doctor;
+        return $role != null && $profile->doctor->id == auth()->user()->doctor->id;
     }
 
     /**
