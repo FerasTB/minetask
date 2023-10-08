@@ -28,11 +28,12 @@ class InvoiceResource extends JsonResource
             'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
             'receipts' => $this->receipts,
             'status' => TransactionStatus::getKey($this->status),
-            'type' => in_array($this->type, DentalDoctorTransaction::getValues()) ?
+            'type' => $this->type != null ? (in_array($this->type, DentalDoctorTransaction::getValues()) ?
                 DentalDoctorTransaction::getKey($this->type) :
-                DentalLabTransaction::getKey($this->type),
-            'isForDentalDoctor' => in_array($this->type, DentalDoctorTransaction::getValues()),
-            'isForDentalLab' => in_array($this->type, DentalLabTransaction::getValues()),
+                DentalLabTransaction::getKey($this->type)) :
+                null,
+            'isForDentalDoctor' => $this->type != null ? in_array($this->type, DentalDoctorTransaction::getValues()) : null,
+            'isForDentalLab' => $this->type != null ? in_array($this->type, DentalLabTransaction::getValues()) : null,
             'running_balance' => $this->running_balance,
             'invoice_number' => $this->invoice_number,
             'created_at' => $this->created_at,
