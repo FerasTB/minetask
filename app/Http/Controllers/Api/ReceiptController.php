@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\AccountingProfileType;
 use App\Enums\COASubType;
 use App\Enums\DentalDoctorTransaction;
+use App\Enums\DentalLabType;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Enums\SubRole;
@@ -168,7 +169,7 @@ class ReceiptController extends Controller
             $fields['status'] = TransactionStatus::Draft;
         }
         $receipt = $profile->receipts()->create($fields);
-        if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
+        if ($profile->lab->type == DentalLabType::Real) {
             $type = 'ReceiptFromDoctor';
             $profile->lab->notify(new ReceiptCreated($receipt, $type));
         }
