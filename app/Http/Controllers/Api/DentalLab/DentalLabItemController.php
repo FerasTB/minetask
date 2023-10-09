@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api\DentalLab;
 
+use App\Enums\COAGeneralType;
 use App\Http\Controllers\Controller;
 use App\Models\DentalLabItem;
 use App\Http\Requests\StoreDentalLabItemRequest;
 use App\Http\Requests\UpdateDentalLabItemRequest;
 use App\Http\Resources\DentalLabItemResource;
 use App\Http\Resources\SupplierItemResource;
+use App\Models\COA;
+use App\Models\CoaGroup;
 use App\Models\DentalLab;
 
 class DentalLabItemController extends Controller
@@ -33,6 +36,10 @@ class DentalLabItemController extends Controller
     {
         $fields = $request->validated();
         $this->authorize('createForLab', [DentalLabItem::class, $lab]);
+        $expensesCoa = COA::findOrFail($request->COA_id);
+        abort_unless($expensesCoa != null, 403);
+        abort_unless($expensesCoa->lab->id == $lab->id, 403);
+        abort_unless($expensesCoa->general_type == COAGeneralType::Expenses, 403);
         $supplierItem = $lab->supplierItem()->create($fields);
         return new DentalLabItemResource($supplierItem);
     }
