@@ -33,7 +33,8 @@ class AccountingProfileController extends Controller
     {
         $this->authorize('createForLab', [AccountingProfile::class, $lab]);
         $accounts = $lab->accountingProfiles()->where('type', AccountingProfileType::DentalLabSupplierAccount)
-            ->with(['invoices', 'invoices.items', 'receipts', 'lab']);
+            ->with(['invoices', 'invoices.items', 'receipts', 'lab'])
+            ->get();
         return DentalLabAccountingProfileResource::collection($accounts);
     }
 
