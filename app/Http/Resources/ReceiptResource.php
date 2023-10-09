@@ -18,7 +18,7 @@ class ReceiptResource extends JsonResource
         return [
             'id' => $this->id,
             'total_price' => $this->total_price,
-            'date_of_payment' => $this->note,
+            'date_of_payment' => $this->date_of_payment,
             'invoice' => new PatientInvoiceResource($this->invoice),
             'doctor' => new DoctorResource($this->doctor),
             'running_balance' => $this->running_balance,
