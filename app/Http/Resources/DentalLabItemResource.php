@@ -19,6 +19,7 @@ class DentalLabItemResource extends JsonResource
             'name' => $this->name,
             'cost' => $this->cost,
             'description' => $this->description,
+            'note' => $this->note,
             'COA' => new COAResource($this->whenLoaded('COA')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),

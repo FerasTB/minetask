@@ -24,6 +24,7 @@ class StoreDentalLabItemRequest extends FormRequest
         return [
             'COA_id' => 'required|integer',
             'doctor_id' => 'nullable|integer',
+            'note' => 'nullable|string',
             'name' => 'required|string',
             'description' => 'nullable|string',
             'cost' => 'nullable|integer',
