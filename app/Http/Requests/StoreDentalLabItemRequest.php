@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StoreDentalLabSupplierAccountingProfileRequest extends FormRequest
+class StoreDentalLabItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +22,11 @@ class StoreDentalLabSupplierAccountingProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'supplier_name' => 'required|string',
-            'note' => 'nullable|string',
-            'initial_balance' => 'nullable|integer',
-            'type' => ['required', Rule::in(['DentalLabSupplierAccount'])],
+            'COA_id' => 'required|integer',
+            'doctor_id' => 'nullable|integer',
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'cost' => 'nullable|integer',
         ];
     }
 }

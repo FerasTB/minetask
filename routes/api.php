@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Api\DentalLab\CoaController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
+use App\Http\Controllers\Api\DentalLab\DentalLabItemController;
 use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\Api\DentalLab\InvoiceController;
@@ -146,4 +147,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/invoice/doctor/{invoice}/item', [InvoiceController::class, 'storeDoctorInvoiceItem']);
     Route::post('dental/lab/receipt/doctor/{profile}', [ReceiptController::class, 'storeDoctorReceipt']);
     Route::post('dental/lab/accept/receipt/{receipt}', [ReceiptController::class, 'acceptDoctorReceipt']);
+    Route::post('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'storeSupplier']);
+    Route::get('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'supplierProfile']);
+    Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
 });

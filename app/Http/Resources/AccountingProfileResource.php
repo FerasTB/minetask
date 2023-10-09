@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Api\AccountingProfileController;
 use App\Models\Doctor;
@@ -34,7 +35,7 @@ class AccountingProfileResource extends JsonResource
             'lab' => new DentalLabResource($this->lab),
             'supplier_name' => $this->supplier_name,
             'initial_balance' => $this->initial_balance,
-            'type' => $this->type,
+            'type' => AccountingProfileType::getKey($this->type),
             'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
             'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
             'office_id' => $this->office_id,

@@ -20,14 +20,21 @@ use Illuminate\Http\Request;
 
 class AccountingProfileController extends Controller
 {
-    public function storeSupplier(StoreDentalLabSupplierAccountingProfileRequest $request)
+    public function storeSupplier(StoreDentalLabSupplierAccountingProfileRequest $request, DentalLab $lab)
     {
         $fields = $request->validated();
         $fields['type'] = AccountingProfileType::getValue($request->type);
-        $lab = DentalLab::find($request->lab_id);
         $this->authorize('createForLab', [AccountingProfile::class, $lab]);
         $profile = $lab->accountingProfiles()->create($fields);
         return new AccountingProfileResource($profile);
+    }
+
+    public function supplierProfile(DentalLab $lab)
+    {
+        $this->authorize('createForLab', [AccountingProfile::class, $lab]);
+        $accounts = $lab->accountingProfiles;
+        $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab']);
+        return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::DentalLabSupplierAccount);
     }
 
     public function StoreAccountProfileForDoctor(StoreDentalLabDoctorAccountingProfileRequest $request, DentalLab $lab, Doctor $doctor)

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SupplierItem extends Model
+class DentalLabItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['accounting_profile_id', 'name', 'COA_id', 'office_id', 'description', 'cost'];
+    protected $fillable = ['name', 'COA_id', 'dental_lab_id', 'doctor_id', 'description', 'cost'];
 
     public function COA()
     {
@@ -21,8 +21,8 @@ class SupplierItem extends Model
         return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
-    public function office()
+    public function lab()
     {
-        return $this->belongsTo(Office::class, 'office_id');
+        return $this->belongsTo(DentalLab::class, 'dental_lab_id');
     }
 }

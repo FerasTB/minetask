@@ -52,4 +52,9 @@ class DentalLab extends Model
     {
         return $this->hasMany(DentalLabService::class, 'dental_lab_id');
     }
+
+    public function supplierItem()
+    {
+        return $this->hasMany(DentalLabItem::class, 'dental_lab_id');
+    }
 }
