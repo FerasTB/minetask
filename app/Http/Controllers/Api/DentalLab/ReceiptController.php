@@ -30,6 +30,8 @@ class ReceiptController extends Controller
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PatientReceipt])->first();
         $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['status'] = TransactionStatus::Approved;
+        $fields['type'] = DentalLabTransaction::ResetVoucher;
         $receipt = $profile->receipts()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
         $receivable = COA::where([
