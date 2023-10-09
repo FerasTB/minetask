@@ -17,6 +17,7 @@ class InvoiceItemController extends Controller
     public function storeSupplierInvoiceItem(StoreSupplierInvoiceItemRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
+        $this->authorize('createForLab', Invoice::class);
         $item = $invoice->items()->create($fields);
         $lab = $invoice->lab;
         $payable = COA::where([

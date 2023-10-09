@@ -92,7 +92,8 @@ class ReceiptController extends Controller
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-        $receipt = $profile->receipts()->create($fields);
+        $fields['type'] = DentalLabTransaction::PaymentVoucher;
+        $fields['status'] = TransactionStatus::Approved;
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
         $payable = COA::where([
             'dental_lab_id' => $profile->lab->id,
@@ -102,6 +103,7 @@ class ReceiptController extends Controller
         abort_unless($payable != null && $cash != null, 403);
         abort_unless($cash->doctor->id != auth()->user()->decoct->id, 403);
         abort_unless($cash->type == COASubType::Cash, 403);
+        $receipt = $profile->receipts()->create($fields);
         $doubleEntryFields['receipt_id'] = $receipt->id;
         $doubleEntryFields['total_price'] = $receipt->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Negative;
@@ -134,7 +136,7 @@ class ReceiptController extends Controller
         $receipts = $supplier->receipts()->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
         return $total;
     }
 }

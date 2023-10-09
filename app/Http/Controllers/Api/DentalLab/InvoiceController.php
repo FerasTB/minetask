@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\DentalLab;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\COASubType;
 use App\Enums\COAType;
 use App\Enums\DentalDoctorTransaction;
@@ -103,9 +104,12 @@ class InvoiceController extends Controller
     public function storeSupplierInvoice(StoreSupplierInvoiceForDentalLabRequest $request, AccountingProfile $profile)
     {
         $fields = $request->validated();
+        abort_unless($profile->type == AccountingProfileType::DentalLabSupplierAccount, 403);
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalLabTransaction::PercherInvoice;
+        $fields['status'] = TransactionStatus::Approved;
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         return new PatientInvoiceResource($invoice);

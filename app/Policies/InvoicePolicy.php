@@ -21,6 +21,15 @@ class InvoicePolicy
         return $role != null;
     }
 
+    public function createForLab(User $user, Invoice $invoice): bool
+    {
+        if ($invoice->lab == null) {
+            return false;
+        }
+        $role = HasRole::where(['roleable_id' => $invoice->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
     public function acceptDentalLabInvoice(User $user, Invoice $invoice): bool
     {
         $role = HasRole::where(['roleable_id' => $invoice->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
