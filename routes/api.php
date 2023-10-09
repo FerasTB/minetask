@@ -151,4 +151,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'storeSupplier']);
     Route::get('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'supplierProfile']);
     Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
+    Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
+    Route::get('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
+    Route::get('dental/lab/{lab}/all/notification', [DentalLabController::class, 'allNotification']);
 });

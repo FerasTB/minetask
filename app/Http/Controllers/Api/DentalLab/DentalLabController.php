@@ -14,8 +14,10 @@ use App\Http\Requests\StoreDentalLabRequest;
 use App\Http\Requests\UpdateDentalLabRequest;
 use App\Http\Resources\DentalLabResource;
 use App\Http\Resources\DentalLabThroughHasRoleResource;
+use App\Http\Resources\NotificationResource;
 use App\Models\COA;
 use App\Models\HasRole;
+use Illuminate\Http\Request;
 
 class DentalLabController extends Controller
 {
@@ -149,5 +151,28 @@ class DentalLabController extends Controller
             'type' => COAType::COGS,
             'general_type' => COAGeneralType::Expenses,
         ]);
+    }
+
+    public function unreadNotification(DentalLab $lab)
+    {
+        $this->authorize('inLab', $lab);
+        return NotificationResource::collection($lab->unreadNotifications);
+    }
+
+    public function markAsRead(Request $request, DentalLab $lab)
+    {
+        $this->authorize('inLab', $lab);
+        $lab->unreadNotifications
+            ->when($request->id, function ($query) use ($request) {
+                return $query->where('id', $request->id);
+            })
+            ->markAsRead();
+        return response()->noContent();
+    }
+
+    public function allNotification(DentalLab $lab)
+    {
+        $this->authorize('inLab', $lab);
+        return NotificationResource::collection($lab->notifications);
     }
 }

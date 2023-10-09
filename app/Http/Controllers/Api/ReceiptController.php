@@ -30,6 +30,7 @@ use App\Models\Patient;
 use App\Models\Receipt;
 use App\Models\Role;
 use App\Models\TransactionPrefix;
+use App\Notifications\ReceiptCreated;
 use Illuminate\Http\Request;
 
 class ReceiptController extends Controller
@@ -167,6 +168,10 @@ class ReceiptController extends Controller
             $fields['status'] = TransactionStatus::Draft;
         }
         $receipt = $profile->receipts()->create($fields);
+        if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
+            $type = 'ReceiptFromDoctor';
+            $profile->lab->notify(new ReceiptCreated($receipt, $type));
+        }
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
         if ($profile->office->type == OfficeType::Combined) {
             $payable = COA::where([

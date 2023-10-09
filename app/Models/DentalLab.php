@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class DentalLab extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = ['percentage', 'type', 'end_time', 'start_time', 'number', 'address', 'image', 'name'];
 
