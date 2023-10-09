@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
 use App\Enums\COASubType;
+use App\Enums\DentalDoctorTransaction;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
 use App\Enums\SubRole;
@@ -158,6 +159,7 @@ class ReceiptController extends Controller
         $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => $profile->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
         $role = HasRole::where(['roleable_id' => $profile->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => auth()->id()])->first();
         if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
             $fields['status'] = TransactionStatus::Approved;
@@ -266,13 +268,15 @@ class ReceiptController extends Controller
     public static function labBalance(int $id, int $thisTransaction)
     {
         $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->where('status', TransactionStatus::Approved)->get();
+        $invoices = $supplier->invoices()->whereIn('type', DentalDoctorTransaction::getValues())->get();
         $totalNegative = $invoices != null ?
             $invoices->sum('total_price') : 0;
-        $receipts = $supplier->receipts()->where('status', TransactionStatus::Approved)->get();
+        $receipts = $supplier->receipts()->whereIn('type', DentalDoctorTransaction::getValues())
+            ->whereNot('status', TransactionStatus::Canceled)
+            ->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
         return $total;
     }
 }

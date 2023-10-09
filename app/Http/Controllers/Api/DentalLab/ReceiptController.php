@@ -50,6 +50,20 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $this->authorize('acceptDoctorReceipt', [$receipt]);
+        $profile = $receipt->account;
+        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
+        $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
+        $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $receipt2 = $profile->receipts()->create([
+            'note' => $receipt->note,
+            'date_of_payment' => now(),
+            'total_price' => $receipt->total_price,
+            'status' => TransactionStatus::Approved,
+            'type' => DentalLabTransaction::ResetVoucher,
+            'receipt_number' => $fields['receipt_number'],
+            'running_balance' => $fields['running_balance'],
+        ]);
+        $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
         $receivable = COA::where([
             'dental_lab_id' => $receipt->lab->id,
             'sub_type' => COASubType::Receivable
@@ -105,7 +119,7 @@ class ReceiptController extends Controller
         $receipts = $supplier->receipts()->whereIn('type', DentalLabTransaction::getValues())->get();
         $totalNegative = $receipts != null ?
             $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
+        $total = $totalPositive - $totalNegative - $thisTransaction + $supplier->initial_balance;
         return $total;
     }
 

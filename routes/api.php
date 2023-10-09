@@ -108,6 +108,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice/supplier/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storeSupplierInvoiceItem']);
     Route::post('invoice_receipt/account/{patient}', [App\Http\Controllers\Api\InvoiceReceiptsController::class, 'storeForPatient']);
     Route::post('invoice_receipt/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceReceiptItem']);
+    Route::post('receipt/dental-lab/{profile}', [App\Http\Controllers\Api\ReceiptController::class, 'storeDentalLabReceipt']);
     Route::apiResource('office/{office}/note', App\Http\Controllers\Api\NoteController::class);
     Route::post('accounting/expense/profile', [App\Http\Controllers\Api\ExpenseController::class, 'storeExpenseAccount']);
     Route::post('add/prefix/office/{office}/doctor/{doctor}', [App\Http\Controllers\TransactionPrefixController::class, 'temprary']);
