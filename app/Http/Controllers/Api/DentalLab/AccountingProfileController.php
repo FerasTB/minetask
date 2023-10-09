@@ -32,9 +32,9 @@ class AccountingProfileController extends Controller
     public function supplierProfile(DentalLab $lab)
     {
         $this->authorize('createForLab', [AccountingProfile::class, $lab]);
-        $accounts = $lab->accountingProfiles;
+        $accounts = $lab->accountingProfiles()->where('type', AccountingProfileType::DentalLabSupplierAccount);
         $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab']);
-        return DentalLabAccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::DentalLabSupplierAccount);
+        return DentalLabAccountingProfileResource::collection($accounts);
     }
 
     public function StoreAccountProfileForDoctor(StoreDentalLabDoctorAccountingProfileRequest $request, DentalLab $lab, Doctor $doctor)
