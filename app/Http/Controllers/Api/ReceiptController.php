@@ -190,6 +190,7 @@ class ReceiptController extends Controller
         $doubleEntryFields['type'] = DoubleEntryType::Negative;
         $payable->doubleEntries()->create($doubleEntryFields);
         $cash->doubleEntries()->create($doubleEntryFields);
+        $receipt->load('lab');
         return new ReceiptResource($receipt);
     }
 
