@@ -17,7 +17,7 @@ final class COAType extends Enum
     const NonCurrent = 2;
     const Capital = 3;
     const OwnerWithdraw = 4;
-    const COGS = 4;
+    const COGS = 5;
     const Type = null;
     // const Equity = 3;
     // const Revenue = 4;
