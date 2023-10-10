@@ -36,7 +36,7 @@ class InvoiceResource extends JsonResource
             'isForDentalDoctor' => $this->type != null ? in_array($this->type, DentalDoctorTransaction::getValues()) : null,
             'isForDentalLab' => $this->type != null ? in_array($this->type, DentalLabTransaction::getValues()) : null,
             'running_balance' => $this->running_balance,
-            'supplier' => $this->whenLoaded('account')->supplier_name,
+            'supplier' => $this->whenLoaded('account.supplier_name'),
             'invoice_number' => $this->invoice_number,
             'created_at' => $this->created_at,
         ];

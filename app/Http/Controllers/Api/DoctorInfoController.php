@@ -195,7 +195,7 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return ReceiptResource::collection($doctor->receipts()
             ->where('accounting_profiles.office_id', $office->id)
-            ->with(['patient', 'doctor', 'office', 'lab'])
+            ->with(['patient', 'doctor', 'office', 'lab', 'account.supplier_name'])
             ->get());
     }
 
@@ -204,7 +204,7 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return InvoiceResource::collection($doctor->invoices()
             ->where('accounting_profiles.office_id', $office->id)
-            ->with(['patient', 'doctor', 'office', 'lab', 'account'])
+            ->with(['patient', 'doctor', 'office', 'lab', 'account.supplier_name'])
             ->get());
     }
 
