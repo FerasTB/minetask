@@ -25,6 +25,7 @@ class InvoiceResource extends JsonResource
             'office' => new OfficeResource($this->whenLoaded('office')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),
+            'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
             'receipts' => $this->receipts,
             'status' => TransactionStatus::getKey($this->status),

@@ -24,8 +24,10 @@ class ReceiptResource extends JsonResource
             'date_of_payment' => $this->date_of_payment,
             'note' => $this->note,
             'invoice' => new PatientInvoiceResource($this->invoice),
-            'doctor' => new DoctorResource($this->doctor),
+            'office' => new OfficeResource($this->whenLoaded('office')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),
+            'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'running_balance' => $this->running_balance,
             'status' => TransactionStatus::getKey($this->status),
             'type' => $this->type != null ? (in_array($this->type, DentalDoctorTransaction::getValues()) ?

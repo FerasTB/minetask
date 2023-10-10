@@ -193,13 +193,19 @@ class DoctorInfoController extends Controller
     public function myReceipts(Office $office)
     {
         $doctor = auth()->user()->doctor;
-        return ReceiptResource::collection($doctor->receipts()->where('accounting_profiles.office_id', $office->id)->get());
+        return ReceiptResource::collection($doctor->receipts()
+            ->where('accounting_profiles.office_id', $office->id)
+            ->with(['patient', 'doctor', 'office', 'lab'])
+            ->get());
     }
 
     public function myInvoices(Office $office)
     {
         $doctor = auth()->user()->doctor;
-        return InvoiceResource::collection($doctor->invoices()->where('accounting_profiles.office_id', $office->id)->get());
+        return InvoiceResource::collection($doctor->invoices()
+            ->where('accounting_profiles.office_id', $office->id)
+            ->with(['patient', 'doctor', 'office', 'lab'])
+            ->get());
     }
 
     public function myRecords()
