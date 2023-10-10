@@ -53,7 +53,7 @@ class ReceiptController extends Controller
         $fields = $request->validated();
         $this->authorize('acceptDoctorReceipt', [$receipt]);
         $profile = $receipt->account;
-        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
+        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
         $receipt2 = $profile->receipts()->create([
@@ -89,7 +89,7 @@ class ReceiptController extends Controller
     public function storeSupplierReceipt(StoreSupplierReceiptForDentalLabRequest $request, AccountingProfile $profile)
     {
         $fields = $request->validated();
-        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
+        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
         $fields['type'] = DentalLabTransaction::PaymentVoucher;
