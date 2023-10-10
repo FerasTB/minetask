@@ -29,7 +29,7 @@ class InvoiceItemController extends Controller
         $expensesCoa = COA::findOrFail($request->item_coa);
         abort_unless($payable != null && $expensesCoa != null && $inventory != null, 403);
         // abort_unless($expensesCoa->doctor->id == auth()->user()->decoct->id, 403);
-        abort_unless($expensesCoa->type == COAGeneralType::Expenses, 403);
+        abort_unless($expensesCoa->general_type == COAGeneralType::Expenses, 403);
         $doubleEntryFields['invoice_item_id'] = $item->id;
         $doubleEntryFields['total_price'] = $item->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
