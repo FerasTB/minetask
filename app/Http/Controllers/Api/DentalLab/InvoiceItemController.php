@@ -21,12 +21,10 @@ class InvoiceItemController extends Controller
         $item = $invoice->items()->create($fields);
         $lab = $invoice->lab;
         $payable = COA::where([
-            'dental_lab_id' => $lab->id,
-            'doctor_id' => $invoice->doctor->id, 'sub_type' => COASubType::Payable
+            'dental_lab_id' => $lab->id, 'sub_type' => COASubType::Payable
         ])->first();
         $inventory = COA::where([
-            'dental_lab_id' => $lab->id,
-            'doctor_id' => $invoice->doctor->id, 'sub_type' => COASubType::Inventory
+            'dental_lab_id' => $lab->id, 'sub_type' => COASubType::Inventory
         ])->first();
         $expensesCoa = COA::findOrFail($request->item_coa);
         abort_unless($payable != null && $expensesCoa != null && $inventory != null, 403);
