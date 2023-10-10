@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,7 @@ class InvoiceItemsResource extends JsonResource
             'amount' => $this->amount,
             'total_price' => $this->total_price,
             'price_per_one' => $this->price_per_one,
+            'invoice' => new InvoiceResource($this->whenLoaded('invoice')),
         ];
     }
 }

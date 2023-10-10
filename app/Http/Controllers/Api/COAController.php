@@ -94,10 +94,10 @@ class COAController extends Controller
     {
         if ($coa->doctor) {
             $this->authorize('updateForDoctor', [$coa, auth()->user()->doctor]);
-            return DoubleEntryResource::collection($coa->doubleEntries);
+            return DoubleEntryResource::collection($coa->doubleEntries()->with('invoiceItem.invoice', 'invoice.items')->get());
         }
         $this->authorize('updateForOffice', [$coa, $coa->office]);
-        return DoubleEntryResource::collection($coa->doubleEntries);
+        return DoubleEntryResource::collection($coa->doubleEntries()->with('invoiceItem.invoice', 'invoice.items')->get());
     }
 
     /**
