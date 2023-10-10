@@ -192,7 +192,7 @@ class DoctorInfoController extends Controller
     public function myReceipts(Office $office)
     {
         $doctor = auth()->user()->doctor;
-        return $doctor->receipts;
+        return $doctor->receipts()->where('account.office.id', $office->id)->get();
     }
 
     public function myInvoices()
