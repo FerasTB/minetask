@@ -96,13 +96,12 @@ class ReceiptController extends Controller
         $fields['status'] = TransactionStatus::Approved;
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
         $payable = COA::where([
-            'dental_lab_id' => $profile->lab->id,
-            'doctor_id' => $profile->doctor->id, 'sub_type' => COASubType::Payable
+            'dental_lab_id' => $profile->lab->id, 'sub_type' => COASubType::Payable
         ])->first();
         $cash = COA::findOrFail($request->cash_coa);
         abort_unless($payable != null && $cash != null, 403);
-        abort_unless($cash->doctor->id != auth()->user()->decoct->id, 403);
-        abort_unless($cash->type == COASubType::Cash, 403);
+        abort_unless($cash->lab->id != $profile->lab->id, 403);
+        abort_unless($cash->sub_type == COASubType::Cash, 403);
         $receipt = $profile->receipts()->create($fields);
         $doubleEntryFields['receipt_id'] = $receipt->id;
         $doubleEntryFields['total_price'] = $receipt->total_price;
