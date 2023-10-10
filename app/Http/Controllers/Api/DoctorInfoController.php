@@ -195,7 +195,7 @@ class DoctorInfoController extends Controller
         $doctor = auth()->user()->doctor;
         return ReceiptResource::collection($doctor->receipts()
             ->where('accounting_profiles.office_id', $office->id)
-            ->with(['patient', 'doctor', 'office', 'lab', 'account.supplier_name'])
+            ->with(['patient', 'doctor', 'office', 'lab', 'account'])
             ->get());
     }
 
