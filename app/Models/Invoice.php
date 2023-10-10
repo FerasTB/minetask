@@ -70,7 +70,7 @@ class Invoice extends Model
 
     public function account()
     {
-        return $this->belongsTo(AccountingProfile::class, 'account_profile_id');
+        return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
 
     public function items()
