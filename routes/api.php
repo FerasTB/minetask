@@ -93,6 +93,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('list/diagnosis', App\Http\Controllers\Api\DiagnosisListController::class);
     Route::apiResource('list/drug', App\Http\Controllers\Api\DrugListController::class);
     Route::apiResource('coa', App\Http\Controllers\Api\COAController::class);
+    Route::apiResource('coa/{coa}/double/entry', [App\Http\Controllers\Api\COAController::class, 'showDoubleEntry']);
     Route::get('office/{office}/coa/group/owner', [App\Http\Controllers\Api\CoaGroupController::class, 'indexOwner']);
     Route::apiResource('office/{office}/coa/group', App\Http\Controllers\Api\CoaGroupController::class);
     Route::put('coa/{coa}/initial', [App\Http\Controllers\Api\COAController::class, 'setInitialBalance']);

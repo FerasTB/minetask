@@ -13,6 +13,7 @@ use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
 use App\Http\Requests\UpdateCoaRequest;
 use App\Http\Resources\COAResource;
+use App\Http\Resources\DoubleEntryResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
@@ -87,6 +88,16 @@ class COAController extends Controller
     public function show(COA $cOA)
     {
         //
+    }
+
+    public function showDoubleEntry(COA $coa)
+    {
+        if ($coa->doctor) {
+            $this->authorize('updateForDoctor', [$coa, auth()->user()->doctor]);
+            return DoubleEntryResource::collection($coa->doubleEntries);
+        }
+        $this->authorize('updateForOffice', [$coa, $coa->office]);
+        return DoubleEntryResource::collection($coa->doubleEntries);
     }
 
     /**
