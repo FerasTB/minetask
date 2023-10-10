@@ -106,7 +106,7 @@ class InvoiceController extends Controller
         $fields = $request->validated();
         abort_unless($profile->type == AccountingProfileType::DentalLabSupplierAccount, 403);
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
-        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
+        $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::SupplierInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         $fields['type'] = DentalLabTransaction::PercherInvoice;
         $fields['status'] = TransactionStatus::Approved;
