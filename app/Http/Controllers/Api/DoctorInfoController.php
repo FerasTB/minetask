@@ -18,6 +18,7 @@ use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\MyPatientThroughAccountingProfileResource;
 use App\Http\Resources\NotificationResource;
+use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
@@ -192,13 +193,13 @@ class DoctorInfoController extends Controller
     public function myReceipts(Office $office)
     {
         $doctor = auth()->user()->doctor;
-        return $doctor->receipts()->where('accounting_profiles.office_id', $office->id)->get();
+        return ReceiptResource::collection($doctor->receipts()->where('accounting_profiles.office_id', $office->id)->get());
     }
 
-    public function myInvoices()
+    public function myInvoices(Office $office)
     {
         $doctor = auth()->user()->doctor;
-        return InvoiceResource::collection($doctor->invoices);
+        return InvoiceResource::collection($doctor->invoices()->where('accounting_profiles.office_id', $office->id)->get());
     }
 
     public function myRecords()

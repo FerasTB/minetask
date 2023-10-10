@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('doctor/profile', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyInfo']);
     Route::get('doctor/docs', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecords']);
     Route::get('doctor/receipts/{office}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myReceipts']);
+    Route::get('doctor/invoices/{office}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myInvoices']);
     Route::get('doctor/patient/docs/{patient}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecordsForPatient']);
     Route::get('doctor/case/docs/{case}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecordsForCase']);
     Route::get('office/{office}/doctor/my_patient', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatient']);
