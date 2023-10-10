@@ -36,6 +36,7 @@ class ReceiptResource extends JsonResource
                 null,
             'isForDentalDoctor' => $this->type != null ? in_array($this->type, DentalDoctorTransaction::getValues()) : null,
             'isForDentalLab' => $this->type != null ? in_array($this->type, DentalLabTransaction::getValues()) : null,
+            'supplier' => $this->whenLoaded('account')->supplier_name,
             'created_at' => $this->created_at,
             'receipt_number' => $this->receipt_number,
         ];
