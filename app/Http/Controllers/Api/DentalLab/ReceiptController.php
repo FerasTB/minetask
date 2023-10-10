@@ -100,7 +100,7 @@ class ReceiptController extends Controller
         ])->first();
         $cash = COA::findOrFail($request->cash_coa);
         abort_unless($payable != null && $cash != null, 403);
-        abort_unless($cash->lab->id != $profile->lab->id, 403);
+        abort_unless($cash->lab->id == $profile->lab->id, 403);
         abort_unless($cash->sub_type == COASubType::Cash, 403);
         $receipt = $profile->receipts()->create($fields);
         $doubleEntryFields['receipt_id'] = $receipt->id;
