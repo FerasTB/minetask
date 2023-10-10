@@ -12,6 +12,7 @@ use App\Http\Resources\DoctorInfoResource;
 use App\Http\Resources\DoctorPatientWithAppointmentResource;
 use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\DrugResource;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
@@ -186,6 +187,18 @@ class DoctorInfoController extends Controller
     public function destroy(Doctor $doctor)
     {
         //
+    }
+
+    public function myReceipts(Office $office)
+    {
+        $doctor = auth()->user()->doctor;
+        return $doctor->receipts;
+    }
+
+    public function myInvoices()
+    {
+        $doctor = auth()->user()->doctor;
+        return InvoiceResource::collection($doctor->invoices);
     }
 
     public function myRecords()

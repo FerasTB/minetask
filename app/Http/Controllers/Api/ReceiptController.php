@@ -118,6 +118,10 @@ class ReceiptController extends Controller
             //     'office_id' => $office->id, 'doctor_id' => null
             // ])->first();
             $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
+            if (!$request->has('date_of_payment')) {
+                $fields['date_of_payment'] = now();
+            }
             $receipt = $profile->receipts()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
@@ -168,6 +172,10 @@ class ReceiptController extends Controller
         } else {
             $fields['status'] = TransactionStatus::Draft;
         }
+        $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
+        if (!$request->has('date_of_payment')) {
+            $fields['date_of_payment'] = now();
+        }
         $receipt = $profile->receipts()->create($fields);
         if ($profile->lab->type == DentalLabType::Real) {
             $type = 'ReceiptFromDoctor';
@@ -207,6 +215,10 @@ class ReceiptController extends Controller
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::ResetVoucher;
+            if (!$request->has('date_of_payment')) {
+                $fields['date_of_payment'] = now();
+            }
             $receipt = $profile->receipts()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             $receivable = COA::where([

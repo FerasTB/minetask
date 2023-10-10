@@ -81,6 +81,10 @@ class InvoiceController extends Controller
                 'patient_id' => $patient->id,
                 'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
             ])->first();
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
+            if (!$request->has('date_of_invoice')) {
+                $fields['date_of_invoice'] = now();
+            }
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
             $invoice = $profile->invoices()->create($fields);
@@ -105,6 +109,10 @@ class InvoiceController extends Controller
         $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
         $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+        if (!$request->has('date_of_invoice')) {
+            $fields['date_of_invoice'] = now();
+        }
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         return new PatientInvoiceResource($invoice);
@@ -126,6 +134,9 @@ class InvoiceController extends Controller
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         $fields['type'] = DentalDoctorTransaction::PercherInvoice;
         $fields['status'] = TransactionStatus::Approved;
+        if (!$request->has('date_of_invoice')) {
+            $fields['date_of_invoice'] = now();
+        }
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         // $invoice->load(['doctor', 'office', 'items', 'lab']);
@@ -150,6 +161,9 @@ class InvoiceController extends Controller
         $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
         $fields['type'] = DentalDoctorTransaction::PercherInvoice;
         $fields['total_price'] = $invoice->total_price;
+        if (!$request->has('date_of_invoice')) {
+            $fields['date_of_invoice'] = now();
+        }
         $percherInvoice = $account->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         foreach ($invoice->items as $item) {
