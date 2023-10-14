@@ -55,11 +55,12 @@ class LabOrderController extends Controller
                 $orderDetail->teeth()->create(['number_of_tooth' => $tooth]);
             }
         }
-        if ($profile->lab->type == DentalLabType::Draft) {
+        if ($profile->lab->type == DentalLabType::Real) {
             $lab = $profile->lab;
             $type = 'NewOrder';
             $lab->notify(new OrderCreated($order, $type));
         }
+        $order->load(['details', 'details.teeth']);
         return new LabOrderResource($order);
     }
 

@@ -17,6 +17,18 @@ class LabOrderPolicy
         return $profile->doctor->id == $user->doctor->id;
     }
 
+    public function storeForLab(User $user, AccountingProfile $profile): bool
+    {
+        $role = HasRole::where(['roleable_id' => $profile->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $profile->doctor->dental_lab_id == $profile->lab->id && $role != null;
+    }
+
+    public function acceptFromDoctor(User $user, LabOrder $order): bool
+    {
+        $role = HasRole::where(['roleable_id' => $order->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return  $role != null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
