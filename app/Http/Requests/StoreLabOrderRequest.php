@@ -24,7 +24,7 @@ class StoreLabOrderRequest extends FormRequest
         return [
             'note' => 'string|nullable',
             'attached_materials' => 'string|nullable',
-            'patient_id' => 'integer|nullable',
+            'patient_id' => 'integer|required',
             'details' => 'array|required',
             'details.*' => 'array|required',
             'details.*.note' => 'string|nullable',
