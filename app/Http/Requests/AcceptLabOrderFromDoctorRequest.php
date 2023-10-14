@@ -28,6 +28,10 @@ class AcceptLabOrderFromDoctorRequest extends FormRequest
             'steps' => 'integer|nullable',
             'received_date' => 'required|date',
             'delivery_date' => 'after:received_date|date|required',
+            'order_steps' => 'array|required',
+            'order_steps.*' => 'array|required',
+            'order_steps.*.name' => 'string|required',
+            'order_steps.*.note' => 'string|nullable',
         ];
     }
 }

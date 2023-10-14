@@ -26,7 +26,7 @@ class LabOrderPolicy
     public function acceptFromDoctor(User $user, LabOrder $order): bool
     {
         $role = HasRole::where(['roleable_id' => $order->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
-        return  $role != null;
+        return  $role != null && $order->doctor->dental_lab_id == null;
     }
 
     /**

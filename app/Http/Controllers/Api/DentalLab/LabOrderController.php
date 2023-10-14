@@ -48,6 +48,15 @@ class LabOrderController extends Controller
         $fields = $request->validated();
         $this->authorize('acceptFromDoctor', [$order]);
         $fields['status'] = LabOrderStatus::Approved;
+        foreach ($fields['order_steps'] as $step) {
+            $rank = 1;
+            $step['rank'] = $rank;
+            $OrderStep = $order->orderSteps()->create($step);
+            if ($rank == 1) {
+                $fields['current_step_id'] = $OrderStep->id;
+            }
+            $rank++;
+        }
         $order->updated($fields);
         $order->load(['details', 'details.teeth']);
         return new LabOrderResource($order);

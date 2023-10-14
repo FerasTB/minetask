@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('note')->nullable();
             $table->string('rank');
+            $table->boolean('isFinished')->default(false);
             $table->timestamps();
         });
     }

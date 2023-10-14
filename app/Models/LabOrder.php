@@ -12,7 +12,7 @@ class LabOrder extends Model
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
 
-    protected $fillable = ['patient_name', 'steps', 'status', 'delivery_date', 'received_date', 'accounting_profile_id', 'note', 'attached_materials', 'patient_id'];
+    protected $fillable = ['patient_name', 'steps', 'status', 'delivery_date', 'received_date', 'accounting_profile_id', 'note', 'attached_materials', 'patient_id', 'current_step_id'];
 
     public function doctor()
     {
@@ -69,5 +69,15 @@ class LabOrder extends Model
     public function details()
     {
         return $this->hasMany(LabOrderDetail::class, 'lab_order_id');
+    }
+
+    public function orderSteps()
+    {
+        return $this->hasMany(LabOrderStep::class, 'lab_order_id');
+    }
+
+    public function currentStep()
+    {
+        return $this->belongsTo(LabOrderStep::class, 'current_step_id');
     }
 }

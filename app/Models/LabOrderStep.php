@@ -9,7 +9,7 @@ class LabOrderStep extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['rank', 'note', 'name'];
+    protected $fillable = ['rank', 'note', 'name', 'isFinished'];
 
     public function order()
     {
