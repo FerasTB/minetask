@@ -45,6 +45,8 @@ class LabOrderController extends Controller
         }
         if ($profile->lab->type == DentalLabType::Draft) {
             $fields['status'] = LabOrderStatus::Approved;
+        } else {
+            $fields['status'] = LabOrderStatus::Draft;
         }
         $order = $profile->labOrders()->create($fields);
         foreach ($fields['details'] as $detail) {

@@ -18,4 +18,5 @@ final class LabOrderStatus extends Enum
     const Finished = 3;
     const Received = 4;
     const Canceled = 5;
+    const NoStatus = null;
 }
