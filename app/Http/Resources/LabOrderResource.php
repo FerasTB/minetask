@@ -21,7 +21,7 @@ class LabOrderResource extends JsonResource
             'delivery_date' => $this->delivery_date,
             'status' => LabOrderStatus::getKey($this->status),
             'steps' => $this->steps,
-            'current_step' => $this->currentStep->rank,
+            'current_step' => $this->currentStep == null ? null : $this->currentStep->rank,
             'order_steps' => LabOrderStepResource::collection($this->whenLoaded('orderSteps')),
             'attached_materials' => $this->attached_materials,
             'note' => $this->note,
