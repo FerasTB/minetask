@@ -60,8 +60,8 @@ class LabOrderController extends Controller
             $type = 'NewOrder';
             $lab->notify(new OrderCreated($order, $type));
         }
-        // $order->load(['details', 'details.teeth']);
-        $order = LabOrder::find($order->id)->with(['details', 'details.teeth']);
+        $order->load(['details', 'details.teeth']);
+        // $order = LabOrder::find($order->id)->with(['details', 'details.teeth']);
         return new LabOrderResource($order);
     }
 

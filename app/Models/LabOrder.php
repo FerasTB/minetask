@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class LabOrder extends Model
 {
     use HasFactory;
+    use \Znck\Eloquent\Traits\BelongsToThrough;
+
 
     protected $fillable = ['patient_name', 'steps', 'status', 'delivery_date', 'received_date', 'accounting_profile_id', 'note', 'attached_materials', 'patient_id'];
 
