@@ -51,6 +51,11 @@ class AccountingProfile extends Model
         return $this->hasMany(InvoiceReceipt::class, 'accounting_profile_id');
     }
 
+    public function labOrders()
+    {
+        return $this->hasMany(LabOrder::class, 'accounting_profile_id');
+    }
+
     public function accountOutcome()
     {
         $positive = $this->invoices();

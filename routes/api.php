@@ -118,6 +118,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('get/prefix/office/{office}', [App\Http\Controllers\TransactionPrefixController::class, 'index']);
     Route::post('doctor/image/office/{office}', [App\Http\Controllers\DoctorImageController::class, 'store']);
     Route::get('doctor/image/{image}', [App\Http\Controllers\DoctorImageController::class, 'show']);
+    Route::post('doctor/lab/{profile}/order', [App\Http\Controllers\Api\LabOrderController::class, 'store']);
     Route::get('app/patient/appointment', [App\Http\Controllers\Api\AppointmentController::class, 'indexForPatient']);
     Route::get('app/patient/record', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsRecord']);
     Route::get('app/patient/doctor', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsDoctor']);
