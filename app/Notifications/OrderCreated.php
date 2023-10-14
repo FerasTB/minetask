@@ -49,9 +49,9 @@ class OrderCreated extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'doctor_id' => $order->doctor->id,
-            'order_id' => $order->id,
-            'type' => $type,
+            'doctor_id' => $this->order->doctor->id,
+            'order_id' => $this->order->id,
+            'type' => $this->type,
         ];
     }
 }
