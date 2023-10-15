@@ -13,7 +13,7 @@ use App\Notifications\Orderstatus;
 class LabOrderStepController extends Controller
 {
 
-    public function markStepAsFinished(StoreLabOrderStepRequest $request, LabOrderStep $step)
+    public function markStepAsFinished(LabOrderStep $step)
     {
         abort_unless($step->id == $step->order->current_step_id, 403);
         $step->update(['isFinished' => true]);

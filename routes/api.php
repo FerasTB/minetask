@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\DentalLab\DentalLabServiceController;
 use App\Http\Controllers\Api\DentalLab\DoctorController;
 use App\Http\Controllers\Api\DentalLab\InvoiceController;
 use App\Http\Controllers\Api\DentalLab\InvoiceItemController;
+use App\Http\Controllers\Api\DentalLab\LabOrderController;
+use App\Http\Controllers\Api\DentalLab\LabOrderStepController;
 use App\Http\Controllers\Api\DentalLab\ReceiptController;
 use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\Api\DoctorInfoController;
@@ -155,6 +157,8 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'storeSupplier']);
     Route::get('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'supplierProfile']);
     Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
+    Route::post('dental/lab/accept/order/{order}', [LabOrderController::class, 'acceptOrderFromDoctor']);
+    Route::get('dental/lab/accept/order/step/{step}/as-finished', [LabOrderStepController::class, 'markStepAsFinished']);
     Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
     Route::get('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
     Route::get('dental/lab/{lab}/all/notification', [DentalLabController::class, 'allNotification']);
