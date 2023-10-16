@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class LabOrderStep extends Model
 {
     use HasFactory;
+    use \Znck\Eloquent\Traits\BelongsToThrough;
+
 
     protected $fillable = ['rank', 'note', 'name', 'isFinished', 'user_id'];
 
