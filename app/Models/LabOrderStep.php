@@ -15,4 +15,20 @@ class LabOrderStep extends Model
     {
         return $this->belongsTo(LabOrder::class, 'lab_order_id');
     }
+
+    public function lab()
+    {
+        return $this->belongsToThrough(
+            DentalLab::class,
+            AccountingProfile::class,
+            LabOrder::class,
+            null,
+            '',
+            [
+                LabOrder::class => 'lab_order_id',
+                AccountingProfile::class => 'accounting_profile_id',
+                DentalLab::class => 'dental_lab_id'
+            ]
+        );
+    }
 }

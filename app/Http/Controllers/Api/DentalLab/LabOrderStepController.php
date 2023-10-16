@@ -45,7 +45,14 @@ class LabOrderStepController extends Controller
     {
         return auth()->user()->dentalLabSteps()
             ->with('order', 'order.lab')
-            ->where('order.lab.id', $lab->id)
+            ->whereHas(
+                'lab',
+                function ($query) use ($lab) {
+                    $query->where([
+                        'id' => $lab->id,
+                    ]);
+                }
+            )
             ->get();
     }
 
