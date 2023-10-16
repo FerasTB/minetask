@@ -22,8 +22,10 @@ class LabOrderStep extends Model
     {
         return $this->belongsToThrough(
             DentalLab::class,
-            AccountingProfile::class,
-            LabOrder::class,
+            [
+                AccountingProfile::class,
+                LabOrder::class,
+            ],
             null,
             '',
             [
