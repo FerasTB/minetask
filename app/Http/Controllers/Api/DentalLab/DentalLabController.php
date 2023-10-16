@@ -6,6 +6,7 @@ use App\Enums\COAGeneralType;
 use App\Enums\COASubType;
 use App\Enums\COAType;
 use App\Enums\DentalLabType;
+use App\Enums\Role as EnumsRole;
 use App\Enums\SubRole;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
@@ -17,6 +18,10 @@ use App\Http\Resources\DentalLabThroughHasRoleResource;
 use App\Http\Resources\NotificationResource;
 use App\Models\COA;
 use App\Models\HasRole;
+use App\Models\ModelHasRole;
+use App\Models\Patient;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DentalLabController extends Controller
@@ -122,6 +127,30 @@ class DentalLabController extends Controller
         //
     }
 
+    public function addEmployee(DentalLab $lab, Patient $patient)
+    {
+        $this->authorize('LabOwner', [$lab]);
+        abort_unless($patient->user != null, 403);
+        $user = $patient->user;
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        abort_unless($role == null, 403);
+        $role = Role::findOfFail(Role::DentalLabTechnician);
+        if (!$user->hasRole($role)) {
+            $role = ModelHasRole::create([
+                'role_id' => $role->id,
+                'roleable_id' => $user->id,
+                'roleable_type' => 'App\Models\User',
+            ]);
+        }
+        $user->roles()->create([
+            'roleable_id' => $lab->id,
+            'roleable_type' => 'App\Models\DentalLab',
+            'sub_role' => SubRole::DentalLabTechnician,
+        ]);
+        $user->update(['current_role_id' => $role->id]);
+        return response('done', 201);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -174,5 +203,11 @@ class DentalLabController extends Controller
     {
         $this->authorize('inLab', $lab);
         return NotificationResource::collection($lab->notifications);
+    }
+
+    public function allUsers(DentalLab $lab)
+    {
+        $this->authorize('LabOwner', [$lab]);
+        return $lab->allUsers;
     }
 }

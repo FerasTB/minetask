@@ -58,4 +58,9 @@ class DentalLab extends Model
     {
         return $this->hasMany(DentalLabItem::class, 'dental_lab_id');
     }
+
+    public function allUsers()
+    {
+        return $this->morphToMany(User::class, 'roleable', 'has_roles', 'roleable_id');
+    }
 }

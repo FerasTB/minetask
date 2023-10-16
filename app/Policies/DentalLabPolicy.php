@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\SubRole;
 use App\Models\DentalLab;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -15,6 +16,12 @@ class DentalLabPolicy
     public function inLab(User $user, DentalLab $lab): bool
     {
         $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
+    public function LabOwner(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id, 'sub_role' => SubRole::DentalLabOwner])->first();
         return $role != null;
     }
 

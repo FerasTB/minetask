@@ -18,4 +18,5 @@ final class SubRole extends Enum
     const OfficeSecretary = 3;
     const DentalLabOwner = 4;
     const DentalLabDraft = 5;
+    const DentalLabTechnician = 6;
 }

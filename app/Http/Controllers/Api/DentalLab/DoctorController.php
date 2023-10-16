@@ -12,6 +12,7 @@ use App\Http\Resources\DoctorResource;
 use App\Models\DentalLab;
 use App\Models\Doctor;
 use App\Models\Office;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -19,10 +20,17 @@ class DoctorController extends Controller
     public function allDoctor(DentalLab $lab)
     {
         $this->authorize('inLab', $lab);
-        $accounts = $lab->accountingProfiles()
-            ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
-            ->with('doctor', 'office', 'lab', 'invoices', 'receipts', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps')->get();
-        return DentalLabAccountingProfileResource::collection($accounts);
+        if (auth()->user()->currentRole->id == Role::DentalLabDoctor) {
+            $accounts = $lab->accountingProfiles()
+                ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
+                ->with('doctor', 'office', 'lab', 'invoices', 'receipts', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps')->get();
+            return DentalLabAccountingProfileResource::collection($accounts);
+        } else {
+            $accounts = $lab->accountingProfiles()
+                ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
+                ->with('doctor', 'office', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps')->get();
+            return DentalLabAccountingProfileResource::collection($accounts);
+        }
     }
 
     public function labDoctor(DentalLab $lab)

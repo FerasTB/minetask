@@ -39,7 +39,17 @@ class LabOrderController extends Controller
                 $orderDetail->teeth()->create(['number_of_tooth' => $tooth]);
             }
         }
-        $order->load(['details', 'details.teeth']);
+        $rank = 1;
+        foreach ($fields['order_steps'] as $step) {
+            $step['rank'] = $rank;
+            $OrderStep = $order->orderSteps()->create($step);
+            if ($rank == 1) {
+                $fields['current_step_id'] = $OrderStep->id;
+            }
+            $rank++;
+        }
+        $order->update($fields);
+        $order->load(['details', 'details.teeth', 'orderSteps']);
         return new LabOrderResource($order);
     }
 

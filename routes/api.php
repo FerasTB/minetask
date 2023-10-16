@@ -144,7 +144,6 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/supplier/{profile}/create/receipt', [ReceiptController::class, 'storeSupplierReceipt']);
     Route::post('dental/lab/{lab}/doctor/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForDoctor']);
     Route::post('dental/lab/{lab}/doctor/not-exist/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForNotExistDoctor']);
-    Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
     Route::get('dental/lab/{lab}/only-me-doctor', [DoctorController::class, 'labDoctor']);
     Route::post('dental/lab/{lab}/doctor/create', [DoctorController::class, 'storeDoctor']);
     Route::apiResource('dental/lab/{lab}/coa', CoaController::class);
@@ -158,8 +157,14 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::get('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'supplierProfile']);
     Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
     Route::post('dental/lab/accept/order/{order}', [LabOrderController::class, 'acceptOrderFromDoctor']);
-    Route::get('dental/lab/accept/order/step/{step}/as-finished', [LabOrderStepController::class, 'markStepAsFinished']);
+    Route::post('dental/lab/store/order/{profile}', [LabOrderController::class, 'store']);
     Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
     Route::get('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
     Route::get('dental/lab/{lab}/all/notification', [DentalLabController::class, 'allNotification']);
+    Route::get('dental/lab/{lab}/all/users', [DentalLabController::class, 'allUsers']);
+    Route::get('dental/lab/{lab}/add/user', [DentalLabController::class, 'addEmployee']);
+});
+Route::group(['middleware' => ['auth:sanctum', 'IsDentalDoctorTechnician']], function () {
+    Route::get('dental/lab/accept/order/step/{step}/as-finished', [LabOrderStepController::class, 'markStepAsFinished']);
+    Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
 });
