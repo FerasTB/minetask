@@ -53,7 +53,7 @@ class LabOrderStepController extends Controller
             //         ]);
             //     }
             // )
-            ->where('lab.id', $lab->id)
+            // ->where('lab.id', $lab->id)
             ->get();
     }
 
