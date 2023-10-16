@@ -9,6 +9,7 @@ use App\Models\LabOrderStep;
 use App\Http\Requests\StoreLabOrderStepRequest;
 use App\Http\Requests\UpdateLabOrderStepRequest;
 use App\Http\Resources\LabOrderResource;
+use App\Http\Resources\LabOrderStepResource;
 use App\Models\DentalLab;
 use App\Models\HasRole;
 use App\Notifications\Orderstatus;
@@ -43,7 +44,7 @@ class LabOrderStepController extends Controller
      */
     public function index(DentalLab $lab)
     {
-        return auth()->user()->dentalLabSteps()
+        return LabOrderStepResource::collection(auth()->user()->dentalLabSteps()
             ->with('order', 'lab')
             // ->whereHas(
             //     'lab',
@@ -54,7 +55,7 @@ class LabOrderStepController extends Controller
             //     }
             // )
             // ->where('lab.id', $lab->id)
-            ->get();
+            ->get());
     }
 
     /**
