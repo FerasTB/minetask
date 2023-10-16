@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DentalLab;
 use App\Http\Requests\StoreDentalLabRequest;
 use App\Http\Requests\UpdateDentalLabRequest;
+use App\Http\Resources\DentalLabEmployeeResource;
 use App\Http\Resources\DentalLabResource;
 use App\Http\Resources\DentalLabThroughHasRoleResource;
 use App\Http\Resources\NotificationResource;
@@ -208,6 +209,6 @@ class DentalLabController extends Controller
     public function allUsers(DentalLab $lab)
     {
         $this->authorize('LabOwner', [$lab]);
-        return $lab->allUsers;
+        return DentalLabEmployeeResource::collection($lab->allUsers()->with('patient', 'doctor')->get());
     }
 }
