@@ -73,6 +73,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Patient::class, 'user_id');
     }
 
+    public function dentalLabSteps()
+    {
+        return $this->hasMany(LabOrderStep::class, 'user_id');
+    }
+
     public function canAccessFilament(): bool
     {
         return str_ends_with($this->email, '@marstaan.com') && $this->hasVerifiedEmail();

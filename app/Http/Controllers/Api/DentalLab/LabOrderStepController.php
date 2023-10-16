@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\DentalLab;
 
 use App\Enums\LabOrderStatus;
+use App\Enums\SubRole;
 use App\Http\Controllers\Controller;
 use App\Models\LabOrderStep;
 use App\Http\Requests\StoreLabOrderStepRequest;
 use App\Http\Requests\UpdateLabOrderStepRequest;
 use App\Http\Resources\LabOrderResource;
+use App\Models\DentalLab;
+use App\Models\HasRole;
 use App\Notifications\Orderstatus;
 
 class LabOrderStepController extends Controller
@@ -15,7 +18,10 @@ class LabOrderStepController extends Controller
 
     public function markStepAsFinished(LabOrderStep $step)
     {
+        $this->authorize('inLab', $step->order->lab);
         abort_unless($step->id == $step->order->current_step_id, 403);
+        $role = HasRole::where(['roleable_id' => $step->order->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => auth()->id, 'sub_role' => SubRole::DentalLabOwner])->first();
+        abort_unless($step->user_id == auth()->id() || $role != null, 403);
         $step->update(['isFinished' => true]);
         $order = $step->order;
         $rank = $order->steps()->where('rank', $step->rank + 1)->first();
@@ -35,9 +41,12 @@ class LabOrderStepController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(DentalLab $lab)
     {
-        //
+        return auth()->user()->dentalLabSteps()
+            ->with('order', 'order.lab')
+            ->where('order.lab.id', $lab->id)
+            ->get();
     }
 
     /**

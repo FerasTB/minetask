@@ -40,6 +40,7 @@ class StoreLabOrderForLabRequest extends FormRequest
             'order_steps.*' => 'array|required',
             'order_steps.*.name' => 'string|required',
             'order_steps.*.note' => 'string|nullable',
+            'order_steps.*.patient_id' => 'integer|nullable',
         ];
     }
 }

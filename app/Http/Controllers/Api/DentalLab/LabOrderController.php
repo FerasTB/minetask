@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateLabOrderStatusRequest;
 use App\Http\Resources\LabOrderResource;
 use App\Models\AccountingProfile;
 use App\Models\LabOrder;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class LabOrderController extends Controller
@@ -42,6 +43,12 @@ class LabOrderController extends Controller
         $rank = 1;
         foreach ($fields['order_steps'] as $step) {
             $step['rank'] = $rank;
+            if ($step['patient_id'] != null) {
+                $patient = Patient::findOrFail($step['patient_id']);
+                $step['user_id'] = $patient->user->id;
+            } else {
+                $step['user_id'] = auth()->id();
+            }
             $OrderStep = $order->orderSteps()->create($step);
             if ($rank == 1) {
                 $fields['current_step_id'] = $OrderStep->id;
@@ -61,6 +68,12 @@ class LabOrderController extends Controller
         $rank = 1;
         foreach ($fields['order_steps'] as $step) {
             $step['rank'] = $rank;
+            if ($step['patient_id'] != null) {
+                $patient = Patient::findOrFail($step['patient_id']);
+                $step['user_id'] = $patient->user->id;
+            } else {
+                $step['user_id'] = auth()->id();
+            }
             $OrderStep = $order->orderSteps()->create($step);
             if ($rank == 1) {
                 $fields['current_step_id'] = $OrderStep->id;
