@@ -134,10 +134,10 @@ class DentalLabController extends Controller
         $user = $patient->user;
         $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
         abort_unless($role == null, 403);
-        $role = Role::findOrFail(Role::DentalLabTechnician);
+        $roleInModel = Role::findOrFail(Role::DentalLabTechnician);
         if (!$user->hasRole($role)) {
             $role = ModelHasRole::create([
-                'role_id' => $role->id,
+                'role_id' => $roleInModel->id,
                 'roleable_id' => $user->id,
                 'roleable_type' => 'App\Models\User',
             ]);
@@ -147,7 +147,7 @@ class DentalLabController extends Controller
             'roleable_type' => 'App\Models\DentalLab',
             'sub_role' => SubRole::DentalLabTechnician,
         ]);
-        $user->update(['current_role_id' => $role->id]);
+        $user->update(['current_role_id' => $roleInModel->id]);
         return response('done', 201);
     }
 
