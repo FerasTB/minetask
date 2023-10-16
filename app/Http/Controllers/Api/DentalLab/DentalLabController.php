@@ -134,7 +134,7 @@ class DentalLabController extends Controller
         $user = $patient->user;
         $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
         abort_unless($role == null, 403);
-        $role = Role::findOfFail(Role::DentalLabTechnician);
+        $role = Role::findOrFail(Role::DentalLabTechnician);
         if (!$user->hasRole($role)) {
             $role = ModelHasRole::create([
                 'role_id' => $role->id,
