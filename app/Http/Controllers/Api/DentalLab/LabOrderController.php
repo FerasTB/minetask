@@ -82,7 +82,7 @@ class LabOrderController extends Controller
             $rank++;
         }
         $order->update($fields);
-        $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'account.office', 'account.lab', 'account.doctor']);
+        $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'office', 'account.lab', 'doctor']);
         return new LabOrderResource($order);
     }
 

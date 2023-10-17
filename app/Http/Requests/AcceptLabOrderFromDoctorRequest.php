@@ -22,7 +22,7 @@ class AcceptLabOrderFromDoctorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'note' => 'string|required',
+            'note' => 'string|nullable',
             'attached_materials' => 'string|required',
             'patient_name' => 'string|required',
             'steps' => 'integer|nullable',
