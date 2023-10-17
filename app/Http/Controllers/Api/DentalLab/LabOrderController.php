@@ -43,7 +43,7 @@ class LabOrderController extends Controller
         $rank = 1;
         foreach ($fields['order_steps'] as $step) {
             $step['rank'] = $rank;
-            if ($step['patient_id'] != null) {
+            if (array_key_exists('patient_id', $step) && $step['patient_id'] != null) {
                 $patient = Patient::findOrFail($step['patient_id']);
                 $step['user_id'] = $patient->user->id;
             } else {
@@ -68,7 +68,7 @@ class LabOrderController extends Controller
         $rank = 1;
         foreach ($fields['order_steps'] as $step) {
             $step['rank'] = $rank;
-            if ($step['patient_id'] != null) {
+            if (array_key_exists('patient_id', $step) && $step['patient_id'] != null) {
                 $patient = Patient::findOrFail($step['patient_id']);
                 $step['user_id'] = $patient->user->id;
             } else {
