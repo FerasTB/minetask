@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\LabOrderStatus;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,6 +28,10 @@ class LabOrderResource extends JsonResource
             'note' => $this->note,
             'patient_name' => $this->patient_name,
             'details' => LabOrderDetailResource::collection($this->whenLoaded('details')),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'office' => new OfficeResource($this->whenLoaded('office')),
+            'lab' => new DentalLabResource($this->whenLoaded('lab')),
+            'account' => new DentalLabAccountingProfileResource($this->whenLoaded('account')),
         ];
     }
 }
