@@ -25,7 +25,7 @@ class LabOrderStepController extends Controller
         abort_unless($step->user_id == auth()->id() || $role != null, 403);
         $step->update(['isFinished' => true]);
         $order = $step->order;
-        $rank = $order->steps()->where('rank', $step->rank + 1)->first();
+        $rank = $order->orderSteps()->where('rank', $step->rank + 1)->first();
         if ($rank == null) {
             $order->update(['status' => LabOrderStatus::Finished]);
             if ($order->doctor->dental_lab_id == null) {
