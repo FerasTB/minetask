@@ -17,6 +17,7 @@ class LabOrderDetailTeethResource extends JsonResource
         return [
             'id' => $this->id,
             'number_of_tooth' => $this->number_of_tooth,
+            'created_at' => $this->created_at,
         ];
     }
 }

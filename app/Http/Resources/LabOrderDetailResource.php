@@ -21,6 +21,7 @@ class LabOrderDetailResource extends JsonResource
             'color' => $this->color,
             'note' => $this->note,
             'teeth' => LabOrderDetailTeethResource::collection($this->whenLoaded('teeth')),
+            'created_at' => $this->created_at,
         ];
     }
 }

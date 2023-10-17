@@ -27,6 +27,7 @@ class LabOrderResource extends JsonResource
             'attached_materials' => $this->attached_materials,
             'note' => $this->note,
             'patient_name' => $this->patient_name,
+            'created_at' => $this->created_at,
             'details' => LabOrderDetailResource::collection($this->whenLoaded('details')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'office' => new OfficeResource($this->whenLoaded('office')),
