@@ -14,9 +14,10 @@ class Orderstatus extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct($order, $status)
+    public function __construct($order, $status, $massage)
     {
         $this->order = $order;
+        $this->$massage = $massage;
         $this->status = $status;
     }
 
@@ -50,6 +51,7 @@ class Orderstatus extends Notification
     {
         return [
             'status' => $this->status,
+            'massage' => $this->massage,
             'order_id' => $this->order->id,
             'lab_id' => $this->order->lab->id,
             'doctor_id' => $this->order->doctor->id,

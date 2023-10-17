@@ -12,6 +12,7 @@ use App\Http\Resources\LabOrderResource;
 use App\Models\AccountingProfile;
 use App\Models\LabOrder;
 use App\Models\Patient;
+use App\Notifications\Orderstatus;
 use Illuminate\Http\Request;
 
 class LabOrderController extends Controller
@@ -85,6 +86,21 @@ class LabOrderController extends Controller
         return new LabOrderResource($order);
     }
 
+    public function rejectOrderFromDoctor(Request $request, LabOrder $order)
+    {
+        $this->authorize('acceptFromDoctor', [$order]);
+        $order->update(['status' => LabOrderStatus::Rejected]);
+        if ($order->doctor->dental_lab_id == null) {
+            $status = 'Rejected';
+            if ($request->has('massage')) {
+                $massage = $request->massage;
+            } else {
+                $massage = 'this order was rejected';
+            }
+            $order->doctor->notify(new OrderStatus($order, $status, $massage));
+        }
+    }
+
     public function updateOrderStatus(UpdateLabOrderStatusRequest $request, LabOrder $order)
     {
         $fields = $request->validated();
@@ -92,6 +108,15 @@ class LabOrderController extends Controller
         $fields['status'] = LabOrderStatus::getValue($request->status);
         $order->updated($fields);
         $order->load(['details', 'details.teeth']);
+        if ($order->doctor->dental_lab_id == null) {
+            $status = $request->status;
+            if ($request->has('massage')) {
+                $massage = $request->massage;
+            } else {
+                $massage = 'this order was ' . $request->status;
+            }
+            $order->doctor->notify(new OrderStatus($order, $status, $massage));
+        }
         return new LabOrderResource($order);
     }
 

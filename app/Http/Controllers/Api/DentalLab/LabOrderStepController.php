@@ -30,7 +30,8 @@ class LabOrderStepController extends Controller
             $order->update(['status' => LabOrderStatus::Finished]);
             if ($order->doctor->dental_lab_id == null) {
                 $status = 'Finished';
-                $order->doctor->notify(new OrderStatus($order, $status));
+                $massage = 'this order was finished';
+                $order->doctor->notify(new OrderStatus($order, $status, $massage));
             }
             $order->load(['orderSteps']);
             return new LabOrderResource($order);
