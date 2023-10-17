@@ -17,7 +17,7 @@ class Orderstatus extends Notification
     public function __construct($order, $status, $massage)
     {
         $this->order = $order;
-        $this->$massage = $massage;
+        $this->massage = $massage;
         $this->status = $status;
     }
 
