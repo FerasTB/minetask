@@ -21,6 +21,7 @@ class LabOrderStepController extends Controller
     {
         $this->authorize('inLab', $step->order->lab);
         abort_unless($step->id == $step->order->current_step_id, 403);
+        abort_unless(!$step->isFinished, 403);
         $role = HasRole::where(['roleable_id' => $step->order->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => auth()->id(), 'sub_role' => SubRole::DentalLabOwner])->first();
         abort_unless($step->user_id == auth()->id() || $role != null, 403);
         $step->update(['isFinished' => true]);
@@ -37,7 +38,7 @@ class LabOrderStepController extends Controller
             return new LabOrderResource($order);
         }
         $order->update(['current_step_id' => $rank->id]);
-        $order->load(['orderSteps']);
+        $order->load(['orderSteps', 'account', 'office', 'account.lab', 'doctor']);
         return new LabOrderResource($order);
     }
     /**
