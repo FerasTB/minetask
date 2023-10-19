@@ -125,7 +125,7 @@ class AccountingProfileController extends Controller
             // return $doctor->accountingProfiles;
             $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts'
+                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
@@ -135,7 +135,7 @@ class AccountingProfileController extends Controller
             $ownerDoctor = $ownerUser->doctor;
             $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts'
+                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
@@ -150,11 +150,11 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             $accounts = $doctor->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
         } else {
             $accounts = $office->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
         }
     }
@@ -166,11 +166,11 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             $accounts = $doctor->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::ExpensesAccount);
         } else {
             $accounts = $office->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::ExpensesAccount);
         }
     }

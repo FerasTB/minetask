@@ -21,18 +21,16 @@ class AccountingProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $doctor = Doctor::find($this->doctor_id);
-        $office = Office::find($this->office_id);
-        if ($office->type == OfficeType::Separate) {
+        if ($this->office->type == OfficeType::Separate) {
             $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
         } else {
-            $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $office->owner->user_id])->first();
+            $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $this->office->owner->user_id])->first();
         }
         return [
             'id' => $this->id,
             'patient' => new MyPatientsResource($role),
-            'doctor' => new DoctorResource($doctor),
-            'lab' => new DentalLabResource($this->lab),
+            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+            'lab' => new DentalLabResource($this->whenLoaded('lab')),
             'supplier_name' => $this->supplier_name,
             'initial_balance' => $this->initial_balance,
             'type' => AccountingProfileType::getKey($this->type),
