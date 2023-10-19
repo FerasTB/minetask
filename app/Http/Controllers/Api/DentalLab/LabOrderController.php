@@ -99,6 +99,7 @@ class LabOrderController extends Controller
             }
             $order->doctor->notify(new OrderStatus($order, $status, $massage));
         }
+        return response()->noContent();
     }
 
     public function updateOrderStatus(UpdateLabOrderStatusRequest $request, LabOrder $order)

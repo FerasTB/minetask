@@ -38,7 +38,7 @@ class LabOrderStepController extends Controller
             return new LabOrderResource($order);
         }
         $order->update(['current_step_id' => $rank->id]);
-        $order->load(['orderSteps', 'account', 'office', 'account.lab', 'doctor']);
+        $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'office', 'account.lab', 'doctor']);
         return new LabOrderResource($order);
     }
     /**
