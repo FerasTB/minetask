@@ -22,9 +22,9 @@ class AccountingProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         if ($this->office->type == OfficeType::Separate) {
-            $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
+            $role = auth()->user()->roles->where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
         } else {
-            $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $this->office->owner->user_id])->first();
+            $role = auth()->user()->roles->where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => $this->office->owner->user_id])->first();
         }
         return [
             'id' => $this->id,
