@@ -19,11 +19,9 @@ class MyPatientsResource extends JsonResource
     public function toArray(Request $request): array
     {
         if ($this->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
-            $patient = Patient::find($this->roleable_id);
+            $patient = $this->roleable;
             return [
-
                 'id' => $patient->id,
-                'id' => $this->roleable,
                 'first_name' => $patient->first_name,
                 'last_name' => $patient->last_name,
                 'phone' => 0 . $patient->phone,
@@ -42,8 +40,8 @@ class MyPatientsResource extends JsonResource
             ];
         }
         if ($this->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-            $patient = TemporaryInformation::where(['patient_id' => $this->roleable_id, 'doctor_id' => auth()->user()->doctor->id])->first();
-            $originalPatient = Patient::find($this->roleable_id);
+            $patient = $this->roleable->where('doctor_id', auth()->user()->doctor->id)->first();
+            $originalPatient = $this->roleable;
             return [
                 'id' => $originalPatient->id,
                 'first_name' => $patient->first_name,
