@@ -39,7 +39,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
                     'image' => $patient->doctorImage != null ?
-                        DoctorImageResource::collection($patient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
+                        DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
                         : "no image",
                 ];
             }
@@ -63,7 +63,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'status' => 'WithoutApprove',
                     'TemporaryId' => $patient->id,
                     'image' => $originalPatient->doctorImage != null ?
-                        DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
+                        DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', auth()->user()->doctor->id)->get())
                         : "no image",
                 ];
             }
