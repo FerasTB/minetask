@@ -21,7 +21,9 @@ class MyPatientsResource extends JsonResource
         if ($this->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
             $patient = Patient::find($this->roleable_id);
             return [
+
                 'id' => $patient->id,
+                'id' => $this->roleable,
                 'first_name' => $patient->first_name,
                 'last_name' => $patient->last_name,
                 'phone' => 0 . $patient->phone,
@@ -34,7 +36,7 @@ class MyPatientsResource extends JsonResource
                 'father_name' => $patient->father_name,
                 'created_at' => $patient->created_at,
                 'image' => $patient->doctorImage != null ?
-                    DoctorImageResource::collection($patient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                    DoctorImageResource::collection($patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                     : "no image",
                 'status' => 'Approve'
             ];
@@ -58,7 +60,7 @@ class MyPatientsResource extends JsonResource
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
                 'image' => $originalPatient->doctorImage != null ?
-                    DoctorImageResource::collection($originalPatient->doctorImage()->where('doctor_id', auth()->user()->doctor->id)->get())
+                    DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                     : "no image",
             ];
         }
