@@ -167,7 +167,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::get('dental/lab/{lab}/add/user/{patient}', [DentalLabController::class, 'addEmployee']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'IsDentalDoctorTechnician']], function () {
-    Route::get('dental/lab/technician', [DentalLabController::class, 'indexForTechnician']);
+    Route::get('dental/lab/technician/index', [DentalLabController::class, 'indexForTechnician']);
     Route::get('dental/lab/accept/order/step/{step}/as-finished', [LabOrderStepController::class, 'markStepAsFinished']);
     Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
     Route::get('dental/lab/{lab}/my-step', [LabOrderStepController::class, 'index']);
