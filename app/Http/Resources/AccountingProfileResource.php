@@ -25,16 +25,19 @@ class AccountingProfileResource extends JsonResource
             $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
                 ->where('roleable_type', 'App\Models\Patient')
                 ->where('user_id', auth()->id())->first();
-            $role->load('roleable', 'roleable.doctorImage');
         } else {
             $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
                 ->where('roleable_type', 'App\Models\Patient')
                 ->where('user_id', $this->office->owner->user_id)->first();
-            $role->load('roleable', 'roleable.doctorImage');
+            $ownerUser = $this->office->owner->user;
+            $ownerDoctor = $ownerUser->doctor;
         }
         return [
             'id' => $this->id,
             'patient' => new MyPatientsResource($role),
+            'patient' => $this->office->type == OfficeType::Separate ?
+                new MyPatientSeparateThroughAccountingProfileResource($this) :
+                new MyPatientCombinedThroughAccountingProfileResource($this),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),
             'supplier_name' => $this->supplier_name,
