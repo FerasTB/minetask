@@ -125,7 +125,7 @@ class AccountingProfileController extends Controller
             // return $doctor->accountingProfiles;
             $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage'
+                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
@@ -135,7 +135,7 @@ class AccountingProfileController extends Controller
             $ownerDoctor = $ownerUser->doctor;
             $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage'
+                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
