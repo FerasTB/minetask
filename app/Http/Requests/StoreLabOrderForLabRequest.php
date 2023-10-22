@@ -36,7 +36,7 @@ class StoreLabOrderForLabRequest extends FormRequest
             'details.*.kind_of_work' => 'string|required',
             'details.*.teeth' => 'array|required',
             'details.*.teeth.*' => 'integer|required',
-            'order_steps' => 'array|required',
+            'order_steps' => 'array|nullable',
             'order_steps.*' => 'array|required',
             'order_steps.*.name' => 'string|required',
             'order_steps.*.note' => 'string|nullable',
