@@ -42,19 +42,21 @@ class LabOrderController extends Controller
             }
         }
         $rank = 1;
-        foreach ($fields['order_steps'] as $step) {
-            $step['rank'] = $rank;
-            if (array_key_exists('patient_id', $step) && $step['patient_id'] != null) {
-                $patient = Patient::findOrFail($step['patient_id']);
-                $step['user_id'] = $patient->user->id;
-            } else {
-                $step['user_id'] = auth()->id();
+        if (array_key_exists('order_steps', $fields)) {
+            foreach ($fields['order_steps'] as $step) {
+                $step['rank'] = $rank;
+                if (array_key_exists('patient_id', $step) && $step['patient_id'] != null) {
+                    $patient = Patient::findOrFail($step['patient_id']);
+                    $step['user_id'] = $patient->user->id;
+                } else {
+                    $step['user_id'] = auth()->id();
+                }
+                $OrderStep = $order->orderSteps()->create($step);
+                if ($rank == 1) {
+                    $fields['current_step_id'] = $OrderStep->id;
+                }
+                $rank++;
             }
-            $OrderStep = $order->orderSteps()->create($step);
-            if ($rank == 1) {
-                $fields['current_step_id'] = $OrderStep->id;
-            }
-            $rank++;
         }
         $order->update($fields);
         $order->load(['details', 'details.teeth', 'orderSteps']);
