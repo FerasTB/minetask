@@ -41,6 +41,17 @@ class DentalLabController extends Controller
         }
     }
 
+    public function indexForTechnician()
+    {
+        $user = auth()->user();
+        $labs = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\DentalLab', 'sub_role' => SubRole::DentalLabTechnician])->with('roleable')->get();
+        if ($labs != []) {
+            return DentalLabThroughHasRoleResource::collection($labs);
+        } else {
+            return response()->noContent();
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
