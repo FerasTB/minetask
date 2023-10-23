@@ -18,6 +18,11 @@ class LabOrderStep extends Model
         return $this->belongsTo(LabOrder::class, 'lab_order_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function lab()
     {
         return $this->belongsToThrough(

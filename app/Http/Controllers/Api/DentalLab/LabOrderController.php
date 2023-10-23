@@ -59,7 +59,7 @@ class LabOrderController extends Controller
             }
         }
         $order->update($fields);
-        $order->load(['details', 'details.teeth', 'orderSteps']);
+        $order->load(['details', 'details.teeth', 'orderSteps', 'orderSteps.user', 'orderSteps.user.patient', 'orderSteps.user.doctor', 'account', 'office', 'account.lab', 'doctor',]);
         return new LabOrderResource($order);
     }
 
@@ -84,7 +84,7 @@ class LabOrderController extends Controller
             $rank++;
         }
         $order->update($fields);
-        $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'office', 'account.lab', 'doctor']);
+        $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'office', 'account.lab', 'doctor', 'orderSteps.user', 'orderSteps.user.patient', 'orderSteps.user.doctor']);
         return new LabOrderResource($order);
     }
 
