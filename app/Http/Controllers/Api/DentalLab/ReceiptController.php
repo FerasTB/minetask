@@ -58,7 +58,6 @@ class ReceiptController extends Controller
             'sub_type' => COASubType::Receivable
         ])->first();
         abort_unless($receivable != null && $cash != null, 403);
-        abort_unless($cash->doctor->id == auth()->user()->decoct->id, 403);
         abort_unless($cash->type == COASubType::Cash, 403);
         $profile = $receipt->account;
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PaymentVoucher])->first();
