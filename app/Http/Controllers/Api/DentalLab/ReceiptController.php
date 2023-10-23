@@ -61,7 +61,7 @@ class ReceiptController extends Controller
         abort_unless($cash->type == COASubType::Cash, 403);
         $profile = $receipt->account;
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PaymentVoucher])->first();
-        $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
+        $fields['running_balance'] = $this->doctorBalance($profile->id, $receipt->total_price);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
         $receipt2 = $profile->receipts()->create([
             'note' => $receipt->note,
