@@ -28,7 +28,7 @@ class DoctorController extends Controller
         } else {
             $accounts = $lab->accountingProfiles()
                 ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
-                ->with('doctor', 'office', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps')->get();
+                ->with('doctor', 'office', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'labOrders.orderSteps.user', 'labOrders.orderSteps.user.patient', 'labOrders.orderSteps.user.doctor')->get();
             return DentalLabAccountingProfileResource::collection($accounts);
         }
     }
