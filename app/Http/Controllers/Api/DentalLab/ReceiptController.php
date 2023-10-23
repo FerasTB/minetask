@@ -52,6 +52,14 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $this->authorize('acceptDoctorReceipt', [$receipt]);
+        $cash = COA::findOrFail($request->cash_coa);
+        $receivable = COA::where([
+            'dental_lab_id' => $receipt->lab->id,
+            'sub_type' => COASubType::Receivable
+        ])->first();
+        abort_unless($receivable != null && $cash != null, 403);
+        abort_unless($cash->doctor->id == auth()->user()->decoct->id, 403);
+        abort_unless($cash->type == COASubType::Cash, 403);
         $profile = $receipt->account;
         $transactionNumber = TransactionPrefix::where(['dental_lab_id' => $profile->lab->id, 'type' => TransactionType::PaymentVoucher])->first();
         $fields['running_balance'] = $this->doctorBalance($profile->id, $fields['total_price']);
@@ -64,18 +72,11 @@ class ReceiptController extends Controller
             'type' => DentalLabTransaction::ResetVoucher,
             'receipt_number' => $fields['receipt_number'],
             'running_balance' => $fields['running_balance'],
+            'total_price' => $receipt->total_price,
         ]);
         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-        $receivable = COA::where([
-            'dental_lab_id' => $receipt->lab->id,
-            'sub_type' => COASubType::Receivable
-        ])->first();
-        $cash = COA::findOrFail($request->cash_coa);
-        abort_unless($receivable != null && $cash != null, 403);
-        abort_unless($cash->doctor->id != auth()->user()->decoct->id, 403);
-        abort_unless($cash->type == COASubType::Cash, 403);
-        $doubleEntryFields['receipt_id'] = $receipt->id;
-        $doubleEntryFields['total_price'] = $receipt->total_price;
+        $doubleEntryFields['receipt_id'] = $receipt2->id;
+        $doubleEntryFields['total_price'] = $receipt2->total_price;
         $doubleEntryFields['type'] = DoubleEntryType::Negative;
         $receivable->doubleEntries()->create($doubleEntryFields);
         $doubleEntryFields['type'] = DoubleEntryType::Positive;
