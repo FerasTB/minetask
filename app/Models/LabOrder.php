@@ -14,6 +14,8 @@ class LabOrder extends Model
 
     protected $fillable = ['patient_name', 'steps', 'status', 'delivery_date', 'received_date', 'accounting_profile_id', 'note', 'attached_materials', 'patient_id', 'current_step_id'];
 
+    protected $with = ['currentStep'];
+
     public function doctor()
     {
         return $this->belongsToThrough(
