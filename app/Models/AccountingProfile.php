@@ -9,7 +9,11 @@ class AccountingProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['dental_lab_id', 'doctor_id', 'type', 'office_id', 'supplier_name', 'note', 'initial_balance', 'COA_id', 'patient_id'];
+    protected $fillable = [
+        'dental_lab_id', 'doctor_id', 'type', 'office_id',
+        'supplier_name', 'note', 'initial_balance', 'COA_id', 'patient_id',
+        'secondary_initial_balance'
+    ];
 
     public function doctor()
     {

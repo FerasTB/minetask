@@ -295,7 +295,7 @@ class ReceiptController extends Controller
             ->get();
         $totalPositive = $receipts != null ?
             $receipts->sum('total_price') : 0;
-        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->initial_balance;
+        $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->secondary_initial_balance;
         return $total;
     }
 }
