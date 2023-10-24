@@ -6,6 +6,7 @@ use App\Enums\AccountingProfileType;
 use App\Enums\OfficeType;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MarkAsReadRequest;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
 use App\Http\Resources\DoctorInfoResource;
@@ -238,13 +239,16 @@ class DoctorInfoController extends Controller
         return NotificationResource::collection($doctor->unreadNotifications);
     }
 
-    public function markAsRead(Request $request)
+    public function markAsRead(MarkAsReadRequest $request)
     {
         $doctor = auth()->user()->doctor;
+        if ($request->has('id')) {
+            $doctor->unreadNotifications
+                ->where('id', $request->id)
+                ->markAsRead();
+            return response()->noContent();
+        }
         $doctor->unreadNotifications
-            ->when($request->id, function ($query) use ($request) {
-                return $query->where('id', $request->id);
-            })
             ->markAsRead();
         return response()->noContent();
     }

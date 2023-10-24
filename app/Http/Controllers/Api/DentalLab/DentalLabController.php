@@ -208,11 +208,11 @@ class DentalLabController extends Controller
             $lab->unreadNotifications
                 ->where('id', $request->id)
                 ->markAsRead();
-            return response($request->id, 200);
+            return response()->noContent();
         }
         $lab->unreadNotifications
             ->markAsRead();
-        return response($request->id, 200);
+        return response()->noContent();
     }
 
     public function allNotification(DentalLab $lab)
