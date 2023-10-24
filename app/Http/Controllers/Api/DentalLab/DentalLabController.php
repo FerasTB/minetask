@@ -10,6 +10,7 @@ use App\Enums\Role as EnumsRole;
 use App\Enums\SubRole;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MarkAsReadRequest;
 use App\Models\DentalLab;
 use App\Http\Requests\StoreDentalLabRequest;
 use App\Http\Requests\UpdateDentalLabRequest;
@@ -200,7 +201,7 @@ class DentalLabController extends Controller
         return NotificationResource::collection($lab->unreadNotifications);
     }
 
-    public function markAsRead(Request $request, DentalLab $lab)
+    public function markAsRead(MarkAsReadRequest $request, DentalLab $lab)
     {
         $this->authorize('inLab', $lab);
         if ($request->has('id')) {

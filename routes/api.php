@@ -162,7 +162,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::post('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
     Route::post('dental/lab/store/order/{profile}', [LabOrderController::class, 'store']);
     Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
-    Route::get('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
+    Route::put('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
     Route::get('dental/lab/{lab}/all/notification', [DentalLabController::class, 'allNotification']);
     Route::get('dental/lab/{lab}/all/users', [DentalLabController::class, 'allUsers']);
     Route::get('dental/lab/{lab}/add/user/{patient}', [DentalLabController::class, 'addEmployee']);
