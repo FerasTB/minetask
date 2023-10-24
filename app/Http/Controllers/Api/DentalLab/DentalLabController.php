@@ -203,10 +203,13 @@ class DentalLabController extends Controller
     public function markAsRead(Request $request, DentalLab $lab)
     {
         $this->authorize('inLab', $lab);
+        if ($request->has('id')) {
+            $lab->unreadNotifications
+                ->where('id', $request->id)
+                ->markAsRead();
+            return response()->noContent();
+        }
         $lab->unreadNotifications
-            ->when($request->input('id'), function ($query) use ($request) {
-                return $query->where('id', $request->input('id'));
-            })
             ->markAsRead();
         return response()->noContent();
     }
