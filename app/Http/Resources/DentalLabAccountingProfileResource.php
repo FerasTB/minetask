@@ -56,7 +56,7 @@ class DentalLabAccountingProfileResource extends JsonResource
             'new' => $this->whenLoaded('receipts') != [] || $this->whenLoaded('invoices') != [] ? true : false,
             // 'total' => AccountingProfileController::accountOutcomeInt($this->id)
             'totalForLab' => $totalPositiveDentalLab - $totalNegativeDentalLab + $this->initial_balance,
-            'totalForLab' => $totalPositiveDoctor - $totalNegativeDoctor + $this->secondary_initial_balance,
+            'totalForDoctor' => $totalPositiveDoctor - $totalNegativeDoctor + $this->secondary_initial_balance,
         ];
     }
 }
