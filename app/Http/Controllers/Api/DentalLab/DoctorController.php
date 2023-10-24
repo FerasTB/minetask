@@ -23,12 +23,12 @@ class DoctorController extends Controller
         if (auth()->user()->currentRole->id == Role::DentalLabDoctor) {
             $accounts = $lab->accountingProfiles()
                 ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
-                ->with('doctor', 'office', 'lab', 'invoices', 'receipts', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'labOrders.orderSteps.user', 'labOrders.orderSteps.user.patient', 'labOrders.orderSteps.user.doctor')->get();
+                ->with('doctor', 'office', 'lab', 'invoices', 'invoices.receipts', 'receipts', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'labOrders.orderSteps.user', 'labOrders.orderSteps.user.patient', 'labOrders.orderSteps.user.doctor')->get();
             return DentalLabAccountingProfileResource::collection($accounts);
         } else {
             $accounts = $lab->accountingProfiles()
                 ->where(['type' => AccountingProfileType::DentalLabDoctorAccount])
-                ->with('doctor', 'office', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'labOrders.orderSteps.user', 'labOrders.orderSteps.user.patient', 'labOrders.orderSteps.user.doctor')->get();
+                ->with('doctor', 'office', 'lab', 'invoices', 'invoices.receipts', 'receipts', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'labOrders.orderSteps.user', 'labOrders.orderSteps.user.patient', 'labOrders.orderSteps.user.doctor')->get();
             return DentalLabAccountingProfileResource::collection($accounts);
         }
     }
