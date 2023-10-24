@@ -204,8 +204,8 @@ class DentalLabController extends Controller
     {
         $this->authorize('inLab', $lab);
         $lab->unreadNotifications
-            ->when($request->id, function ($query) use ($request) {
-                return $query->where('id', $request->id);
+            ->when($request->input('id'), function ($query) use ($request) {
+                return $query->where('id', $request->input('id'));
             })
             ->markAsRead();
         return response()->noContent();
