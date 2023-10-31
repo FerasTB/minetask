@@ -47,7 +47,7 @@ class LabOrderStepController extends Controller
     public function index(DentalLab $lab)
     {
         return LabOrderStepResource::collection(auth()->user()->dentalLabSteps()
-            ->with('order', 'lab')
+            ->with('order', 'order.currentStep', 'lab')
             // ->whereHas(
             //     'lab',
             //     function ($query) use ($lab) {

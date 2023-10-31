@@ -20,6 +20,7 @@ class LabOrderStepResource extends JsonResource
             'note' => $this->note,
             'rank' => $this->rank,
             'order' => new LabOrderResource($this->whenLoaded('order')),
+            'current_step' => $this->whenLoaded('order.currentStep'),
             'lab' => new DentalLabResource($this->whenLoaded('lab')),
             'employee' => new DentalLabEmployeeResource($this->whenLoaded('user')),
             'created_at' => $this->created_at,
