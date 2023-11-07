@@ -83,7 +83,11 @@ class LabOrderController extends Controller
             }
             $rank++;
         }
+
         $order->update($fields);
+        $status = 'Accepted';
+        $massage = 'this order was accepted';
+        $order->doctor->notify(new OrderStatus($order, $status, $massage));
         $order->load(['details', 'details.teeth', 'orderSteps', 'account', 'office', 'account.lab', 'doctor', 'orderSteps.user', 'orderSteps.user.patient', 'orderSteps.user.doctor']);
         return new LabOrderResource($order);
     }
