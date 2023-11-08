@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\Api\DoctorInfoController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::post('/auth/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
-
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('doctor/info', App\Http\Controllers\Api\DoctorInfoController::class);
     Route::get('doctor/profile', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyInfo']);
