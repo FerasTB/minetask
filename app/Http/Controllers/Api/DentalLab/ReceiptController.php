@@ -18,6 +18,7 @@ use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Receipt;
 use App\Models\TransactionPrefix;
+use App\Notifications\ReceiptStatus;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Http\Request;
 
@@ -83,6 +84,9 @@ class ReceiptController extends Controller
         $receipt->update([
             'status' => TransactionStatus::Approved,
         ]);
+        $massage = 'the recept was accepted';
+        $status = 'Accepted';
+        $receipt->doctor->notify(new ReceiptStatus($receipt, $status, $massage));
         return new ReceiptResource($receipt);
     }
 
