@@ -23,8 +23,10 @@ use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\HasRole;
+use App\Models\ModelHasRole;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\Role as ModelsRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -266,6 +268,14 @@ class OfficeController extends Controller
         $this->authorize('officeOwner', $office);
         $patient = Patient::findOrFail($fields['patient_id']);
         $user = $patient->user;
+        $roleInModel = Role::findOrFail(ModelsRole::DentalDoctorTechnician);
+        if (!$user->hasRole($roleInModel)) {
+            $role = ModelHasRole::create([
+                'role_id' => $roleInModel->id,
+                'roleable_id' => $user->id,
+                'roleable_type' => 'App\Models\User',
+            ]);
+        }
         $fields['sub_role'] = SubRole::getValue($request->sub_role);
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
@@ -280,6 +290,7 @@ class OfficeController extends Controller
         $income = $relation->properties()->create([
             'type' => HasRolePropertyType::Income,
         ]);
+        $user->update(['current_role_id' => $roleInModel->id]);
         return new EmployeeInOfficeResource($relation);
     }
 
