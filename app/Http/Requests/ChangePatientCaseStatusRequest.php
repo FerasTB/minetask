@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\PatientCaseStatus;
 use App\Enums\Role;
+use App\Models\Role as ModelsRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +15,7 @@ class ChangePatientCaseStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->currentRole->id == ModelsRole::DentalDoctor;
     }
 
     /**

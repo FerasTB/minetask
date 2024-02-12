@@ -71,8 +71,9 @@ class PatientCaseController extends Controller
 
     public function ChangeStatus(ChangePatientCaseStatusRequest $request, PatientCase $case)
     {
+        $this->authorize('update', [$case]);
         $fields = $request->validated();
-        $status = PatientCaseStatus::getValue($request->status);
+        $status = PatientCaseStatus::getValue($fields['status']);
         $case->update([
             'status' => $status,
         ]);
