@@ -268,7 +268,7 @@ class OfficeController extends Controller
         $this->authorize('officeOwner', $office);
         $patient = Patient::findOrFail($fields['patient_id']);
         $user = $patient->user;
-        $roleInModel = Role::findOrFail(ModelsRole::DentalDoctorTechnician);
+        $roleInModel = ModelsRole::findOrFail(ModelsRole::DentalDoctorTechnician);
         if (!$user->hasRole($roleInModel)) {
             $role = ModelHasRole::create([
                 'role_id' => $roleInModel->id,
