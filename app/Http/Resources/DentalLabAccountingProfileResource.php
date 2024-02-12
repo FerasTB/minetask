@@ -27,7 +27,7 @@ class DentalLabAccountingProfileResource extends JsonResource
             $positive->sum('total_price') : 0;
         $negative = $this->receipts
             ->whereIn('type', DentalLabTransaction::getValues())
-            ->where('status', '!=', TransactionStatus::Canceled);;
+            ->where('status', '!=', TransactionStatus::Canceled);
         $totalNegativeDentalLab = $negative != null ?
             $negative->sum('total_price') : 0;
         $negative = $this->invoices
@@ -37,7 +37,7 @@ class DentalLabAccountingProfileResource extends JsonResource
             $positive->sum('total_price') : 0;
         $positive = $this->receipts
             ->whereIn('type', DentalDoctorTransaction::getValues())
-            ->where('status', '!=', TransactionStatus::Canceled);;
+            ->where('status', '!=', TransactionStatus::Canceled);
         $totalPositiveDoctor = $positive != null ?
             $negative->sum('total_price') : 0;
         return [
