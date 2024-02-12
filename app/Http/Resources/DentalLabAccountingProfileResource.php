@@ -34,12 +34,12 @@ class DentalLabAccountingProfileResource extends JsonResource
             ->whereIn('type', DentalDoctorTransaction::getValues())
             ->where('status', '!=', TransactionStatus::Canceled);
         $totalNegativeDoctor = $negative != null ?
-            $positive->sum('total_price') : 0;
+            $negative->sum('total_price') : 0;
         $positive = $this->receipts
             ->whereIn('type', DentalDoctorTransaction::getValues())
             ->where('status', '!=', TransactionStatus::Canceled);
         $totalPositiveDoctor = $positive != null ?
-            $negative->sum('total_price') : 0;
+            $positive->sum('total_price') : 0;
         return [
             'id' => $this->id,
             // 'patient' => new MyPatientsResource($role),
@@ -53,7 +53,7 @@ class DentalLabAccountingProfileResource extends JsonResource
             'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
             'order' => LabOrderResource::collection($this->whenLoaded('labOrders')),
             'office' => new OfficeResource($this->whenLoaded('office')),
-            'new' => $this->whenLoaded('receipts') != [] || $this->whenLoaded('invoices') != [] ? true : false,
+            'new' => $this->whenLoaded('receipts') != [] || $this->whenLoaded('invoices') != [] ? false : true,
             // 'total' => AccountingProfileController::accountOutcomeInt($this->id)
             'totalForLab' => $totalPositiveDentalLab - $totalNegativeDentalLab + $this->initial_balance,
             'totalForDoctor' => $totalPositiveDoctor - $totalNegativeDoctor + $this->secondary_initial_balance,
