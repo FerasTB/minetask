@@ -160,7 +160,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
     Route::post('dental/lab/accept/order/{order}', [LabOrderController::class, 'acceptOrderFromDoctor']);
     Route::post('dental/lab/reject/order/{order}', [LabOrderController::class, 'rejectOrderFromDoctor']);
-    Route::post('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
+    Route::put('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
     Route::post('dental/lab/store/order/{profile}', [LabOrderController::class, 'store']);
     Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
     Route::put('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
