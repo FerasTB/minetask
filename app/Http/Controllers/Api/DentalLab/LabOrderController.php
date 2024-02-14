@@ -113,7 +113,7 @@ class LabOrderController extends Controller
         $fields = $request->validated();
         $this->authorize('acceptFromDoctor', [$order]);
         $fields['status'] = LabOrderStatus::getValue($request->status);
-        $order->updated($fields);
+        $order->update($fields);
         $order->load(['details', 'details.teeth']);
         if ($order->doctor->dental_lab_id == null) {
             $status = $request->status;
