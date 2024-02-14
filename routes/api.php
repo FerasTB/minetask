@@ -136,6 +136,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/doctor/unread/notification', [DoctorInfoController::class, 'unreadNotification']);
     Route::put('/doctor/mark/read/notification', [DoctorInfoController::class, 'markAsRead']);
     Route::get('/doctor/all/notification', [DoctorInfoController::class, 'allNotification']);
+    Route::put('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
