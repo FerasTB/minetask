@@ -109,6 +109,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice/lap/accept/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'acceptDentalLabInvoice']);
     Route::get('invoice/lap/reject/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'rejectDentalLabInvoice']);
     Route::post('invoice/lab/{profile}', [App\Http\Controllers\Api\InvoiceController::class, 'storeDentalLabInvoice']);
+
     Route::post('invoice/lab/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storeDentalLabInvoiceItem']);
     Route::post('receipt/supplier', [App\Http\Controllers\Api\ReceiptController::class, 'storeSupplierReceipt']);
     Route::post('invoice/supplier', [App\Http\Controllers\Api\InvoiceController::class, 'storeSupplierInvoice']);
@@ -136,7 +137,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/doctor/unread/notification', [DoctorInfoController::class, 'unreadNotification']);
     Route::put('/doctor/mark/read/notification', [DoctorInfoController::class, 'markAsRead']);
     Route::get('/doctor/all/notification', [DoctorInfoController::class, 'allNotification']);
-    Route::put('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
+    Route::put('/order/lab/update/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
