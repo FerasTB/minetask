@@ -45,7 +45,7 @@ class PatientCasePolicy
      */
     public function update(User $user, PatientCase $case): bool
     {
-        return $case->doctor_id == $user->doctor->id;
+        return $case->case->doctor_id == $user->doctor->id;
     }
 
     /**
