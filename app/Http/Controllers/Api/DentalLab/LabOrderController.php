@@ -111,7 +111,7 @@ class LabOrderController extends Controller
     public function updateOrderStatus(UpdateLabOrderStatusRequest $request, LabOrder $order)
     {
         $fields = $request->validated();
-        $this->authorize('acceptFromDoctor', [$order]);
+        // $this->authorize('acceptFromDoctor', [$order]);
         $fields['status'] = LabOrderStatus::getValue($request->status);
         $order->updated($fields);
         $order->load(['details', 'details.teeth']);
