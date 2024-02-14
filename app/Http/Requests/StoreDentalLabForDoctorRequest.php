@@ -25,7 +25,7 @@ class StoreDentalLabForDoctorRequest extends FormRequest
         return [
             'number' => 'nullable|integer',
             'coa_id' => 'nullable|integer',
-            'initial_balance' => 'nullable|integer',
+            'secondary_initial_balance' => 'nullable|integer',
             'note' => 'nullable|string',
             'address' => 'required|string',
             'image' => 'nullable|text',
