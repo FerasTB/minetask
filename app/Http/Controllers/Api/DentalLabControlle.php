@@ -40,6 +40,7 @@ class DentalLabControlle extends Controller
             'note' => $request->note,
             'type' => AccountingProfileType::DentalLabDoctorAccount,
         ]);
+        $account->load(['invoices', 'invoices.items', 'receipts', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps']);
         return new DentalLabResource($lab);
     }
 }
