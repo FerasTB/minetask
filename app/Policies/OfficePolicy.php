@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\Role;
 use App\Enums\SubRole;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
@@ -74,5 +75,12 @@ class OfficePolicy
             return ($role->sub_role == SubRole::OfficeOwner);
         }
         return false;
+    }
+
+    public function employeeUpdateSetting(User $user, Office $office, Doctor $doctor): bool
+    {
+        $employeeRole = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        $doctorRole = HasRole::where(['user_id' => $doctor->user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        return $employeeRole != null && $doctorRole != null;
     }
 }

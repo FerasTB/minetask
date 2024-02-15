@@ -15,6 +15,7 @@ use App\Http\Requests\AddDoctorToOfficeRequest;
 use App\Http\Requests\AddEmployeeToOfficeRequest;
 use App\Http\Requests\StoreOfficeRequest;
 use App\Http\Requests\UpdateHasRolePropertyRequest;
+use App\Http\Requests\UpdateHasRoleSettingRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
 use App\Http\Resources\EmployeeInOfficeResource;
@@ -308,6 +309,17 @@ class OfficeController extends Controller
             'write' => $fields['write'],
             'edit' => $fields['edit'],
         ]);
+        return new EmployeeInOfficeResource($relation);
+    }
+
+    public function updateEmployeeSetting(UpdateHasRoleSettingRequest $request, Office $office, Patient $patient)
+    {
+        $fields = $request->validated();
+        $doctor = Doctor::findOrFail($fields['doctor_id']);
+        $this->authorize('employeeUpdateSetting', [$office, $doctor]);
+        abort_unless(auth()->user()->current_role_id == ModelsRole::DentalDoctorTechnician, 403);
+        $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => auth()->id()])->first();
+        $relation->setting->update($fields);
         return new EmployeeInOfficeResource($relation);
     }
 
