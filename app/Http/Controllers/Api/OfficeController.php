@@ -49,10 +49,9 @@ class OfficeController extends Controller
         }
     }
 
-    public function doctorOffice(Doctor $doctor)
+    public function userOffice()
     {
-        $user = auth()->user();
-        $offices = HasRole::where(['user_id' => $doctor->user->id, 'roleable_type' => 'App\Models\Office'])->with('roleable')->get();
+        $offices = HasRole::where(['user_id' => auth()->id(), 'roleable_type' => 'App\Models\Office'])->with('roleable')->get();
         return OfficeThroughHasRoleResource::collection($offices);
     }
 
