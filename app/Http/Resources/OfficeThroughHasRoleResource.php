@@ -33,6 +33,8 @@ class OfficeThroughHasRoleResource extends JsonResource
         return [
             'role_in_office' => SubRole::getKey($this->sub_role),
             'office' => new OfficeResource($this->whenLoaded('roleable')),
+            'setting' => new EmployeeSettingResource($this->setting),
+            'properties' => HasRolePropertyResource::collection($this->whenLoaded('properties')),
         ];
     }
 }
