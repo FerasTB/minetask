@@ -18,6 +18,7 @@ class DoubleEntryResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => DoubleEntryType::getKey($this->type),
+            'entryType' => 'Entry',
             'total_price' => $this->total_price,
             'created_at' => $this->created_at,
             'receipt' => new ReceiptResource($this->receipt),
