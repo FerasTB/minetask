@@ -126,7 +126,7 @@ class AccountingProfileController extends Controller
             // return $doctor->accountingProfiles;
             $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts', 'InvoiceResource', 'InvoiceResource.items'
+                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
