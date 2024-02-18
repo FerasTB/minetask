@@ -18,6 +18,7 @@ class DirectDoubleEntryResource extends JsonResource
         return [
             'id' => $this->id,
             'total_price' => $this->total_price,
+            'created_at' => $this->created_at,
             'type' => DoubleEntryType::getKey($this->type),
             'coa' => new COAResource($this->whenLoaded('coa')),
         ];

@@ -19,6 +19,7 @@ class DoubleEntryResource extends JsonResource
             'id' => $this->id,
             'type' => DoubleEntryType::getKey($this->type),
             'total_price' => $this->total_price,
+            'created_at' => $this->created_at,
             'receipt' => new ReceiptResource($this->receipt),
             'invoice' => new InvoiceResource($this->invoice),
             'invoice_item' => new InvoiceItemsResource($this->invoiceItem),
