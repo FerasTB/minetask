@@ -35,12 +35,12 @@ class COAController extends Controller
                 $doctor->COAS()
                     ->where('office_id', $office->id)
                     ->with([
-                        'doctor', 'office', 'doubleEntries'
+                        'doctor', 'office', 'doubleEntries', 'directDoubleEntries'
                     ])
                     ->get()
             );
         } else {
-            return COAResource::collection($office->COAS()->with(['office', 'doubleEntries'])->get());
+            return COAResource::collection($office->COAS()->with(['office', 'doubleEntries', 'directDoubleEntries'])->get());
         }
     }
 

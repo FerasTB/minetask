@@ -30,6 +30,7 @@ class COAResource extends JsonResource
             'general_type' => COAGeneralType::getKey($this->general_type),
             'type' => COAType::getKey($this->type),
             'entry' => DoubleEntryResource::collection($this->whenLoaded('doubleEntries')),
+            'direct_double_entry' => DirectDoubleEntryResource::collection($this->whenLoaded('directDoubleEntries')),
             'total' => COAController::coaOutcomeInt($this->id),
         ];
     }
