@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('accounting_profile_id')->constrained('accounting_profiles')->onDelete('cascade');
             $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('set null');
             $table->integer('total_price');
-            $table->date('date_of_invoice')->default(now());
+            $table->date('date_of_invoice')->nullable();
             $table->date('due_to_invoice')->nullable();
             // $table->integer('discount')->nullable();
             $table->string('note')->nullable();
