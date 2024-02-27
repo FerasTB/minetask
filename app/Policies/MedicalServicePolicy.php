@@ -33,10 +33,7 @@ class MedicalServicePolicy
     public function create(User $user, Office $office): bool
     {
         $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
-        if ($role != null) {
-            return ($role->sub_role == SubRole::OfficeOwner);
-        }
-        return false;
+        return $role != null;
     }
 
     /**
