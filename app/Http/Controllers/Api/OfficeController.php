@@ -357,30 +357,4 @@ class OfficeController extends Controller
             return response()->noContent();
         }
     }
-
-    public function temp()
-    {
-        $doctor = Doctor::find(4);
-        $office = Office::find(3);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PatientInvoice,
-            'prefix' => 'PINV',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PatientReceipt,
-            'prefix' => 'PREC',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PaymentVoucher,
-            'prefix' => 'PVOC',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::SupplierInvoice,
-            'prefix' => 'SINV',
-            'office_id' => $office->id,
-        ]);
-    }
 }
