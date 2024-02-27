@@ -12,6 +12,7 @@ use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Office;
+use App\Models\PatientCase;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -87,6 +88,10 @@ class AppointmentController extends Controller
             $fields['doctor_id'] = $doctor->id;
         } else {
             $doctor = Doctor::find($request->doctor_id);
+        }
+        if ($request->patientCase_id) {
+            $patientCase = PatientCase::findOrFail($request->patientCase_id);
+            $this->authorize('update', $patientCase);
         }
         $appointment = $doctor->appointments()->create($fields);
         $appointment = Appointment::find($appointment->id);
