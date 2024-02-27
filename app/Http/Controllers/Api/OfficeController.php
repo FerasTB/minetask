@@ -257,6 +257,26 @@ class OfficeController extends Controller
                 'case_name' => Doctor::DefaultCase,
                 'office_id' => $office->id,
             ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PatientInvoice,
+                'prefix' => 'PINV',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PatientReceipt,
+                'prefix' => 'PREC',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::PaymentVoucher,
+                'prefix' => 'PVOC',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::SupplierInvoice,
+                'prefix' => 'SINV',
+                'office_id' => $office->id,
+            ]);
         }
         $relation->setting()->create($fields);
         return new DoctorInOfficeResource($relation);
@@ -336,5 +356,31 @@ class OfficeController extends Controller
         } else {
             return response()->noContent();
         }
+    }
+
+    public function temp()
+    {
+        $doctor = Doctor::find(4);
+        $office = Office::find(3);
+        $doctor->transactionPrefix()->create([
+            'type' => TransactionType::PatientInvoice,
+            'prefix' => 'PINV',
+            'office_id' => $office->id,
+        ]);
+        $doctor->transactionPrefix()->create([
+            'type' => TransactionType::PatientReceipt,
+            'prefix' => 'PREC',
+            'office_id' => $office->id,
+        ]);
+        $doctor->transactionPrefix()->create([
+            'type' => TransactionType::PaymentVoucher,
+            'prefix' => 'PVOC',
+            'office_id' => $office->id,
+        ]);
+        $doctor->transactionPrefix()->create([
+            'type' => TransactionType::SupplierInvoice,
+            'prefix' => 'SINV',
+            'office_id' => $office->id,
+        ]);
     }
 }

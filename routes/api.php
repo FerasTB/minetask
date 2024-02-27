@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
     Route::get('user/office', [App\Http\Controllers\Api\OfficeController::class, 'userOffice']);
     Route::get('my_offices', [App\Http\Controllers\Api\OfficeController::class, 'MyOffices']);
+    Route::post('temp/temp/temp', [App\Http\Controllers\Api\OfficeController::class, 'temp']);
     Route::apiResource('availability', App\Http\Controllers\Api\AvailabilityController::class);
     Route::apiResource('appointment', App\Http\Controllers\Api\AppointmentController::class);
     Route::apiResource('vacation', App\Http\Controllers\Api\VacationController::class);
