@@ -25,7 +25,7 @@ class UserInfo extends Model
     public function hasLanguage(Language $lang)
     {
         return UserInfo::whereHas(
-            'allLanguages',
+            'allLanguage',
             function ($query) use ($lang) {
                 $query->where([
                     'language_id' => $lang->id,
