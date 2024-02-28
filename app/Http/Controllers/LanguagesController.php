@@ -12,12 +12,9 @@ class LanguagesController extends Controller
 {
     public function index()
     {
-        $id = auth()->id();
-        $user = User::find($id)->with(['info', 'info.allLanguage'])->get();
         $info = auth()->user()->info;
         $info->load('allLanguage');
-        return $info;
-        return new UserResource($user);
+        return new UserResource($info);
     }
 
     public function switchLanguage(Language $lang)
