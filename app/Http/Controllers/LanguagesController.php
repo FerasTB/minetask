@@ -12,7 +12,8 @@ class LanguagesController extends Controller
 {
     public function index()
     {
-        $user = User::find(auth()->id())->with(['info', 'info.allLanguage'])->get();
+        $id = auth()->id();
+        $user = User::find($id)->with(['info', 'info.allLanguage'])->get();
         return new UserResource($user);
     }
 
