@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DentalLab\LabOrderStepController;
 use App\Http\Controllers\Api\DentalLab\ReceiptController;
 use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\Api\DoctorInfoController;
+use App\Http\Controllers\LanguagesController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -135,6 +136,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/switch-role/{role}', [RoleController::class, 'switchRole']);
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
     Route::get('/role', [RoleController::class, 'index']);
+    Route::get('/switch-language/{lang}', [LanguagesController::class, 'switchLanguage']);
+    Route::get('/assign-language/{lang}', [LanguagesController::class, 'assignLanguage']);
+    Route::get('/language', [LanguagesController::class, 'index']);
     Route::post('/office/{office}/accounting/lab/profile', [DentalLabControlle::class, 'store']);
     Route::get('/doctor/unread/notification', [DoctorInfoController::class, 'unreadNotification']);
     Route::put('/doctor/mark/read/notification', [DoctorInfoController::class, 'markAsRead']);
