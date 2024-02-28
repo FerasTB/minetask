@@ -31,6 +31,7 @@ class UserInfoController extends Controller
     public function store(StoreUserInfoRequest $request)
     {
         abort_unless(!auth()->user()->info, 403);
+        $fields = $request->validated();
         auth()->user()->info()->create($request);
     }
 
