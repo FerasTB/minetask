@@ -22,7 +22,7 @@ class UserInfo extends Model
         return $this->morphToMany(Language::class, 'languageable', 'model_has_languages', 'languageable_id');
     }
 
-    public function hasRole(Language $lang)
+    public function hasLanguage(Language $lang)
     {
         return User::whereHas(
             'allLanguages',
