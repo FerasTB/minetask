@@ -18,6 +18,7 @@ use App\Http\Requests\UpdateHasRolePropertyRequest;
 use App\Http\Requests\UpdateHasRoleSettingRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
+use App\Http\Resources\EmployeeInOfficeInfoResource;
 use App\Http\Resources\EmployeeInOfficeResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
@@ -346,6 +347,12 @@ class OfficeController extends Controller
     {
         $this->authorize('officeOwner', $office);
         return EmployeeInOfficeResource::collection($office->roles);
+    }
+
+    public function AllDoctorInOfficeInfo(Office $office)
+    {
+        $this->authorize('officeOwner', $office);
+        return EmployeeInOfficeInfoResource::collection($office->roles);
     }
 
     public function MyOffices()
