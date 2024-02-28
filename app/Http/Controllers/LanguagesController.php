@@ -19,20 +19,20 @@ class LanguagesController extends Controller
 
     public function switchLanguage(Language $lang)
     {
-        abort_unless(auth()->user()->info && auth()->user()->info->hasLanguage($lang), 404);
+        abort_unless(auth()->user()->info && auth()->user()->info()->hasLanguage($lang), 404);
 
-        auth()->user()->info->update(['current_language_id' => $lang->id]);
+        auth()->user()->info()->update(['current_language_id' => $lang->id]);
 
         return response('Done', 200);
     }
 
     public function assignLanguage(Language $lang)
     {
-        abort_unless(auth()->user()->info && !auth()->user()->info->hasLanguage($lang), 404);
+        abort_unless(auth()->user()->info && !auth()->user()->info()->hasLanguage($lang), 404);
 
         $lang = modelHasLanguage::create([
             'language_id' => $lang->id,
-            'languageable_id' => auth()->user()->info->id,
+            'languageable_id' => auth()->user()->info()->id,
             'languageable_type' => 'App\Models\UserInfo',
         ]);
 
