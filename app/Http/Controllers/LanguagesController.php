@@ -14,7 +14,9 @@ class LanguagesController extends Controller
     {
         $id = auth()->id();
         $user = User::find($id)->with(['info', 'info.allLanguage'])->get();
-        return auth()->user()->info->allLanguage;
+        $info = auth()->user()->info;
+        $info->load('allLanguage');
+        return $info;
         return new UserResource($user);
     }
 
