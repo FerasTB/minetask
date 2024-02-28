@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UserInfo;
 use App\Http\Requests\StoreUserInfoRequest;
 use App\Http\Requests\UpdateUserInfoRequest;
+use App\Http\Resources\UserInfoResource;
 
 class UserInfoController extends Controller
 {
@@ -13,7 +14,7 @@ class UserInfoController extends Controller
      */
     public function index()
     {
-        //
+        return new UserInfoResource(auth()->user()->info);
     }
 
     /**
@@ -29,7 +30,8 @@ class UserInfoController extends Controller
      */
     public function store(StoreUserInfoRequest $request)
     {
-        //
+        abort_unless(!auth()->user()->info, 403);
+        auth()->user()->info()->create($request);
     }
 
     /**
