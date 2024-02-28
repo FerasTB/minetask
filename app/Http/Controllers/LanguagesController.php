@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserInfoResource;
 use App\Http\Resources\UserResource;
 use App\Models\Language;
 use App\Models\modelHasLanguage;
@@ -13,8 +14,8 @@ class LanguagesController extends Controller
     public function index()
     {
         $info = auth()->user()->info;
-        $info->load('allLanguage');
-        return new UserResource($info);
+        $info->load('allLanguage', 'user');
+        return new UserInfoResource($info);
     }
 
     public function switchLanguage(Language $lang)

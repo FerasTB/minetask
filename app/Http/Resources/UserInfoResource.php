@@ -16,6 +16,7 @@ class UserInfoResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user' => new UserResource($this->whenLoaded('user')),
             'country' => $this->country,
             'numberPrefix' => $this->numberPrefix,
             'languages' => LanguageResource::collection($this->whenLoaded('allLanguage')),

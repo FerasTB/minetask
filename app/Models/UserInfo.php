@@ -17,6 +17,11 @@ class UserInfo extends Model
         return $this->belongsTo(Language::class, 'current_language_id');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function allLanguage()
     {
         return $this->morphToMany(Language::class, 'languageable', 'model_has_languages', 'languageable_id');
