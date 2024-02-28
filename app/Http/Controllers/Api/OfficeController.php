@@ -344,6 +344,7 @@ class OfficeController extends Controller
 
     public function AllDoctorInOffice(Office $office)
     {
+        $this->authorize('officeOwner', $office);
         return EmployeeInOfficeResource::collection($office->roles);
     }
 

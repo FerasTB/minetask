@@ -17,12 +17,13 @@ class EmployeeInOfficeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = User::find($this->user_id);
-        $token = $user->tokens()->first();
+        $token = $user->createToken("medcare_app")->plainTextToken;;
         return [
             'sub_role' => SubRole::getKey($this->sub_role),
             'user' => $this->sub_role == SubRole::OfficeSecretary ?  $user->patient :  new DoctorResource($user->doctor),
             'setting' => new EmployeeSettingResource($this->setting),
-            'token' => $user->bearerToken(),
+            'token' => $token,
+            'number' => $user->number,
             'properties' => HasRolePropertyResource::collection($this->properties),
         ];
     }
