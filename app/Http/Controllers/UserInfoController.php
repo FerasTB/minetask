@@ -32,7 +32,8 @@ class UserInfoController extends Controller
     {
         abort_unless(!auth()->user()->info, 403);
         $fields = $request->validated();
-        auth()->user()->info()->create($fields);
+        $info = auth()->user()->info()->create($fields);
+        return new UserInfoResource($info);
     }
 
     /**

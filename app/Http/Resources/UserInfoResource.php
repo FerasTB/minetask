@@ -19,7 +19,7 @@ class UserInfoResource extends JsonResource
             'country' => $this->country,
             'numberPrefix' => $this->numberPrefix,
             'languages' => LanguageResource::collection($this->whenLoaded('allLanguages')),
-            'current_language' => $this->current_language_id == null ? 'noRole' : $this->currentLanguage->name,
+            'current_language' => $this->current_language_id == null ? 'noLanguage' : $this->currentLanguage->name,
         ];
     }
 }
