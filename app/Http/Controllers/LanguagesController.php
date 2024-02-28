@@ -28,11 +28,13 @@ class LanguagesController extends Controller
 
     public function assignLanguage(Language $lang)
     {
-        abort_unless(auth()->user()->info && !auth()->user()->info()->hasLanguage($lang), 404);
+        abort_unless(auth()->user()->info, 403);
+        $info = auth()->user()->info;
+        abort_unless(!$info->hasLanguage($lang), 404);
 
         $lang = modelHasLanguage::create([
             'language_id' => $lang->id,
-            'languageable_id' => auth()->user()->info()->id,
+            'languageable_id' => $info->id,
             'languageable_type' => 'App\Models\UserInfo',
         ]);
 
