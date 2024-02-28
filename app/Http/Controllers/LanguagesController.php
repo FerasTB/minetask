@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\Language;
 use App\Models\modelHasLanguage;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LanguagesController extends Controller
 {
     public function index()
     {
-        return new UserResource(auth()->user());
+        $user = User::find(auth()->id());
+        $user->load('info.allLanguage');
+        return new UserResource($user);
     }
 
     public function switchLanguage(Language $lang)
