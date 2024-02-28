@@ -23,7 +23,7 @@ class EmployeeInOfficeResource extends JsonResource
             'user' => $this->sub_role == SubRole::OfficeSecretary ?  $user->patient :  new DoctorResource($user->doctor),
             'setting' => new EmployeeSettingResource($this->setting),
             'token' => $token,
-            'number' => $user->number,
+            'phone' => $user->number,
             'properties' => HasRolePropertyResource::collection($this->properties),
         ];
     }
