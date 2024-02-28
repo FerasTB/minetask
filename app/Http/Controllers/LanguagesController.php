@@ -30,6 +30,7 @@ class LanguagesController extends Controller
     {
         abort_unless(auth()->user()->info, 403);
         $info = auth()->user()->info;
+        return 'hi';
         abort_unless(!$info->hasLanguage($lang), 404);
 
         $lang = modelHasLanguage::create([
