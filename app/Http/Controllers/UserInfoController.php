@@ -14,7 +14,7 @@ class UserInfoController extends Controller
      */
     public function index()
     {
-        return new UserInfoResource(auth()->user()->info);
+        return auth()->user()->info ?  new UserInfoResource(auth()->user()->info) : null;
     }
 
     /**

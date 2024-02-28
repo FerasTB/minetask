@@ -21,7 +21,7 @@ class UserResource extends JsonResource
             'role' => Role::getKey($this->role),
             'current_role' => $this->current_role_id == null ? 'noRole' : $this->currentRole->name,
             'roles' => RoleResource::collection($this->allRoles),
-            'info' => new UserInfoResource($this->info),
+            'info' => auth()->user()->info ?  new UserInfoResource(auth()->user()->info) : null,
             'created_at' => $this->created_at,
         ];
     }
