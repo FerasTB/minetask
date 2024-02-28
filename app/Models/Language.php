@@ -12,7 +12,7 @@ class Language extends Model
 
     protected $fillable = ['name'];
 
-    public function users(): MorphToMany
+    public function userInfos(): MorphToMany
     {
         return $this->morphedByMany(UserInfo::class, 'languageable', 'model_has_languages');
     }
