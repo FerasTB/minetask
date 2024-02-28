@@ -29,7 +29,7 @@ class UserInfo extends Model
             function ($query) use ($lang) {
                 $query->where([
                     'language_id' => $lang->id,
-                    'languageable_id' => auth()->user()->info()->id,
+                    'languageable_id' => auth()->user()->info->id,
                     'languageable_type' => 'App\Models\UserInfo',
                 ]);
             }
