@@ -16,7 +16,7 @@ class OfficeAnalysisResource extends JsonResource
     {
         return [
             'appointments' => $this->appointments ? $this->appointments->count : "0",
-            'teethRecords' => $this->teethRecords ? $this->teethRecords->count : "0",
+            // 'teethRecords' => $this->teethRecords ? $this->teethRecords->count : "0",
         ];
     }
 }
