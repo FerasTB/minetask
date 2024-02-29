@@ -373,6 +373,7 @@ class OfficeController extends Controller
         $office->load([
             'appointments.count',
         ]);
+        return $office;
         return new OfficeAnalysisResource($office);
     }
 }
