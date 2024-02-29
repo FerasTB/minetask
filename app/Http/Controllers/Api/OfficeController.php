@@ -373,9 +373,8 @@ class OfficeController extends Controller
         $office->load(
             'appointments',
             'supplierAccountingProfiles',
-            'patientAccountingProfiles,'
+            'patientAccountingProfiles',
         );
-        return $office;
         return new OfficeAnalysisResource($office);
     }
 }
