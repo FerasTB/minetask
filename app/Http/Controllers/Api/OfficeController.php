@@ -20,6 +20,7 @@ use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
 use App\Http\Resources\EmployeeInOfficeInfoResource;
 use App\Http\Resources\EmployeeInOfficeResource;
+use App\Http\Resources\OfficeAnalysisResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Models\COA;
@@ -364,5 +365,15 @@ class OfficeController extends Controller
         } else {
             return response()->noContent();
         }
+    }
+
+    public function analysis(Office $office)
+    {
+        $this->authorize('officeOwner', $office);
+        $office->load([
+            'appointments',
+            'teethRecords',
+        ]);
+        return new OfficeAnalysisResource($office);
     }
 }
