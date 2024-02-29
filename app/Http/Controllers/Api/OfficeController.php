@@ -375,6 +375,7 @@ class OfficeController extends Controller
             'supplierAccountingProfiles',
             'patientAccountingProfiles,'
         ]);
+        return $office;
         return new OfficeAnalysisResource($office);
     }
 }
