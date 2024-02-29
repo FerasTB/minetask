@@ -374,6 +374,7 @@ class OfficeController extends Controller
             'appointments',
             'supplierAccountingProfiles',
             'patientAccountingProfiles',
+            'teethRecords',
         );
         return new OfficeAnalysisResource($office);
     }
