@@ -371,7 +371,7 @@ class OfficeController extends Controller
     {
         $this->authorize('officeOwner', $office);
         $office->load([
-            'appointments',
+            'appointments.count',
         ]);
         return new OfficeAnalysisResource($office);
     }
