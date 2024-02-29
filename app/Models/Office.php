@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AccountingProfileType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -60,12 +61,12 @@ class Office extends Model
 
     public function patientAccountingProfiles()
     {
-        return $this->hasMany(AccountingProfile::class, 'office_id')->where(['doctor_id' => null, 'patient_id' != null]);
+        return $this->hasMany(AccountingProfile::class, 'office_id')->where(['type' => AccountingProfileType::PatientAccount]);
     }
 
     public function supplierAccountingProfiles()
     {
-        return $this->hasMany(AccountingProfile::class, 'office_id')->where(['doctor_id' => null, 'patient_id' => null]);
+        return $this->hasMany(AccountingProfile::class, 'office_id')->where(['type' => AccountingProfileType::SupplierAccount]);
     }
 
     public function teethRecords()
