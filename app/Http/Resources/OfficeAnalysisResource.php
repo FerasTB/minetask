@@ -15,8 +15,8 @@ class OfficeAnalysisResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'appointments' => $this->appointments->count,
-            'teethRecords' => $this->teethRecords->count,
+            'appointments' => $this->appointments ? $this->appointments->count : "0",
+            'teethRecords' => $this->teethRecords ? $this->teethRecords->count : "0",
         ];
     }
 }
