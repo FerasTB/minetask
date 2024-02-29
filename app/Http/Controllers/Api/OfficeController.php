@@ -372,6 +372,8 @@ class OfficeController extends Controller
         $this->authorize('officeOwner', $office);
         $office->load([
             'appointments',
+            'supplierAccountingProfiles',
+            'patientAccountingProfiles,'
         ]);
         return new OfficeAnalysisResource($office);
     }
