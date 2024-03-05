@@ -23,6 +23,7 @@ use App\Http\Resources\EmployeeInOfficeResource;
 use App\Http\Resources\OfficeAnalysisResource;
 use App\Http\Resources\OfficeResource;
 use App\Http\Resources\OfficeThroughHasRoleResource;
+use App\Http\Resources\OfficeWithDoctorsRecourse;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\HasRole;
@@ -356,6 +357,12 @@ class OfficeController extends Controller
         return EmployeeInOfficeInfoResource::collection($office->roles);
     }
 
+    public function OfficeWithDoctors(Office $office)
+    {
+        $this->authorize('officeSecretary', $office);
+        return new OfficeWithDoctorsRecourse($office);
+    }
+
     public function MyOffices()
     {
         $user = auth()->user();
@@ -374,7 +381,6 @@ class OfficeController extends Controller
             'appointments',
             'supplierAccountingProfiles',
             'patientAccountingProfiles',
-            'teethRecords',
         );
         return new OfficeAnalysisResource($office);
     }

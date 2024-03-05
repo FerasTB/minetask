@@ -77,6 +77,15 @@ class OfficePolicy
         return false;
     }
 
+    public function officeSecretary(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        if ($role != null) {
+            return ($role->sub_role == SubRole::OfficeSecretary);
+        }
+        return false;
+    }
+
     public function employeeUpdateSetting(User $user, Office $office, Doctor $doctor): bool
     {
         $employeeRole = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();

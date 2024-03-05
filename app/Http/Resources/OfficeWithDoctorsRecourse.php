@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OfficeAnalysisResource extends JsonResource
+class OfficeWithDoctorsRecourse extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,8 @@ class OfficeAnalysisResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'appointments' => $this->appointments->count(),
-            'patients' => $this->patientAccountingProfiles->count(),
-            'suppliers' => $this->supplierAccountingProfiles->count(),
+            'office' => new OfficeResource($this),
+            'people' => EmployeeInOfficeInfoResource::collection($this->roles),
         ];
     }
 }

@@ -80,6 +80,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('office/{office}/employee/{patient}/setting', [App\Http\Controllers\Api\OfficeController::class, 'updateEmployeeSetting']);
     Route::get('office/{office}/show_employee', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOffice']);
     Route::get('office/{office}/show_employee/info', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOfficeInfo']);
+    Route::get('secretary/office/{office}/show_employee/info', [App\Http\Controllers\Api\OfficeController::class, 'OfficeWithDoctors']);
     Route::get('office/{office}/analysis', [App\Http\Controllers\Api\OfficeController::class, 'analysis']);
     Route::apiResource('medical/info', App\Http\Controllers\Api\MedicalInformationController::class);
     // Route::apiResource('accounting/debt', App\Http\Controllers\Api\DebtController::class);
