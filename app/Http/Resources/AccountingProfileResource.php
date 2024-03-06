@@ -54,7 +54,8 @@ class AccountingProfileResource extends JsonResource
             'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
             'office_id' => $this->office_id,
             // 'total' => AccountingProfileController::accountOutcomeInt($this->id)
-            'total' => $totalPositive - $totalNegative + $this->initial_balance
+            'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
+                :  $totalNegative - $totalPositive + $this->initial_balance,
         ];
     }
 }
