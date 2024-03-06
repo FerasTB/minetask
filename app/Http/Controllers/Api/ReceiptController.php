@@ -136,6 +136,7 @@ class ReceiptController extends Controller
             //     'office_id' => $office->id, 'doctor_id' => $request->doctor_id
             // ])->first();
             $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
             $receipt = $profile->receipts()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
@@ -172,7 +173,6 @@ class ReceiptController extends Controller
         } else {
             $fields['status'] = TransactionStatus::Draft;
         }
-        $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
         if (!$request->has('date_of_payment')) {
             $fields['date_of_payment'] = now();
         }
@@ -233,6 +233,7 @@ class ReceiptController extends Controller
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::ResetVoucher;
             $receipt = $profile->receipts()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
             $doctor = Doctor::find($request->doctor_id);
