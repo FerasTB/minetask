@@ -96,6 +96,7 @@ class InvoiceController extends Controller
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
             $invoice = $profile->invoices()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         }
