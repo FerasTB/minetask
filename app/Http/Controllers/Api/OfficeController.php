@@ -256,6 +256,12 @@ class OfficeController extends Controller
                 'sub_type' => COASubType::Payable,
                 'office_id' => $office->id,
             ]);
+            $doctor->COAS()->create([
+                'name' => COA::OwnerWithDraw,
+                'type' => COAType::OwnerWithdraw,
+                'general_type' => COAGeneralType::Equity,
+                'office_id' => $office->id,
+            ]);
             $doctor->cases()->create([
                 'case_name' => Doctor::DefaultCase,
                 'office_id' => $office->id,

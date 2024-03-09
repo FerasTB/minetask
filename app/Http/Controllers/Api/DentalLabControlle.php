@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDentalLabForDoctorRequest;
 use App\Http\Requests\StoreDentalLabRequest;
 use App\Http\Resources\DentalLabResource;
+use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\CoaGroup;
 use App\Models\DentalLab;
@@ -40,6 +41,7 @@ class DentalLabControlle extends Controller
             'note' => $request->note,
             'type' => AccountingProfileType::DentalLabDoctorAccount,
         ]);
+        $account = AccountingProfile::findOrFail($account->id);
         $account->load(['invoices', 'invoices.items', 'receipts', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps']);
         return new DentalLabResource($lab);
     }
