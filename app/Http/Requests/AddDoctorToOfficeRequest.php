@@ -31,6 +31,7 @@ class AddDoctorToOfficeRequest extends FormRequest
             'rate_type' => 'integer|nullable',
             'rate' => 'integer|nullable',
             'salary' => 'integer|nullable',
+            'doctors' => 'string|nullable',
         ];
     }
 }
