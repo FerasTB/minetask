@@ -80,8 +80,8 @@ class AuthController extends Controller
         ]);
         $ArabicLanguage = Language::findOrFail(1);
         $EnglishLanguage = Language::findOrFail(2);
-        LanguagesController::assertLanguage($ArabicLanguage);
-        LanguagesController::assertLanguage($EnglishLanguage);
+        LanguagesController::assertLanguage($ArabicLanguage, $user);
+        LanguagesController::assertLanguage($EnglishLanguage, $user);
         return response()->json([
             'status' => 'alright',
             'user' => new UserResource($user),
