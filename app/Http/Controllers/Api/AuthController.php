@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LanguagesController;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Language;
 use App\Models\ModelHasRole;
 use App\Models\Patient;
 use App\Models\Role as ModelsRole;
@@ -72,6 +74,14 @@ class AuthController extends Controller
         }
         $token = $user->createToken("medcare_app")->plainTextToken;
         $user = User::find($user->id);
+        $info = auth()->user()->info()->create([
+            'country' => 'Syria',
+            'numberPrefix' => '+963',
+        ]);
+        $ArabicLanguage = Language::findOrFail(1);
+        $EnglishLanguage = Language::findOrFail(2);
+        LanguagesController::assertLanguage($ArabicLanguage);
+        LanguagesController::assertLanguage($EnglishLanguage);
         return response()->json([
             'status' => 'alright',
             'user' => new UserResource($user),

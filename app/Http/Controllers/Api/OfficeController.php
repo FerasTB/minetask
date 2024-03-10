@@ -225,6 +225,14 @@ class OfficeController extends Controller
         // }
         $doctor = Doctor::findOrFail($fields['doctor_id']);
         $user = $doctor->user;
+        $roleInModel = ModelsRole::findOrFail(ModelsRole::DentalDoctor);
+        if (!$user->hasRole($roleInModel)) {
+            $role = ModelHasRole::create([
+                'role_id' => $roleInModel->id,
+                'roleable_id' => $user->id,
+                'roleable_type' => 'App\Models\User',
+            ]);
+        }
         $fields['sub_role'] = SubRole::getValue($request->sub_role);
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
@@ -288,6 +296,7 @@ class OfficeController extends Controller
             ]);
         }
         $relation->setting()->create($fields);
+        $user->update(['current_role_id' => $roleInModel->id]);
         return new DoctorInOfficeResource($relation);
     }
 

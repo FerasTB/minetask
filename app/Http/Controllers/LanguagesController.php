@@ -43,4 +43,20 @@ class LanguagesController extends Controller
 
         return response('Done', 200);
     }
+
+    public static function assertLanguage(Language $lang)
+    {
+        abort_unless(auth()->user()->info, 403);
+        $info = auth()->user()->info;
+        abort_unless(!$info->hasLanguage($lang), 404);
+
+        $lang = modelHasLanguage::create([
+            'language_id' => $lang->id,
+            'languageable_id' => $info->id,
+            'languageable_type' => 'App\Models\UserInfo',
+        ]);
+        $info->update(['current_language_id' => $lang->id]);
+
+        return response('Done', 200);
+    }
 }
