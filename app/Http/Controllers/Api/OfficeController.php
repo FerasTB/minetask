@@ -237,10 +237,6 @@ class OfficeController extends Controller
         $fields['roleable_id'] = $office->id;
         $fields['roleable_type'] = 'App\Models\Office';
         $relation = $user->roles()->create($fields);
-        $office->cases()->create([
-            'case_name' => Doctor::DefaultCase,
-            'doctor_id' => $doctor->id,
-        ]);
         if ($office->type == OfficeType::Separate) {
             $doctor = $user->doctor;
             $doctor->COAS()->create([
