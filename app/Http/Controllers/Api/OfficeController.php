@@ -224,8 +224,7 @@ class OfficeController extends Controller
         //     return DoctorInOfficeResource::collection($office->roles);
         // }
         $doctor = Doctor::findOrFail($fields['doctor_id']);
-        $user = auth()->user;
-        $doctor = $user->doctor;
+        $user = $doctor->user;
         $roleInModel = ModelsRole::findOrFail(ModelsRole::DentalDoctor);
         if (!$user->hasRole($roleInModel)) {
             $role = ModelHasRole::create([
@@ -240,7 +239,7 @@ class OfficeController extends Controller
         $relation = $user->roles()->create($fields);
         $office->cases()->create([
             'case_name' => Doctor::DefaultCase,
-            'doctor_id' => auth()->user()->doctor->id,
+            'doctor_id' => $doctor->id,
         ]);
         if ($office->type == OfficeType::Separate) {
             $doctor = $user->doctor;
