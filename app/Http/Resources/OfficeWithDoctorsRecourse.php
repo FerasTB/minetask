@@ -16,7 +16,7 @@ class OfficeWithDoctorsRecourse extends JsonResource
     {
         return [
             'office' => new OfficeResource($this),
-            'people' => EmployeeInOfficeInfoResource::collection($this->roles),
+            'people' => EmployeeInOfficeResource::collection($this->roles),
         ];
     }
 }
