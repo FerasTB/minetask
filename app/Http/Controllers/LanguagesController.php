@@ -50,7 +50,7 @@ class LanguagesController extends Controller
         $info = $user->info;
         // abort_unless(!$info->hasLanguage($lang), 404);
 
-        $lang = modelHasLanguage::create([
+        $language = modelHasLanguage::create([
             'language_id' => $lang->id,
             'languageable_id' => $info->id,
             'languageable_type' => 'App\Models\UserInfo',
