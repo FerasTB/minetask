@@ -74,7 +74,7 @@ class AuthController extends Controller
         }
         $token = $user->createToken("medcare_app")->plainTextToken;
         $user = User::find($user->id);
-        $info = auth()->user()->info()->create([
+        $info = $user->info()->create([
             'country' => 'Syria',
             'numberPrefix' => '+963',
         ]);
