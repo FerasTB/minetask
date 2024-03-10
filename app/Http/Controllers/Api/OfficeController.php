@@ -224,7 +224,8 @@ class OfficeController extends Controller
         //     return DoctorInOfficeResource::collection($office->roles);
         // }
         $doctor = Doctor::findOrFail($fields['doctor_id']);
-        $user = $doctor->user;
+        $user = auth()->user;
+        $doctor = $user->doctor;
         $roleInModel = ModelsRole::findOrFail(ModelsRole::DentalDoctor);
         if (!$user->hasRole($roleInModel)) {
             $role = ModelHasRole::create([
