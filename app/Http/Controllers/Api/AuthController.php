@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Resources\DoctorResource as ResourcesDoctorResource;
 use App\Http\Resources\PatientResource;
 use App\Http\Resources\UserResource;
 use App\Models\Language;
@@ -39,7 +40,7 @@ class AuthController extends Controller
             'status' => 'alright',
             'user' => new UserResource($user),
             'patient' => $user->patient ? new PatientResource($user->patient) : null,
-            'doctor' => $user->doctor ? new DoctorResource($user->doctor) : null,
+            'doctor' => $user->doctor ? new ResourcesDoctorResource($user->doctor) : null,
             'token' => $token,
             'completed' => $user->patient != null || $user->doctor != null,
         ]);
