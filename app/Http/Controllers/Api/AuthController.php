@@ -49,7 +49,7 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         $request->validated();
-        $user = auth()->user;
+        $user = auth()->user();
         if (!Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'error' => ['The provided credentials are incorrect.'],
