@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\Role;
+use App\Filament\Resources\DoctorResource;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LanguagesController;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Resources\PatientResource;
 use App\Http\Resources\UserResource;
 use App\Models\Language;
 use App\Models\ModelHasRole;
@@ -35,10 +38,30 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'alright',
             'user' => new UserResource($user),
+            'patient' => $user->patient ? new PatientResource($user->patient) : null,
+            'doctor' => $user->doctor ? new DoctorResource($user->doctor) : null,
             'token' => $token,
             'completed' => $user->patient != null || $user->doctor != null,
         ]);
     }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $request->validated();
+        $user = auth()->user;
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'error' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+        $user->update([
+            'password' => Hash::make($request->newPassword)
+        ]);
+        return response()->json([
+            'status' => 'password changed',
+        ]);
+    }
+
     public function register(RegisterRequest $request)
     {
         $request->validated();

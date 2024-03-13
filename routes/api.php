@@ -37,6 +37,7 @@ Broadcast::routes(['middleware' => ['auth:sanctum']]);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('doctor/info', App\Http\Controllers\Api\DoctorInfoController::class);
     Route::get('doctor/profile', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyInfo']);
+    Route::put('profile/reset/password', [App\Http\Controllers\Api\AuthController::class, 'resetPassword']);
     Route::get('doctor/docs', [App\Http\Controllers\Api\DoctorInfoController::class, 'myRecords']);
     Route::get('doctor/receipts/{office}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myReceipts']);
     Route::get('doctor/invoices/{office}', [App\Http\Controllers\Api\DoctorInfoController::class, 'myInvoices']);
