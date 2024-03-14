@@ -12,6 +12,7 @@ use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Office;
+use App\Models\OfficeRoom;
 use App\Models\PatientCase;
 use Illuminate\Http\Request;
 
@@ -23,8 +24,31 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         if ($request->doctor) {
-            $office = Office::find($request->office);
+            $office = Office::findOrFail($request->office);
             $this->authorize('viewAny', [Appointment::class, $office]);
+            if ($request->room) {
+                $room = OfficeRoom::findOrFail($request->room);
+                $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
+                $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor, 'office_room_id' => $room->id])
+                    ->with([
+                        'patient',
+                        'patient.doctorImage',
+                        'doctor',
+                        'office',
+                        'case',
+                        'room',
+                        'case.case',
+                        'case.teethRecords',
+                        'record',
+                        'record.diagnosis',
+                        'record.diagnosis.drug',
+                        'record.operations',
+                        'record.diagnosis.teeth',
+                        'record.operations.teeth',
+                    ])
+                    ->get();
+                return AppointmentResource::collection($appointments);
+            }
             $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])
                 ->with([
                     'patient',

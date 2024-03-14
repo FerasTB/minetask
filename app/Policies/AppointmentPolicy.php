@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\Appointment;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\OfficeRoom;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -18,6 +19,12 @@ class AppointmentPolicy
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
         return ($user->doctor && $role != null);
+    }
+
+    public function viewAnyWithRoom(User $user, Office $office, OfficeRoom $room): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return ($user->doctor && $role != null && $room->office->id == $office->id);
     }
 
     /**
