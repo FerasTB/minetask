@@ -69,7 +69,30 @@ class AppointmentController extends Controller
                 ->get();
             return AppointmentResource::collection($appointments);
         }
-        $office = Office::find($request->office);
+        $office = Office::findOrFail($request->office);
+        if ($request->room) {
+            $room = OfficeRoom::findOrFail($request->room);
+            $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
+            $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor, 'office_room_id' => $room->id])
+                ->with([
+                    'patient',
+                    'patient.doctorImage',
+                    'doctor',
+                    'office',
+                    'case',
+                    'room',
+                    'case.case',
+                    'case.teethRecords',
+                    'record',
+                    'record.diagnosis',
+                    'record.diagnosis.drug',
+                    'record.operations',
+                    'record.diagnosis.teeth',
+                    'record.operations.teeth',
+                ])
+                ->get();
+            return AppointmentResource::collection($appointments);
+        }
         $this->authorize('viewAny', [Appointment::class, $office]);
         $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])
             ->with([
