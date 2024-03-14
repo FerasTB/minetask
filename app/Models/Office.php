@@ -18,6 +18,9 @@ class Office extends Model
         'start_time', 'end_time', 'type',
     ];
 
+    protected $with = ['rooms'];
+
+
 
     public function availabilities()
     {
@@ -121,5 +124,10 @@ class Office extends Model
     public function doctorImage()
     {
         return $this->hasMany(DoctorImage::class, 'office_id');
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(OfficeRoom::class, 'office_id');
     }
 }

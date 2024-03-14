@@ -32,6 +32,7 @@ class AppointmentController extends Controller
                     'doctor',
                     'office',
                     'case',
+                    'room',
                     'case.case',
                     'case.teethRecords',
                     'record',
@@ -53,6 +54,7 @@ class AppointmentController extends Controller
                 'doctor',
                 'office',
                 'case',
+                'room',
                 'case.case',
                 'case.teethRecords',
                 'record',
@@ -73,6 +75,7 @@ class AppointmentController extends Controller
             ->with([
                 'doctor',
                 'office',
+                'room',
             ])
             ->get());
     }
@@ -100,6 +103,7 @@ class AppointmentController extends Controller
             'patient.doctorImage',
             'doctor',
             'office',
+            'room',
             'case',
             'case.case',
             'case.teethRecords',

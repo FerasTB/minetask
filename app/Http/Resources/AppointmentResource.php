@@ -35,6 +35,7 @@ class AppointmentResource extends JsonResource
             'office' => new OfficeResource($this->whenLoaded('office')),
             // 'patientCase' => new PatientCaseResource($this->patientCase),
             'case' => new PatientCaseResource($this->whenLoaded('case')),
+            'room' => new OfficeRoomResource($this->whenLoaded('room')),
             'record' => new TeethRecordForAppointmentResource($this->whenLoaded('record')),
             'note' => $this->note,
             'step' => $this->step,

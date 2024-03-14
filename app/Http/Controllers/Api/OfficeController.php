@@ -377,7 +377,7 @@ class OfficeController extends Controller
     public function MyOffices()
     {
         $user = auth()->user();
-        $offices = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\Office'])->with(['roleable', 'properties'])->get();
+        $offices = HasRole::where(['user_id' => $user->id, 'roleable_type' => 'App\Models\Office'])->with(['roleable', 'properties', 'roleable.rooms'])->get();
         if ($offices != []) {
             return OfficeThroughHasRoleResource::collection($offices);
         } else {
