@@ -133,15 +133,21 @@ class AppointmentController extends Controller
     public function store(StoreAppointmentRequest $request)
     {
         $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
         if (!$request->doctor_id) {
             $doctor = auth()->user()->doctor;
             $fields['doctor_id'] = $doctor->id;
         } else {
             $doctor = Doctor::find($request->doctor_id);
         }
+        $this->authorize('createForDoctor', [Appointment::class, $office, $doctor]);
         if ($request->patientCase_id) {
             $patientCase = PatientCase::findOrFail($request->patientCase_id);
             $this->authorize('update', $patientCase);
+        }
+        if ($request->office_room_id) {
+            $room = OfficeRoom::findOrFail($request->office_room_id);
+            abort_unless($room->office_id == $office->id, 403);
         }
         $appointment = $doctor->appointments()->create($fields);
         $appointment = Appointment::find($appointment->id);

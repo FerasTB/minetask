@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\Role;
 use App\Models\Appointment;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\OfficeRoom;
@@ -41,6 +42,13 @@ class AppointmentPolicy
     public function create(User $user): bool
     {
         //
+    }
+
+    public function createForDoctor(User $user, Office $office, Doctor $doctor): bool
+    {
+        $role = HasRole::where(['user_id' => $doctor->user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        $role2 = HasRole::where(['user_id' => $user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
+        return ($role != null) && ($role2 != null);
     }
 
     /**
