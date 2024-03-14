@@ -73,7 +73,7 @@ class AppointmentController extends Controller
         if ($request->room) {
             $room = OfficeRoom::findOrFail($request->room);
             $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
-            $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor, 'office_room_id' => $room->id])
+            $appointments = Appointment::where(['office_id' => $request->office, 'office_room_id' => $room->id])
                 ->with([
                     'patient',
                     'patient.doctorImage',
