@@ -85,6 +85,14 @@ class Doctor extends Model
         ]);
     }
 
+    public function invoiceReceipts()
+    {
+        return $this->hasManyDeep(InvoiceReceipt::class, [AccountingProfile::class], [
+            'doctor_id', // Foreign key on the "accounting_profiles" table.
+            'accounting_profile_id'     // Foreign key on the "invoices" table.
+        ]);
+    }
+
     public function receipts()
     {
         return $this->hasManyDeep(Receipt::class, [AccountingProfile::class], [

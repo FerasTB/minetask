@@ -13,6 +13,7 @@ use App\Http\Resources\DoctorInfoResource;
 use App\Http\Resources\DoctorPatientWithAppointmentResource;
 use App\Http\Resources\DrugPatientIndexResource;
 use App\Http\Resources\DrugResource;
+use App\Http\Resources\InvoiceReceiptsResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\MyPatientCombinedThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
@@ -206,6 +207,15 @@ class DoctorInfoController extends Controller
         return InvoiceResource::collection($doctor->invoices()
             ->where('accounting_profiles.office_id', $office->id)
             ->with(['patient', 'doctor', 'office', 'lab', 'account'])
+            ->get());
+    }
+
+    public function myInvoiceReceipt(Office $office)
+    {
+        $doctor = auth()->user()->doctor;
+        return InvoiceReceiptsResource::collection($doctor->invoiceReceipts()
+            ->where('accounting_profiles.office_id', $office->id)
+            ->with(['patient', 'doctor', 'office', 'account', 'items'])
             ->get());
     }
 
