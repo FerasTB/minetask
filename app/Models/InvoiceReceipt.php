@@ -54,7 +54,7 @@ class InvoiceReceipt extends Model
         );
     }
 
-    public function accountingProfile()
+    public function account()
     {
         return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
