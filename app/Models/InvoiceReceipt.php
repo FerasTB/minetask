@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InvoiceReceipt extends Model
 {
     use HasFactory;
+    use \Znck\Eloquent\Traits\BelongsToThrough;
 
     protected $fillable = ['accounting_profile_id', 'doctor_id', 'total_price', 'date_of_payment', 'note', 'running_balance', 'invoice_number'];
 
