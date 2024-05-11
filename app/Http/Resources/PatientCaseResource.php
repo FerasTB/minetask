@@ -21,6 +21,7 @@ class PatientCaseResource extends JsonResource
             'id' => $this->id,
             'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'case' => new MedicalCaseResource($this->whenLoaded('case')),
+            'teeth_records' => new TeethRecordForAppointmentResource($this->whenLoaded('teethRecords')),
             'status' => PatientCaseStatus::getKey($this->status),
             'time_per_session' => $this->time_per_session,
             'number_of_sessions' => $this->number_of_sessions,

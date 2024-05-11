@@ -6,9 +6,11 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PatientCaseStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentFirstStep;
+use App\Http\Requests\StoreAppointmentNewFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
 use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
+use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\Appointment;
 use App\Models\DiagnosisList;
@@ -82,7 +84,9 @@ class TeethRecordController extends Controller
     {
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
-        $case = MedicalCase::find($request->case_id);
+        // $case = MedicalCase::find($request->case_id);
+        $patientCase = PatientCase::findOrFail($fields['patientCase']);
+        $case = MedicalCase::find($patientCase->case->id);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
         } else {
@@ -99,37 +103,37 @@ class TeethRecordController extends Controller
             ]);
             $fields['appointment_id'] = $appointment->id;
         }
-        $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
-        // $this->authorize('create', [Record::class, $case]);
-        if ($patientCase) {
-            if ($patientCase->status == PatientCaseStatus::Closed) {
-                $patientCase = $case->patientCases()->create($fields);
-            }
-            $fields['report_id'] = $patientCase->patient->teethReport->id;
-            $record = $patientCase->teethRecords()->create($fields);
-            if ($record->description != null) {
-                $complaint = TeethComplaintList::firstOrCreate([
-                    'complaint' => $record->description,
-                ]);
-            }
-            $fields['description'] = $request->diagnosis;
-            $diagnosis = $record->diagnosis()->create($fields);
-            if ($diagnosis->description != null) {
-                $diagnosis = DiagnosisList::firstOrCreate([
-                    'description' => $diagnosis->description,
-                ]);
-            }
-            $appointment->update([
-                'patientCase_id' => $patientCase->id,
-            ]);
-            return response()->json([
-                'patientCase_id' => $patientCase->id,
-                'closable' => $case->case_name != Doctor::DefaultCase,
-                'record_id' => $record->id,
-                'diagnosis_id' => $record->diagnosis->id,
-            ]);
-        }
-        $patientCase = $case->patientCases()->create($fields);
+        // $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
+        // // $this->authorize('create', [Record::class, $case]);
+        // if ($patientCase) {
+        //     if ($patientCase->status == PatientCaseStatus::Closed) {
+        //         $patientCase = $case->patientCases()->create($fields);
+        //     }
+        //     $fields['report_id'] = $patientCase->patient->teethReport->id;
+        //     $record = $patientCase->teethRecords()->create($fields);
+        //     if ($record->description != null) {
+        //         $complaint = TeethComplaintList::firstOrCreate([
+        //             'complaint' => $record->description,
+        //         ]);
+        //     }
+        //     $fields['description'] = $request->diagnosis;
+        //     $diagnosis = $record->diagnosis()->create($fields);
+        //     if ($diagnosis->description != null) {
+        //         $diagnosis = DiagnosisList::firstOrCreate([
+        //             'description' => $diagnosis->description,
+        //         ]);
+        //     }
+        //     $appointment->update([
+        //         'patientCase_id' => $patientCase->id,
+        //     ]);
+        //     return response()->json([
+        //         'patientCase_id' => $patientCase->id,
+        //         'closable' => $case->case_name != Doctor::DefaultCase,
+        //         'record_id' => $record->id,
+        //         'diagnosis_id' => $record->diagnosis->id,
+        //     ]);
+        // }
+        // $patientCase = $case->patientCases()->create($fields);
         $fields['report_id'] = $patientCase->patient->teethReport->id;
         $record = $patientCase->teethRecords()->create($fields);
         if ($record->description != null) {
@@ -153,6 +157,17 @@ class TeethRecordController extends Controller
             'record_id' => $record->id,
             'diagnosis_id' => $record->diagnosis->id,
         ]);
+    }
+
+    public function newFirst(StoreAppointmentNewFirstStep $request)
+    {
+        $fields = $request->validated();
+        $doctor = auth()->user()->doctor;
+        $case = MedicalCase::find($request->case_id);
+        $patientCase = $case->patientCases()->create($fields);
+        $cases = $doctor->PatientCases()->where('patient_id', $fields['patient_id'])
+            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis'])->get();
+        return PatientCaseResource::collection($cases);
     }
 
     public function AfterTreatmentUpdate(TeethRecord $record, UpdateAfterTreatmentRequest $request)
