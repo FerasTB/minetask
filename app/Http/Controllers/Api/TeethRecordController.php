@@ -89,6 +89,8 @@ class TeethRecordController extends Controller
         // $case = MedicalCase::find($request->case_id);
         $patientCase = PatientCase::findOrFail($fields['patientCase']);
         $case = MedicalCase::find($patientCase->case->id);
+        $record = TeethRecord::findOrFail($request->record_id);
+        $this->authorize('create', [Operation::class, $record]);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
         } else {
@@ -154,12 +156,6 @@ class TeethRecordController extends Controller
             'patientCase_id' => $patientCase->id,
         ]);
         foreach ($fields['operations'] as $operation) {
-            $record = TeethRecord::find($operation['record_id']);
-            if (!$record) {
-                // return new OperationResource($operation);
-                return response('the is no record', 404);
-            }
-            $this->authorize('create', [Operation::class, $record]);
             $operation = $record->operations()->create($fields);
             foreach ($operation['teeth'] as $tooth) {
                 $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
