@@ -10,12 +10,14 @@ use App\Http\Requests\StoreAppointmentNewFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
 use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
+use App\Http\Resources\OperationResource;
 use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\Appointment;
 use App\Models\DiagnosisList;
 use App\Models\Doctor;
 use App\Models\MedicalCase;
+use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\PatientCase;
 use App\Models\TeethComplaintList;
@@ -151,6 +153,22 @@ class TeethRecordController extends Controller
         $appointment->update([
             'patientCase_id' => $patientCase->id,
         ]);
+        foreach ($fields['operations'] as $operation) {
+            $record = TeethRecord::find($operation['record_id']);
+            if (!$record) {
+                // return new OperationResource($operation);
+                return response('the is no record', 404);
+            }
+            $this->authorize('create', [Operation::class, $record]);
+            $operation = $record->operations()->create($fields);
+            foreach ($operation['teeth'] as $tooth) {
+                $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
+            }
+        }
+        foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {
+            $tooth = $diagnosis->teeth()->create(['number_of_tooth' => $diagnosis_tooth]);
+        }
+
         return response()->json([
             'patientCase_id' => $patientCase->id,
             'closable' => $case->case_name != Doctor::DefaultCase,
