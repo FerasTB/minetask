@@ -65,7 +65,7 @@ class PatientCaseController extends Controller
         // $this->authorize('viewAny', [MedicalCase::class, $patient]);
         $doctor = auth()->user()->doctor;
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
-            ->with(['case', 'teethRecords'])->get();
+            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis'])->get();
         return PatientCaseResource::collection($cases);
     }
 
