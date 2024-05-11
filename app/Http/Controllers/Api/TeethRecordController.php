@@ -82,7 +82,7 @@ class TeethRecordController extends Controller
         return TeethRecordResource::collection($case->teethRecords);
     }
 
-    public function firstStep(StoreAppointmentFirstStep $request)
+    public function storeWholeRecord(StoreAppointmentFirstStep $request)
     {
         $fields = $request->validated();
         $patient = Patient::findOrFail($request->patient_id);
@@ -177,7 +177,7 @@ class TeethRecordController extends Controller
         ]);
     }
 
-    public function newFirst(StoreAppointmentNewFirstStep $request)
+    public function firstStep(StoreAppointmentNewFirstStep $request)
     {
         $fields = $request->validated();
         $doctor = auth()->user()->doctor;
