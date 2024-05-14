@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\DentalDoctorTransaction;
+use App\Enums\OfficeType;
 use App\Enums\PatientCaseStatus;
+use App\Enums\TransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAppointmentFirstStep;
 use App\Http\Requests\StoreAppointmentNewFirstStep;
@@ -13,15 +16,18 @@ use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\OperationResource;
 use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\TeethRecordResource;
+use App\Models\AccountingProfile;
 use App\Models\Appointment;
 use App\Models\DiagnosisList;
 use App\Models\Doctor;
 use App\Models\MedicalCase;
+use App\Models\Office;
 use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\PatientCase;
 use App\Models\TeethComplaintList;
 use App\Models\TeethRecord;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TeethRecordController extends Controller
@@ -155,10 +161,40 @@ class TeethRecordController extends Controller
         $appointment->update([
             'patientCase_id' => $patientCase->id,
         ]);
+        if ($fields['with_draft']) {
+            $office = Office::findOrFail($request->office_id);
+            if ($office->type == OfficeType::Combined) {
+                $owner = User::findOrFail($office->owner->user_id);
+                $profile = AccountingProfile::where([
+                    'patient_id' => $patient->id,
+                    'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                ])->first();
+                $fields['type'] = DentalDoctorTransaction::SellInvoice;
+                $fields['status'] = TransactionStatus::Draft;
+                if (!$request->has('date_of_invoice')) {
+                    $fields['date_of_invoice'] = now();
+                }
+                $invoice = $profile->invoices()->create($fields);
+            } else {
+                $profile = AccountingProfile::where([
+                    'patient_id' => $patient->id,
+                    'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                ])->first();
+                $fields['type'] = DentalDoctorTransaction::SellInvoice;
+                $fields['status'] = TransactionStatus::Draft;
+                $invoice = $profile->invoices()->create($fields);
+            }
+            $withDraft = True;
+        }
         foreach ($fields['operations'] as $operation) {
             $operation = $record->operations()->create($fields);
             foreach ($operation['teeth'] as $tooth) {
                 $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
+            }
+            if ($withDraft) {
+                $fields['description'] = $fields['operation_description'];
+                $fields['name'] = $fields['operation_name'];
+                $item = $invoice->items()->create($fields);
             }
         }
         foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {

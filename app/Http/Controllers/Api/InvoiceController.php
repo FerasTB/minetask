@@ -212,7 +212,7 @@ class InvoiceController extends Controller
     public static function supplierBalance(int $id, int $thisTransaction)
     {
         $supplier = AccountingProfile::findOrFail($id);
-        $invoices = $supplier->invoices()->get();
+        $invoices = $supplier->invoices()->whereNot('status', TransactionStatus::Draft)->get();
         $totalNegative = $invoices != null ?
             $invoices->sum('total_price') : 0;
         $receipts = $supplier->receipts()->get();
