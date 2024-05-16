@@ -95,8 +95,6 @@ class TeethRecordController extends Controller
         // $case = MedicalCase::find($request->case_id);
         $patientCase = PatientCase::findOrFail($fields['patientCase']);
         $case = MedicalCase::find($patientCase->case->id);
-        $record = TeethRecord::findOrFail($request->record_id);
-        $this->authorize('create', [Operation::class, $record]);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
         } else {
