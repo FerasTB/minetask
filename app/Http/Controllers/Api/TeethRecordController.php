@@ -96,8 +96,11 @@ class TeethRecordController extends Controller
         // $case = MedicalCase::find($request->case_id);
         $patientCase = PatientCase::findOrFail($fields['patientCase']);
         $case = MedicalCase::find($patientCase->case->id);
+        $doctor = auth()->user()->doctor;
+        abort_unless($case->doctor_id == $doctor->id, 403);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
+            abort_unless($appointment->doctor_id == $doctor->id, 403);
         } else {
             $office = $case->office;
             $doctor = auth()->user()->doctor;
