@@ -32,7 +32,7 @@ class StoreOperationRequest extends FormRequest
             // 'operations.*.amount' => 'integer|required',
             // 'operations.*.total_price' => 'integer|required',
             // 'operations.*.price_per_one' => 'integer|required',
-            'operations.tooth' => 'integer|required',
+            'operations.number_of_tooth' => 'integer|required',
         ];
     }
 }
