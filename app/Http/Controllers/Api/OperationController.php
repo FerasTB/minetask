@@ -67,7 +67,7 @@ class OperationController extends Controller
         // }
         foreach ($fields['operations'] as $operation) {
             $operation = $record->operations()->create($fields);
-            $tooth = $operation->teeth()->create(['number_of_tooth' => $fields['tooth']]);
+            $tooth = $operation->teeth()->create(['number_of_tooth' => $operation['tooth']]);
             // $fields['description'] = $fields['operation_description'];
             // $fields['name'] = $fields['operation_name'];
             // $item = $invoice->items()->create($fields);
