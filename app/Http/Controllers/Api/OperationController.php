@@ -66,8 +66,8 @@ class OperationController extends Controller
         //     $invoice = $profile->invoices()->create($fields);
         // }
         foreach ($fields['operations'] as $operation) {
-            $operation = $record->operations()->create($fields);
-            $tooth = $operation->teeth()->create($fields);
+            $operation = $record->operations()->create($operation);
+            $tooth = $operation->teeth()->create($operation);
             // $fields['description'] = $fields['operation_description'];
             // $fields['name'] = $fields['operation_name'];
             // $item = $invoice->items()->create($fields);
