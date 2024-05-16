@@ -38,12 +38,11 @@ class OperationController extends Controller
     public function store(StoreOperationRequest $request)
     {
         $fields = $request->validated();
-        $patientCase = PatientCase::findOrFail($request->patientCase_id);
         $record = TeethRecord::findOrFail($request->record_id);
+        $patientCase = $record->PatientCase;
         $patient = $patientCase->patient;
         $doctor = $patientCase->case->doctor;
         abort_unless($doctor->id == auth()->user()->doctor->id, 403);
-        abort_unless($record->case->id == $patientCase->id, 403);
         // $office = Office::findOrFail($request->office_id);
         // if ($office->type == OfficeType::Combined) {
         //     $owner = User::findOrFail($office->owner->user_id);
