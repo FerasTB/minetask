@@ -198,8 +198,8 @@ class TeethRecordController extends Controller
                 }
             }
         }
+        $diagnosis = Diagnosis::find($diagnosis->id);
         foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {
-            $diagnosis = Diagnosis::find($diagnosis->id);
             $tooth = $diagnosis->teeth()->create(['number_of_tooth' => $diagnosis_tooth]);
         }
 
