@@ -18,6 +18,7 @@ use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Appointment;
+use App\Models\Diagnosis;
 use App\Models\DiagnosisList;
 use App\Models\Doctor;
 use App\Models\MedicalCase;
@@ -198,6 +199,7 @@ class TeethRecordController extends Controller
             }
         }
         foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {
+            $diagnosis = Diagnosis::find($diagnosis->id);
             $tooth = $diagnosis->teeth()->create(['number_of_tooth' => $diagnosis_tooth]);
         }
 
