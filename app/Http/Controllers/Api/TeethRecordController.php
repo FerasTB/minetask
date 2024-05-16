@@ -216,6 +216,7 @@ class TeethRecordController extends Controller
         $fields = $request->validated();
         $doctor = auth()->user()->doctor;
         $case = MedicalCase::find($request->case_id);
+        abort_unless($case->doctor_id == $doctor->id, 403);
         $patientCase = $case->patientCases()->create($fields);
         $cases = $doctor->PatientCases()->where('patient_id', $fields['patient_id'])
             ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis'])->get();
