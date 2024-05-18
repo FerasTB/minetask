@@ -44,34 +44,35 @@ class OperationController extends Controller
         $patient = $patientCase->patient;
         $doctor = $patientCase->case->doctor;
         abort_unless($doctor->id == auth()->user()->doctor->id, 403);
-        // $office = Office::findOrFail($request->office_id);
-        // if ($office->type == OfficeType::Combined) {
-        //     $owner = User::findOrFail($office->owner->user_id);
-        //     $profile = AccountingProfile::where([
-        //         'patient_id' => $patient->id,
-        //         'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
-        //     ])->first();
-        //     $fields['type'] = DentalDoctorTransaction::SellInvoice;
-        //     $fields['status'] = TransactionStatus::Draft;
-        //     if (!$request->has('date_of_invoice')) {
-        //         $fields['date_of_invoice'] = now();
-        //     }
-        //     $invoice = $profile->invoices()->create($fields);
-        // } else {
-        //     $profile = AccountingProfile::where([
-        //         'patient_id' => $patient->id,
-        //         'office_id' => $office->id, 'doctor_id' => $request->doctor_id
-        //     ])->first();
-        //     $fields['type'] = DentalDoctorTransaction::SellInvoice;
-        //     $fields['status'] = TransactionStatus::Draft;
-        //     $invoice = $profile->invoices()->create($fields);
-        // }
+        $office = Office::findOrFail($request->office_id);
+        if ($office->type == OfficeType::Combined) {
+            $owner = User::findOrFail($office->owner->user_id);
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+            ])->first();
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
+            $fields['status'] = TransactionStatus::Draft;
+            if (!$request->has('date_of_invoice')) {
+                $fields['date_of_invoice'] = now();
+            }
+            $invoice = $profile->invoices()->create($fields);
+        } else {
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+            ])->first();
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
+            $fields['status'] = TransactionStatus::Draft;
+            $invoice = $profile->invoices()->create($fields);
+        }
         foreach ($fields['operations'] as $operation_fields) {
             $operation = $record->operations()->create($operation_fields);
             $tooth = $operation->teeth()->create($operation_fields);
-            // $fields['description'] = $fields['operation_description'];
-            // $fields['name'] = $fields['operation_name'];
-            // $item = $invoice->items()->create($fields);
+            $fields['description'] = $fields['operation_description'];
+            $fields['name'] = $fields['operation_name'];
+            $fields['operation_id'] = $operation->id;
+            $item = $invoice->items()->create($fields);
         }
 
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
