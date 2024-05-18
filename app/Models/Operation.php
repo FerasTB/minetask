@@ -25,7 +25,7 @@ class Operation extends Model
     protected function price(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->invoiceItem?->price
+            get: fn () => $this->invoiceItem?->total_price
         );
     }
     public function record()

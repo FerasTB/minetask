@@ -25,6 +25,7 @@ class StoreOperationRequest extends FormRequest
         return [
             'record_id' => 'required|integer',
             'office_id' => 'required|integer',
+            'total_price' => 'nullable|integer',
             'operations' => 'array|required',
             'operations.*' => 'array|required',
             'operations.*.operation_description' => 'string|nullable',
