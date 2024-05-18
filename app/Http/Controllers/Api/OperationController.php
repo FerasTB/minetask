@@ -11,6 +11,7 @@ use App\Http\Requests\StoreOperationWithInvoiceRequest;
 use App\Http\Requests\StoreToothRequest;
 use App\Http\Requests\UpdateOperationRequest;
 use App\Http\Resources\OperationResource;
+use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\ToothResource;
 use App\Models\AccountingProfile;
 use App\Models\Office;
@@ -72,6 +73,10 @@ class OperationController extends Controller
             // $fields['name'] = $fields['operation_name'];
             // $item = $invoice->items()->create($fields);
         }
+
+        $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
+            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis'])->get();
+        return PatientCaseResource::collection($cases);
     }
 
     public function storeWithInvoice(StoreOperationWithInvoiceRequest $request)
