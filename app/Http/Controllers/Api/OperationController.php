@@ -69,11 +69,11 @@ class OperationController extends Controller
         foreach ($fields['operations'] as $operation_fields) {
             $operation = $record->operations()->create($operation_fields);
             $tooth = $operation->teeth()->create($operation_fields);
-            $fields['description'] = $fields['operation_description'];
-            $fields['name'] = $fields['operation_name'];
-            $fields['amount'] = 1;
-            $fields['operation_id'] = $operation->id;
-            $item = $invoice->items()->create($fields);
+            $operation_fields['description'] = $operation_fields['operation_description'];
+            $operation_fields['name'] = $operation_fields['operation_name'];
+            $operation_fields['amount'] = 1;
+            $operation_fields['operation_id'] = $operation->id;
+            $item = $invoice->items()->create($operation_fields);
         }
 
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
