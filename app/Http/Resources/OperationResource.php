@@ -18,6 +18,7 @@ class OperationResource extends JsonResource
             'id' => $this->id,
             'operation_name' => $this->operation_name,
             'operation_description' => $this->operation_description,
+            'created_at' => $this->created_at,
             'teeth' => ToothResource::collection($this->whenLoaded('teeth')),
         ];
     }
