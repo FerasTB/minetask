@@ -16,6 +16,7 @@ use App\Http\Requests\StoreDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
+use App\Http\Requests\UpdatePatientInvoiceStatusRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PatientInvoiceResource;
 use App\Models\AccountingProfile;
@@ -101,6 +102,50 @@ class InvoiceController extends Controller
             $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         }
         return new PatientInvoiceResource($invoice);
+    }
+
+    public function changePatientInvoiceStatus(UpdatePatientInvoiceStatusRequest $request, Invoice $invoice)
+    {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        $patient = $invoice->patient;
+        abort_unless($patient != null, 403);
+        abort_unless($invoice->doctor->id == auth()->user()->doctor->id, 403);
+        $fields['status'] = TransactionStatus::getValue($fields['status']);
+        if (($fields['status'] == TransactionStatus::Approved || $fields['status'] == TransactionStatus::Paid) && $invoice->status == TransactionStatus::Draft) {
+            $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientInvoice])->first();
+            if ($office->type == OfficeType::Combined) {
+                $owner = User::findOrFail($office->owner->user_id);
+                $profile = AccountingProfile::where([
+                    'patient_id' => $patient->id,
+                    'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                ])->first();
+                if (!$request->has('date_of_invoice')) {
+                    $fields['date_of_invoice'] = now();
+                }
+                $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+                $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+                $invoice->update($fields);
+                $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+            } else {
+                $profile = AccountingProfile::where([
+                    'patient_id' => $patient->id,
+                    'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                ])->first();
+                $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+                $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+                $invoice->update($fields);
+                $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+            }
+            return new PatientInvoiceResource($invoice);
+        } elseif ($fields['status'] == TransactionStatus::Paid && $invoice->status == TransactionStatus::Approved) {
+            $invoice->update([
+                'status' => $fields['status'],
+            ]);
+            return new PatientInvoiceResource($invoice);
+        } else {
+            return response('something went wrong', 404);
+        }
     }
 
     public function storeSupplierInvoice(StoreSupplierInvoiceRequest $request)

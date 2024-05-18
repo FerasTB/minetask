@@ -60,7 +60,7 @@ class OperationController extends Controller
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                'office_id' => $office->id, 'doctor_id' => $doctor->id
             ])->first();
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             $fields['status'] = TransactionStatus::Draft;
@@ -71,6 +71,7 @@ class OperationController extends Controller
             $tooth = $operation->teeth()->create($operation_fields);
             $fields['description'] = $fields['operation_description'];
             $fields['name'] = $fields['operation_name'];
+            $fields['amount'] = 1;
             $fields['operation_id'] = $operation->id;
             $item = $invoice->items()->create($fields);
         }
