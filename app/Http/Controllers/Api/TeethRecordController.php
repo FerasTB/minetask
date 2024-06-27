@@ -156,7 +156,7 @@ class TeethRecordController extends Controller
         $fields['description'] = $request->diagnosis;
         $diagnosis = $record->diagnosis()->create($fields);
         if ($diagnosis->description != null) {
-            $diagnosis = DiagnosisList::firstOrCreate([
+            $diagnosis_list = DiagnosisList::firstOrCreate([
                 'description' => $diagnosis->description,
             ]);
         }
