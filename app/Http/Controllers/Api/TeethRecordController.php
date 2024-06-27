@@ -205,13 +205,15 @@ class TeethRecordController extends Controller
         foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {
             $tooth = $diagnosis->teeth()->create(['number_of_tooth' => $diagnosis_tooth]);
         }
-
-        return response()->json([
-            'patientCase_id' => $patientCase->id,
-            'closable' => $case->case_name != Doctor::DefaultCase,
-            'record_id' => $record->id,
-            'diagnosis_id' => $record->diagnosis->id,
-        ]);
+        $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
+            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis', 'teethRecords.operations.teeth', 'teethRecords.diagnosis.teeth'])->get();
+        return PatientCaseResource::collection($cases);
+        // return response()->json([
+        //     'patientCase_id' => $patientCase->id,
+        //     'closable' => $case->case_name != Doctor::DefaultCase,
+        //     'record_id' => $record->id,
+        //     'diagnosis_id' => $record->diagnosis->id,
+        // ]);
     }
 
     public function firstStep(StoreAppointmentNewFirstStep $request)
