@@ -20,4 +20,25 @@ class Tooth extends Model
     {
         return $this->belongsTo(Diagnosis::class, 'diagnosis_id');
     }
+
+    // Accessor to get tooth name
+    public function getToothNameAttribute()
+    {
+        $number = $this->number_of_tooth;
+        $quadrant = (int) ($number / 10);  // تحديد الربع
+        $tooth = $number % 10;  // تحديد رقم السن داخل الربع
+
+        $quadrantNames = [
+            1 => 'الفك العلوي الأيمن',
+            2 => 'الفك العلوي الأيسر',
+            3 => 'الفك السفلي الأيسر',
+            4 => 'الفك السفلي الأيمن',
+        ];
+
+        if (isset($quadrantNames[$quadrant])) {
+            return "الربع " . $quadrantNames[$quadrant] . "، سن رقم " . $tooth;
+        }
+
+        return "سن غير معروف";
+    }
 }

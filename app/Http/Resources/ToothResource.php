@@ -17,6 +17,7 @@ class ToothResource extends JsonResource
         return [
             'id' => $this->id,
             'number_of_tooth' => $this->number_of_tooth,
+            'tooth_name' => $this->tooth_name,
         ];
     }
 }
