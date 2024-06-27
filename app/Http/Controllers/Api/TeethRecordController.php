@@ -192,7 +192,7 @@ class TeethRecordController extends Controller
         }
         if ($request->has('operations')) {
             foreach ($fields['operations'] as $operation) {
-                $operation = $record->operations()->create($fields);
+                $operation = $record->operations()->create($operation);
                 foreach ($operation['teeth'] as $tooth) {
                     $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
                 }
