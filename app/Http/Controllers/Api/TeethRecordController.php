@@ -192,9 +192,9 @@ class TeethRecordController extends Controller
         }
         if ($request->has('operations')) {
             foreach ($fields['operations'] as $operation) {
-                $operation = $record->operations()->create($operation);
+                $operation_created = $record->operations()->create($operation);
                 foreach ($operation['teeth'] as $tooth) {
-                    $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
+                    $tooth = $operation_created->teeth()->create(['number_of_tooth' => $tooth]);
                 }
                 if ($withDraft) {
                     $fields['description'] = $operation['operation_description'];
