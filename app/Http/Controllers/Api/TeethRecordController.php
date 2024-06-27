@@ -187,6 +187,8 @@ class TeethRecordController extends Controller
                 $invoice = $profile->invoices()->create($fields);
             }
             $withDraft = True;
+        } else {
+            $withDraft = False;
         }
         if ($request->has('operations')) {
             foreach ($fields['operations'] as $operation) {
@@ -195,8 +197,8 @@ class TeethRecordController extends Controller
                     $tooth = $operation->teeth()->create(['number_of_tooth' => $tooth]);
                 }
                 if ($withDraft) {
-                    $fields['description'] = $fields['operation_description'];
-                    $fields['name'] = $fields['operation_name'];
+                    $fields['description'] = $operation['operation_description'];
+                    $fields['name'] = $operation['operation_name'];
                     $item = $invoice->items()->create($fields);
                 }
             }
