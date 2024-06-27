@@ -202,6 +202,7 @@ class TeethRecordController extends Controller
                     $fields['amount'] = $operation['amount'];
                     $fields['price_per_one'] = $operation['price_per_one'];
                     $fields['total_price'] = $operation['total_price'];
+                    $fields['operation_id'] = $operation_created->id;
                     if ($operation["coa_id"] != null) {
                         $fields['coa_id'] = $operation['coa_id'];
                     }
