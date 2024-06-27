@@ -199,6 +199,12 @@ class TeethRecordController extends Controller
                 if ($withDraft) {
                     $fields['description'] = $operation['operation_description'];
                     $fields['name'] = $operation['operation_name'];
+                    $fields['amount'] = $operation['amount'];
+                    $fields['price_per_one'] = $operation['price_per_one'];
+                    $fields['total_price'] = $operation['total_price'];
+                    if ($operation["coa_id"]) {
+                        $fields['coa_id'] = $operation['coa_id'];
+                    }
                     $item = $invoice->items()->create($fields);
                 }
             }
