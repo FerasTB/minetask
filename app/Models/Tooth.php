@@ -21,7 +21,6 @@ class Tooth extends Model
         return $this->belongsTo(Diagnosis::class, 'diagnosis_id');
     }
 
-    // Accessor to get tooth name
     public function getToothNameAttribute()
     {
         $number = $this->number_of_tooth;
@@ -35,8 +34,19 @@ class Tooth extends Model
             4 => 'الفك السفلي الأيمن',
         ];
 
-        if (isset($quadrantNames[$quadrant])) {
-            return "الربع " . $quadrantNames[$quadrant] . "، سن رقم " . $tooth;
+        $toothNames = [
+            1 => 'السن القاطع (رباعية)',
+            2 => 'السن القاطع (ثنية)',
+            3 => 'سن الناب',
+            4 => 'السن الضاحك الأول',
+            5 => 'السن الضاحك الثاني',
+            6 => 'السن الطاحن الأول',
+            7 => 'السن الطاحن الثاني',
+            8 => 'السن الطاحن الثالث (سن العقل)',
+        ];
+
+        if (isset($quadrantNames[$quadrant]) && isset($toothNames[$tooth])) {
+            return $quadrantNames[$quadrant] . "، " . $toothNames[$tooth];
         }
 
         return "سن غير معروف";
