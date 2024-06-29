@@ -12,6 +12,7 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AcceptDentalLabInvoiceForDoctorRequest;
+use App\Http\Requests\ProcessDraftInvoiceRequest;
 use App\Http\Requests\StoreDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
@@ -23,6 +24,7 @@ use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\TransactionPrefix;
@@ -187,6 +189,81 @@ class InvoiceController extends Controller
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
         // $invoice->load(['doctor', 'office', 'items', 'lab']);
         return new InvoiceResource($invoice);
+    }
+
+    public function processDraftInvoice(ProcessDraftInvoiceRequest $request)
+    {
+        $invoiceItemIds = $request->invoice_item_ids;
+
+        // Fetch the invoice items and ensure they belong to a draft invoice
+        $invoiceItems = InvoiceItem::whereIn('id', $invoiceItemIds)
+            ->with('invoice')
+            ->get();
+
+        if ($invoiceItems->isEmpty()) {
+            return response()->json(['message' => 'No valid invoice items found.'], 400);
+        }
+
+        // Collect all draft invoices
+        $draftInvoices = $invoiceItems->pluck('invoice')->unique();
+        $patientId = $invoiceItems->first()->invoice->patient_id;
+        // Verify that all invoices are drafts
+        foreach ($draftInvoices as $draftInvoice) {
+            if ($draftInvoice->status != TransactionStatus::Draft) {
+                return response()->json(['message' => 'One or more invoices are not drafts.'], 400);
+            }
+            if ($draftInvoice->patient_id != $patientId) {
+                return response()->json(['message' => 'Invoice items belong to different patients.'], 400);
+            }
+        }
+        $fields = $request->validated();
+        $office =  $invoiceItems->first()->invoice->office_id;
+        $patient =  $invoiceItems->first()->invoice->patient_id;
+        $doctor =  $invoiceItems->first()->invoice->doctor_id;
+
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientInvoice])->first();
+        if ($office->type == OfficeType::Combined) {
+            $owner = User::findOrFail($office->owner->user_id);
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+            ])->first();
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
+            if (!$request->has('date_of_invoice')) {
+                $fields['date_of_invoice'] = now();
+            }
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['status'] = TransactionStatus::Paid;
+            $newInvoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        } else {
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $doctor->id
+            ])->first();
+            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::SellInvoice;
+            $fields['status'] = TransactionStatus::Paid;
+            $newInvoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        }
+
+        // Assign the items to the new invoice and remove from the draft invoices
+        foreach ($invoiceItems as $item) {
+            $item->invoice_id = $newInvoice->id;
+            $item->save();
+        }
+
+        // Remove the draft invoices if they have no more items
+        foreach ($draftInvoices as $draftInvoice) {
+            if ($draftInvoice->items()->count() == 0) {
+                $draftInvoice->delete();
+            }
+        }
+        return new PatientInvoiceResource($newInvoice);
+        // return response()->json(['message' => 'Invoice processed successfully.', 'new_invoice_id' => $newInvoice->id]);
     }
 
     public function acceptDentalLabInvoice(AcceptDentalLabInvoiceForDoctorRequest $request, Invoice $invoice)
