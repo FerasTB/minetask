@@ -77,7 +77,7 @@ class OperationController extends Controller
         }
 
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
-            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis'])->get();
+            ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis', 'teethRecords.operations.teeth', 'teethRecords.diagnosis.teeth'])->get();
         return PatientCaseResource::collection($cases);
     }
 
