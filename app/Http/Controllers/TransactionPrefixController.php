@@ -29,13 +29,12 @@ class TransactionPrefixController extends Controller
         ])->get());
     }
 
-    public function getPrefixAndComplaintAndCases(Request $request)
+    public function getPrefixAndComplaintAndCases(Office $office)
     {
         $response = [];
 
         // Fetch MedicalCase data if office_id is present in the request
-        if ($request->has('office_id')) {
-            $office = Office::findOrFail($request->office_id);
+        if ($office) {
             $this->authorize('viewAny', [MedicalCase::class, $office]);
 
             $cases = MedicalCase::where([
@@ -51,8 +50,7 @@ class TransactionPrefixController extends Controller
         $response['teeth_complaints'] = TeethComplaintListResource::collection($teethComplaints);
 
         // Fetch TransactionPrefix data if office_id is present in the request
-        if ($request->has('office_id')) {
-            $office = Office::findOrFail($request->office_id);
+        if ($office) {
             $this->authorize('inOffice', [TransactionPrefix::class, $office]);
 
             $transactionPrefixes = TransactionPrefix::where([
