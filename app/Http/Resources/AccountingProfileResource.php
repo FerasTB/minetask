@@ -38,24 +38,43 @@ class AccountingProfileResource extends JsonResource
         $negative = $this->receipts;
         $totalNegative = $negative != null ?
             $negative->sum('total_price') : 0;
+        // return [
+        //     'id' => $this->id,
+        //     // 'patient' => new MyPatientsResource($role),
+        //     'patient' => $this->office->type == OfficeType::Separate ?
+        //         new MyPatientSeparateThroughAccountingProfileResource($this) :
+        //         new MyPatientCombinedThroughAccountingProfileResource($this),
+        //     'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+        //     'lab' => new DentalLabResource($this->whenLoaded('lab')),
+        //     'supplier_name' => $this->supplier_name,
+        //     'initial_balance' => $this->initial_balance,
+        //     'type' => AccountingProfileType::getKey($this->type),
+        //     'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
+        //     'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
+        //     'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
+        //     'office_id' => $this->office_id,
+        //     // 'total' => AccountingProfileController::accountOutcomeInt($this->id)
+        //     'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
+        //         :  $totalNegative - $totalPositive + $this->initial_balance,
+        // ];
         return [
-            'id' => $this->id,
-            'patient' => new MyPatientsResource($role),
             'patient' => $this->office->type == OfficeType::Separate ?
                 new MyPatientSeparateThroughAccountingProfileResource($this) :
                 new MyPatientCombinedThroughAccountingProfileResource($this),
-            'doctor' => new DoctorResource($this->whenLoaded('doctor')),
-            'lab' => new DentalLabResource($this->whenLoaded('lab')),
-            'supplier_name' => $this->supplier_name,
-            'initial_balance' => $this->initial_balance,
-            'type' => AccountingProfileType::getKey($this->type),
-            'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
-            'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
-            'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
-            'office_id' => $this->office_id,
-            // 'total' => AccountingProfileController::accountOutcomeInt($this->id)
-            'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
-                :  $totalNegative - $totalPositive + $this->initial_balance,
+            'details' => [
+                'id' => $this->id,
+                'doctor' => new DoctorResource($this->whenLoaded('doctor')),
+                'lab' => new DentalLabResource($this->whenLoaded('lab')),
+                'supplier_name' => $this->supplier_name,
+                'initial_balance' => $this->initial_balance,
+                'type' => AccountingProfileType::getKey($this->type),
+                'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
+                'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
+                'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
+                'office_id' => $this->office_id,
+                'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
+                    : $totalNegative - $totalPositive + $this->initial_balance,
+            ]
         ];
     }
 }

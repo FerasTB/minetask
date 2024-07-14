@@ -145,7 +145,7 @@ class DoctorInfoController extends Controller
                 'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
             ])->get();
 
-            $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
+            // $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
             $response['profile'] = AccountingProfileResource::collection($accountsCombined);
         } else {
             // return $doctor->accountingProfiles;
@@ -162,7 +162,7 @@ class DoctorInfoController extends Controller
             ])->with([
                 'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
             ])->get();
-            $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
+            // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
             $response['profile'] = AccountingProfileResource::collection($accountsSeparate);
         }
 
