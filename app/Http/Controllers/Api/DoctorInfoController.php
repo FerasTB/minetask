@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MarkAsReadRequest;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorInfoRequest;
+use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DoctorInfoResource;
 use App\Http\Resources\DoctorPatientWithAppointmentResource;
 use App\Http\Resources\DrugPatientIndexResource;
@@ -116,6 +117,56 @@ class DoctorInfoController extends Controller
             }
         }
         return response('you have to complete your info', 404);
+    }
+
+    public function showMyPatientAndProfile(Office $office = null)
+    {
+
+        // Ensure a valid doctor is authenticated
+        $doctor = auth()->user()->doctor;
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+
+        $response = [];
+
+        // Authorization and data retrieval for Combined office type
+        if ($office->type == OfficeType::Combined) {
+            $this->authorize('inOffice', [Doctor::class, $office]);
+
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
+
+            $accountsCombined = AccountingProfile::where([
+                'doctor_id' => $ownerDoctor->id,
+                'office_id' => $office->id,
+                'type' => AccountingProfileType::PatientAccount
+            ])->with([
+                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+            ])->get();
+
+            $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
+            $response['profile'] = AccountingProfileResource::collection($accountsCombined);
+        } else {
+            // return $doctor->accountingProfiles;
+            $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient', 'patient.doctorImage'])->get();
+            // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
+
+            // Authorization and data retrieval for Separate office type
+            $this->authorize('inOffice', [AccountingProfile::class, $office]);
+
+            $accountsSeparate = AccountingProfile::where([
+                'doctor_id' => $doctor->id,
+                'office_id' => $office->id,
+                'type' => AccountingProfileType::PatientAccount
+            ])->with([
+                'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+            ])->get();
+            $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
+            $response['profile'] = AccountingProfileResource::collection($accountsSeparate);
+        }
+
+        return response()->json($response);
     }
 
     public function drug(Office $office, Patient $patient)
