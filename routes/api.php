@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('accounting/expense/profile', [App\Http\Controllers\Api\ExpenseController::class, 'storeExpenseAccount']);
     Route::post('add/prefix/office/{office}/doctor/{doctor}', [App\Http\Controllers\TransactionPrefixController::class, 'temprary']);
     Route::get('get/prefix/office/{office}', [App\Http\Controllers\TransactionPrefixController::class, 'index']);
+    Route::get('get/prefix-complaint-cases', [App\Http\Controllers\TransactionPrefixController::class, 'getPrefixAndComplaintAndCases']);
     Route::post('doctor/image/office/{office}', [App\Http\Controllers\DoctorImageController::class, 'store']);
     Route::get('doctor/image/{image}', [App\Http\Controllers\DoctorImageController::class, 'show']);
     Route::post('doctor/lab/{profile}/order', [App\Http\Controllers\Api\LabOrderController::class, 'store']);

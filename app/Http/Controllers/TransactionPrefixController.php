@@ -6,9 +6,14 @@ use App\Enums\TransactionType;
 use App\Models\TransactionPrefix;
 use App\Http\Requests\StoreTransactionPrefixRequest;
 use App\Http\Requests\UpdateTransactionPrefixRequest;
+use App\Http\Resources\MedicalCaseResource;
+use App\Http\Resources\TeethComplaintListResource;
 use App\Http\Resources\TransactionPrefixResource;
 use App\Models\Doctor;
+use App\Models\MedicalCase;
 use App\Models\Office;
+use App\Models\TeethComplaintList;
+use Illuminate\Http\Request;
 
 class TransactionPrefixController extends Controller
 {
@@ -23,6 +28,45 @@ class TransactionPrefixController extends Controller
             'office_id' => $office->id,
         ])->get());
     }
+
+    public function getPrefixAndComplaintAndCases(Request $request)
+    {
+        $response = [];
+
+        // Fetch MedicalCase data if office_id is present in the request
+        if ($request->has('office_id')) {
+            $office = Office::findOrFail($request->office_id);
+            $this->authorize('viewAny', [MedicalCase::class, $office]);
+
+            $cases = MedicalCase::where([
+                'doctor_id' => auth()->user()->doctor->id,
+                'office_id' => $office->id
+            ])->with(['doctor', 'office'])->get();
+
+            $response['medical_cases'] = MedicalCaseResource::collection($cases);
+        }
+
+        // Fetch TeethComplaintList data
+        $teethComplaints = TeethComplaintList::all();
+        $response['teeth_complaints'] = TeethComplaintListResource::collection($teethComplaints);
+
+        // Fetch TransactionPrefix data if office_id is present in the request
+        if ($request->has('office_id')) {
+            $office = Office::findOrFail($request->office_id);
+            $this->authorize('inOffice', [TransactionPrefix::class, $office]);
+
+            $transactionPrefixes = TransactionPrefix::where([
+                'doctor_id' => auth()->user()->doctor->id,
+                'office_id' => $office->id,
+            ])->get();
+
+            $response['transaction_prefixes'] = TransactionPrefixResource::collection($transactionPrefixes);
+        }
+
+        return response()->json($response);
+    }
+
+
 
     /**
      * Store a newly created resource in storage.
