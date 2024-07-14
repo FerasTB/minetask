@@ -13,6 +13,7 @@ use App\Models\Doctor;
 use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\TeethComplaintList;
+use App\Models\Tooth;
 use Illuminate\Http\Request;
 
 class TransactionPrefixController extends Controller
@@ -29,7 +30,7 @@ class TransactionPrefixController extends Controller
         ])->get());
     }
 
-    public function getPrefixAndComplaintAndCases(Office $office)
+    public function getPrefixAndComplaintAndCasesAndTeeth(Office $office)
     {
         $response = [];
 
@@ -60,6 +61,23 @@ class TransactionPrefixController extends Controller
 
             $response['transaction_prefixes'] = TransactionPrefixResource::collection($transactionPrefixes);
         }
+
+        // Define the specific valid ranges of tooth numbers
+        $validToothNumbers = array_merge(
+            range(11, 18),
+            range(21, 28),
+            range(31, 38),
+            range(41, 48)
+        );
+
+        $toothNames = [];
+
+        foreach ($validToothNumbers as $number) {
+            $toothModel = new Tooth();
+            $toothModel->number_of_tooth = $number;
+            $toothNames[$number] = $toothModel->tooth_name; // Using the attribute accessor
+        }
+        $response['toothNames'] = $toothNames;
 
         return response()->json($response);
     }
