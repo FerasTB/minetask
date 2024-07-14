@@ -38,11 +38,32 @@ class CaseController extends Controller
      */
     public function store(StoreMedicalCaseRequest $request)
     {
+        // Validate the request fields
         $fields = $request->validated();
+
+        // Find the office and authorize the action
         $office = Office::findOrFail($request->office_id);
         $this->authorize('create', [MedicalCase::class, $office]);
+
+        // Get the authenticated doctor's ID
         $doctor = auth()->user()->doctor;
+
+        // Check if the case_name is unique for this doctor
+        $existingCase = MedicalCase::where('doctor_id', $doctor->id)
+            ->where('case_name', $fields['case_name'])
+            ->first();
+
+        // If a case with the same name already exists for the doctor, return an error response
+        if ($existingCase) {
+            return response()->json([
+                'error' => 'The case_name must be unique for this doctor.'
+            ], 422); // Unprocessable Entity
+        }
+
+        // Create the new medical case
         $case = $doctor->cases()->create($fields);
+
+        // Return the newly created medical case as a resource
         return new MedicalCaseResource($case);
     }
 
