@@ -92,7 +92,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('accounting/receipt', App\Http\Controllers\Api\ReceiptController::class);
     Route::apiResource('accounting', App\Http\Controllers\Api\AccountingProfileController::class);
     Route::get('accounting/patient/profile', [App\Http\Controllers\Api\AccountingProfileController::class, 'patientProfile']);
-    Route::get('accounting/patient/patient-profile/{office}', [App\Http\Controllers\Api\AccountingProfileController::class, 'showMyPatientAndProfile']);
+    Route::get('accounting/patient/patient-profile/{office}', [App\Http\Controllers\Api\DoctorInfoController::class, 'showMyPatientAndProfile']);
     Route::put('account/{accounting}/initial', [App\Http\Controllers\Api\AccountingProfileController::class, 'setInitialBalance']);
     Route::put('account/{accounting}/initial/secondary', [App\Http\Controllers\Api\AccountingProfileController::class, 'setSecondaryInitialBalance']);
     Route::put('account/{office}/{patient}/initial', [App\Http\Controllers\Api\PatientInfoController::class, 'setInitialBalance']);
