@@ -27,6 +27,8 @@ class InvoiceReceiptsResource extends JsonResource
             // 'lab' => new DentalLabResource($this->whenLoaded('lab')),
             'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'running_balance' => $this->running_balance,
+            'type' => 'SellInvoice',
+            'prefix' => 'PINV',
             'invoice_number' => $this->invoice_number,
             'created_at' => $this->created_at,
         ];

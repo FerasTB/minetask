@@ -17,4 +17,16 @@ final class DentalLabTransaction extends Enum
     const ResetVoucher = 2;
     const SellInvoice = 3;
     const PercherInvoice = 4;
+
+    public static $types = [
+        self::SellInvoice => 'PINV',
+        self::ResetVoucher => 'PREC',
+        self::PaymentVoucher => 'PVOC',
+        self::PercherInvoice => 'SINV',
+    ];
+
+    public static function getNewValue($type)
+    {
+        return self::$types[$type] ?? 'Unknown';
+    }
 }
