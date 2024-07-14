@@ -17,4 +17,16 @@ final class TransactionType extends Enum
     const PatientReceipt = 2; // reset voucher
     const PaymentVoucher = 3;
     const SupplierInvoice = 4; // percher invoice
+
+    public static $types = [
+        self::PatientInvoice => 'sell invoice',
+        self::PatientReceipt => 'reset voucher',
+        self::PaymentVoucher => 'payment voucher',
+        self::SupplierInvoice => 'purchase invoice',
+    ];
+
+    public static function getNewValue($type)
+    {
+        return self::$types[$type] ?? 'Unknown';
+    }
 }

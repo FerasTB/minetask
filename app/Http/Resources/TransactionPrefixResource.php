@@ -17,7 +17,7 @@ class TransactionPrefixResource extends JsonResource
     {
         return [
             'last_transaction_number' => $this->last_transaction_number,
-            'type' => TransactionType::getKey($this->type),
+            'type' => TransactionType::getNewValue($this->type),
             'prefix' => $this->prefix,
         ];
     }
