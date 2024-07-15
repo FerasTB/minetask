@@ -41,6 +41,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'image' => $patient->doctorImage != null ?
                         DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                         : "no image",
+                    'medical_info' => new MedicalInformationResource($patient->medicalInformation),
                 ];
             }
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
@@ -65,6 +66,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'image' => $originalPatient->doctorImage != null ?
                         DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                         : "no image",
+                    'medical_info' => new MedicalInformationResource($patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id)),
                 ];
             }
         }

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\AccountingProfileType;
+use App\Enums\DoctorRoleForPatient;
 use App\Enums\OfficeType;
 use App\Http\Controllers\Api\AccountingProfileController;
 use App\Models\Doctor;
