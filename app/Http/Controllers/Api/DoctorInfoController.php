@@ -148,10 +148,12 @@ class DoctorInfoController extends Controller
             ])->with([
                 'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items',
                 'patient.cases' => function ($query) use ($doctor, $office) {
-                    $query->whereHas('medicalCase', function ($q) use ($doctor, $office) {
-                        $q->where('case_name', Doctor::DefaultCase)
-                            ->where('doctor_id', $doctor->id)
-                            ->where('office_id', $office->id);
+                    $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
+                        $query->where([
+                            'case_name' => Doctor::DefaultCase,
+                            'doctor_id' => $doctor->id,
+                            'office_id' => $office->id
+                        ]);
                     })->with([
                         'teethRecords',
                         'teethRecords.operations',
@@ -176,10 +178,12 @@ class DoctorInfoController extends Controller
             ])->with([
                 'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items',
                 'patient.cases' => function ($query) use ($doctor, $office) {
-                    $query->whereHas('medicalCase', function ($q) use ($doctor, $office) {
-                        $q->where('case_name', Doctor::DefaultCase)
-                            ->where('doctor_id', $doctor->id)
-                            ->where('office_id', $office->id);
+                    $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
+                        $query->where([
+                            'case_name' => Doctor::DefaultCase,
+                            'doctor_id' => $doctor->id,
+                            'office_id' => $office->id
+                        ]);
                     })->with([
                         'teethRecords',
                         'teethRecords.operations',
