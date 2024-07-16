@@ -30,7 +30,6 @@ class StoreOperationRequest extends FormRequest
             'operations.*' => 'array|required',
             'operations.*.operation_description' => 'string|nullable',
             'operations.*.operation_name' => 'string|required',
-            'operations.*.coa_id' => 'integer|nullable',
             'operations.*.total_price' => 'integer|required',
             'operations.*.price_per_one' => 'integer|required',
             'operations.*.number_of_tooth' => 'integer|required',
