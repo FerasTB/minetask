@@ -22,6 +22,11 @@ class PatientCase extends Model
         return $this->belongsTo(MedicalCase::class, 'case_id');
     }
 
+    public function medicalCase()
+    {
+        return $this->belongsTo(MedicalCase::class, 'case_id');
+    }
+
     public function teethRecords()
     {
         return $this->hasMany(TeethRecord::class, 'patientCase_id');
