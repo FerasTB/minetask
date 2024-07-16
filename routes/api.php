@@ -121,6 +121,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice/process-draft-invoice', [App\Http\Controllers\Api\InvoiceController::class, 'processDraftInvoice']);
     Route::put('invoice/patient/status/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'changePatientInvoiceStatus']);
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);
+    Route::post('invoice/patient/{record}/binding', [App\Http\Controllers\Api\InvoiceItemController::class, 'addBindingCharge']);
     Route::post('invoice/lap/accept/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'acceptDentalLabInvoice']);
     Route::get('invoice/lap/reject/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'rejectDentalLabInvoice']);
     Route::post('invoice/lab/{profile}', [App\Http\Controllers\Api\InvoiceController::class, 'storeDentalLabInvoice']);

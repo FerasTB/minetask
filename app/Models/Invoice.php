@@ -10,7 +10,7 @@ class Invoice extends Model
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['type', 'status', 'invoice_number', 'note', 'date_of_invoice', 'total_price', 'doctor_id', 'accounting_profile_id', 'running_balance'];
+    protected $fillable = ['teeth_record_id', 'type', 'status', 'invoice_number', 'note', 'date_of_invoice', 'total_price', 'doctor_id', 'accounting_profile_id', 'running_balance'];
 
     public function patient()
     {

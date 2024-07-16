@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\COAGeneralType;
 use App\Enums\COASubType;
+use App\Enums\DentalDoctorTransaction;
 use App\Enums\DoubleEntryType;
 use App\Enums\OfficeType;
+use App\Enums\TransactionStatus;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDraftPatientInvoiceItemRequest;
 use App\Http\Requests\StoreInvoiceItemRequest;
 use App\Http\Requests\StorePatientInvoiceItemRequest;
 use App\Http\Requests\StorePatientInvoiceReceiptItemRequest;
@@ -18,6 +22,7 @@ use App\Models\COA;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\InvoiceReceipt;
+use App\Models\TeethRecord;
 use Illuminate\Http\Request;
 
 class InvoiceItemController extends Controller
@@ -90,6 +95,43 @@ class InvoiceItemController extends Controller
         $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
         $serviceCoa->doubleEntries()->create($doubleEntryFields);
         return new InvoiceItemsResource($item);
+    }
+
+    public function addBindingCharge(StoreDraftPatientInvoiceItemRequest $request, TeethRecord $record)
+    {
+        $fields = $request->validated();
+
+        // Check for existing draft invoice
+        $invoice = Invoice::where('teeth_record_id', $record->id)
+            ->where('status', TransactionStatus::Draft)
+            ->first();
+
+        // If no draft invoice exists, create a new one
+        if (!$invoice) {
+            $invoice = Invoice::create([
+                'teeth_record_id' => $record->id,
+                'status' => TransactionStatus::Draft,
+                'total_price' => 0,
+                'accounting_profile_id' => $fields['accounting_profile_id'],
+                'type' => DentalDoctorTransaction::SellInvoice,
+                'data_of_invoice' => now(),
+            ]);
+        }
+
+        // Create a new invoice item
+        $invoiceItem = new InvoiceItem([
+            'name' => $fields['name'],
+            'description' => $fields['description'],
+            'amount' => $fields['amount'],
+            'total_price' => $fields['total_price'],
+            'price_per_one' => $fields['price_per_one'],
+            'coa_id' => $fields['service_coa'],
+        ]);
+
+        // Save the invoice item to the invoice
+        $invoice->items()->save($invoiceItem);
+
+        return response()->json(['invoice' => $invoice, 'invoiceItem' => $invoiceItem], 201);
     }
 
     public function storeSupplierInvoiceItem(StoreSupplierInvoiceItemRequest $request, Invoice $invoice)
