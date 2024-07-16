@@ -46,37 +46,10 @@ class OperationController extends Controller
         $doctor = $patientCase->case->doctor;
         abort_unless($doctor->id == auth()->user()->doctor->id, 403);
         $office = Office::findOrFail($request->office_id);
-        if ($office->type == OfficeType::Combined) {
-            $owner = User::findOrFail($office->owner->user_id);
-            $profile = AccountingProfile::where([
-                'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
-            ])->first();
-            $fields['type'] = DentalDoctorTransaction::SellInvoice;
-            $fields['status'] = TransactionStatus::Draft;
-            if (!$request->has('date_of_invoice')) {
-                $fields['date_of_invoice'] = now();
-            }
-            $invoice = $profile->invoices()->create($fields);
-        } else {
-            $profile = AccountingProfile::where([
-                'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $doctor->id
-            ])->first();
-            $fields['type'] = DentalDoctorTransaction::SellInvoice;
-            $fields['status'] = TransactionStatus::Draft;
-            $invoice = $profile->invoices()->create($fields);
-        }
         foreach ($fields['operations'] as $operation_fields) {
             $operation = $record->operations()->create($operation_fields);
             $tooth = $operation->teeth()->create($operation_fields);
-            $operation_fields['description'] = $operation_fields['operation_description'];
-            $operation_fields['name'] = $operation_fields['operation_name'];
-            $operation_fields['amount'] = 1;
-            $operation_fields['operation_id'] = $operation->id;
-            $item = $invoice->items()->create($operation_fields);
         }
-
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
             ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis', 'teethRecords.operations.teeth', 'teethRecords.diagnosis.teeth'])->get();
         return PatientCaseResource::collection($cases);

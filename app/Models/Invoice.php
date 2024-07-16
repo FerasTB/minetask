@@ -73,6 +73,11 @@ class Invoice extends Model
         return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
 
+    public function record()
+    {
+        return $this->belongsTo(TeethRecord::class, 'teeth_record_id');
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class, 'invoice_id');

@@ -15,6 +15,7 @@ use App\Http\Requests\AcceptDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\ProcessDraftInvoiceRequest;
 use App\Http\Requests\StoreDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
+use App\Http\Requests\StoreInvoiceAndItemForPatientRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
 use App\Http\Requests\UpdatePatientInvoiceStatusRequest;
@@ -102,6 +103,123 @@ class InvoiceController extends Controller
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             $invoice = $profile->invoices()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+        }
+        return new PatientInvoiceResource($invoice);
+    }
+
+    public function storePatientInvoiceWithItems(StoreInvoiceAndItemForPatientRequest $request, Patient $patient)
+    {
+        // Validate the main invoice fields
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientInvoice])->first();
+
+        // Determine the doctor and profile based on office type
+        if ($office->type == OfficeType::Combined) {
+            $owner = User::findOrFail($office->owner->user_id);
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+            ])->first();
+        } else {
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+            ])->first();
+        }
+
+        // Set fields for invoice
+        $fields['type'] = DentalDoctorTransaction::SellInvoice;
+        if (!$request->has('date_of_invoice')) {
+            $fields['date_of_invoice'] = now();
+        }
+        $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+
+        // Create the invoice
+        $invoice = $profile->invoices()->create($fields);
+        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+
+        // Process binding charges
+        if ($request->has('binding_charges')) {
+            foreach ($request->binding_charges as $bindingChargeId) {
+                $bindingCharge = InvoiceItem::findOrFail($bindingChargeId);
+                $itemData = [
+                    'name' => $bindingCharge->name,
+                    'description' => $bindingCharge->description,
+                    'amount' => $bindingCharge->amount,
+                    'total_price' => $bindingCharge->total_price,
+                    'price_per_one' => $bindingCharge->price_per_one,
+                    'coa_id' => $bindingCharge->coa_id,
+                    'service_percentage' => $bindingCharge->service_percentage,
+                    'teeth_record_id' => $bindingCharge->invoice->record->id,
+                ];
+                $item = $invoice->items()->create($itemData);
+
+                // Determine the receivable based on office type
+                if ($office->type == OfficeType::Combined) {
+                    $receivable = COA::where([
+                        'office_id' => $office->id,
+                        'doctor_id' => null, 'sub_type' => COASubType::Receivable
+                    ])->first();
+                } else {
+                    $doctor = $invoice->doctor;
+                    $receivable = COA::where([
+                        'office_id' => $office->id,
+                        'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
+                    ])->first();
+                }
+
+                // Create double entry for receivable
+                $doubleEntryFields = [
+                    'COA_id' => $receivable->id,
+                    'invoice_item_id' => $item->id,
+                    'total_price' => $item->total_price,
+                    'type' => DoubleEntryType::Positive,
+                ];
+                $receivable->doubleEntries()->create($doubleEntryFields);
+
+                // Create double entry for service COA
+                $serviceCoa = COA::findOrFail($itemData['coa_id']);
+                $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
+                $serviceCoa->doubleEntries()->create($doubleEntryFields);
+                $bindingCharge->delete();
+            }
+        }
+
+        // Process invoice items
+        if ($request->has('items')) {
+            foreach ($request->items as $itemData) {
+                $item = $invoice->items()->create($itemData);
+
+                // Determine the receivable based on office type
+                if ($office->type == OfficeType::Combined) {
+                    $receivable = COA::where([
+                        'office_id' => $office->id,
+                        'doctor_id' => null, 'sub_type' => COASubType::Receivable
+                    ])->first();
+                } else {
+                    $doctor = $invoice->doctor;
+                    $receivable = COA::where([
+                        'office_id' => $office->id,
+                        'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
+                    ])->first();
+                }
+
+                // Create double entry for receivable
+                $doubleEntryFields = [
+                    'COA_id' => $receivable->id,
+                    'invoice_item_id' => $item->id,
+                    'total_price' => $item->total_price,
+                    'type' => DoubleEntryType::Positive,
+                ];
+                $receivable->doubleEntries()->create($doubleEntryFields);
+
+                // Create double entry for service COA
+                $serviceCoa = COA::findOrFail($itemData['coa_id']);
+                $doubleEntryFields['COA_id'] = $serviceCoa->COA_id;
+                $serviceCoa->doubleEntries()->create($doubleEntryFields);
+            }
         }
         return new PatientInvoiceResource($invoice);
     }
