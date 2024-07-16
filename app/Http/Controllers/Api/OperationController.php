@@ -16,6 +16,7 @@ use App\Http\Resources\ToothResource;
 use App\Models\AccountingProfile;
 use App\Models\Office;
 use App\Models\Operation;
+use App\Models\Patient;
 use App\Models\PatientCase;
 use App\Models\Record;
 use App\Models\TeethRecord;
@@ -79,6 +80,38 @@ class OperationController extends Controller
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
             ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis', 'teethRecords.operations.teeth', 'teethRecords.diagnosis.teeth'])->get();
         return PatientCaseResource::collection($cases);
+    }
+
+    public function createDraftInvoice(Request $request, Patient $patient, $doctor, Office $office)
+    {
+        $doctor = auth()->user()->doctor;
+        if ($office->type == OfficeType::Combined) {
+            $owner = User::findOrFail($office->owner->user_id);
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+            ])->first();
+        } else {
+            $profile = AccountingProfile::where([
+                'patient_id' => $patient->id,
+                'office_id' => $office->id, 'doctor_id' => $doctor->id
+            ])->first();
+        }
+
+        $fields['type'] = DentalDoctorTransaction::SellInvoice;
+        $fields['status'] = TransactionStatus::Draft;
+        if (!$request->has('date_of_invoice')) {
+            $fields['date_of_invoice'] = now();
+        }
+        $invoice = $profile->invoices()->create($fields);
+        foreach ($fields['operations'] as $operation_fields) {
+            $operation_fields['description'] = $operation_fields['operation_description'];
+            $operation_fields['name'] = $operation_fields['operation_name'];
+            $operation_fields['amount'] = 1;
+            // $operation_fields['operation_id'] = $operation->id;
+            $item = $invoice->items()->create($operation_fields);
+        }
+        return response()->json(['message' => 'binding charge created'], 201);
     }
 
     public function storeWithInvoice(StoreOperationWithInvoiceRequest $request)

@@ -75,7 +75,10 @@ class AccountingProfileResource extends JsonResource
                 'office_id' => $this->office_id,
                 'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
                     : $totalNegative - $totalPositive + $this->initial_balance,
-            ]
+            ],
+            'default_case' => $this->when(isset($this->default_case), function () {
+                return new PatientDefaultCaseResource($this->default_case);
+            }),
         ];
     }
 }

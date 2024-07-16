@@ -21,14 +21,18 @@ use App\Http\Resources\MyPatientSeparateThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\MyPatientThroughAccountingProfileResource;
 use App\Http\Resources\NotificationResource;
+use App\Http\Resources\PatientCaseResource;
+use App\Http\Resources\patientDefaultCaseResource;
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\Drug;
 use App\Models\HasRole;
+use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\PatientCase;
 use App\Models\TeethRecord;
 use App\Models\User;
 use App\Policies\DoctorInfoPolicy;
@@ -165,7 +169,31 @@ class DoctorInfoController extends Controller
             // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
             $response['profile'] = AccountingProfileResource::collection($accountsSeparate);
         }
+        // Fetch default case for each patient
+        foreach ($response['profile'] as $accountProfile) {
+            $patient = $accountProfile->patient;
+            $defaultCase = MedicalCase::where([
+                'case_name' => Doctor::DefaultCase,
+                'doctor_id' => $doctor->id,
+                'office_id' => $office->id
+            ])->first();
 
+            if ($defaultCase) {
+                $PatientCase = PatientCase::where([
+                    'case_id' => $defaultCase->id,
+                    'patient_id' => $patient->id,
+                    'office_id' => $office->id
+                ])->with([
+                    'teethRecords',
+                    'teethRecords.operations',
+                    'teethRecords.diagnosis',
+                    'teethRecords.operations.teeth',
+                    'teethRecords.diagnosis.teeth'
+                ])->first();
+
+                $accountProfile->cases = new PatientDefaultCaseResource($PatientCase);
+            }
+        }
         return response()->json($response);
     }
 
