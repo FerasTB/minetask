@@ -146,16 +146,26 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items',
+                'patient.cases' => function ($query) use ($doctor, $office) {
+                    $query->whereHas('medicalCase', function ($q) use ($doctor, $office) {
+                        $q->where('case_name', Doctor::DefaultCase)
+                            ->where('doctor_id', $doctor->id)
+                            ->where('office_id', $office->id);
+                    })->with([
+                        'teethRecords',
+                        'teethRecords.operations',
+                        'teethRecords.diagnosis',
+                        'teethRecords.operations.teeth',
+                        'teethRecords.diagnosis.teeth'
+                    ]);
+                }
             ])->get();
 
             // $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
             $response['profile'] = AccountingProfileResource::collection($accountsCombined);
         } else {
-            // return $doctor->accountingProfiles;
-            $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])->with(['office', 'patient', 'patient.doctorImage'])->get();
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
-
             // Authorization and data retrieval for Separate office type
             $this->authorize('inOffice', [AccountingProfile::class, $office]);
 
@@ -164,35 +174,56 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+                'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items',
+                'patient.cases' => function ($query) use ($doctor, $office) {
+                    $query->whereHas('medicalCase', function ($q) use ($doctor, $office) {
+                        $q->where('case_name', Doctor::DefaultCase)
+                            ->where('doctor_id', $doctor->id)
+                            ->where('office_id', $office->id);
+                    })->with([
+                        'teethRecords',
+                        'teethRecords.operations',
+                        'teethRecords.diagnosis',
+                        'teethRecords.operations.teeth',
+                        'teethRecords.diagnosis.teeth'
+                    ]);
+                }
             ])->get();
             // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
             $response['profile'] = AccountingProfileResource::collection($accountsSeparate);
         }
-        // Fetch default case for each patient
+        // Process each profile to include the default case
         foreach ($response['profile'] as $accountProfile) {
             $patient = $accountProfile->patient;
-            $defaultCase = MedicalCase::where([
-                'case_name' => Doctor::DefaultCase,
-                'doctor_id' => $doctor->id,
-                'office_id' => $office->id
-            ])->first();
-
+            $defaultCase = $patient->cases->first();
             if ($defaultCase) {
-                $PatientCase = PatientCase::where([
-                    'case_id' => $defaultCase->id,
-                    'patient_id' => $patient->id,
-                ])->with([
-                    'teethRecords',
-                    'teethRecords.operations',
-                    'teethRecords.diagnosis',
-                    'teethRecords.operations.teeth',
-                    'teethRecords.diagnosis.teeth'
-                ])->first();
-
-                $accountProfile->default_case = new PatientDefaultCaseResource($PatientCase);
+                $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
             }
         }
+        // // Fetch default case for each patient
+        // foreach ($response['profile'] as $accountProfile) {
+        //     $patient = $accountProfile->patient;
+        //     $defaultCase = MedicalCase::where([
+        //         'case_name' => Doctor::DefaultCase,
+        //         'doctor_id' => $doctor->id,
+        //         'office_id' => $office->id
+        //     ])->first();
+
+        //     if ($defaultCase) {
+        //         $PatientCase = PatientCase::where([
+        //             'case_id' => $defaultCase->id,
+        //             'patient_id' => $patient->id,
+        //         ])->with([
+        //             'teethRecords',
+        //             'teethRecords.operations',
+        //             'teethRecords.diagnosis',
+        //             'teethRecords.operations.teeth',
+        //             'teethRecords.diagnosis.teeth'
+        //         ])->first();
+
+        //         $accountProfile->default_case = new PatientDefaultCaseResource($PatientCase);
+        //     }
+        // }
         return response()->json($response);
     }
 
