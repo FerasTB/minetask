@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('appointment/{appointment}/update/status', [App\Http\Controllers\Api\AppointmentController::class, 'appointmentStatusUpdate']);
     Route::apiResource('record', App\Http\Controllers\Api\TeethRecordController::class);
     Route::put('record/{record}/after/treatment', [App\Http\Controllers\Api\TeethRecordController::class, 'AfterTreatmentUpdate']);
+    Route::put('record/{record}/close', [App\Http\Controllers\Api\TeethRecordController::class, 'closeTheRecord']);
     Route::post('appointment/first', [App\Http\Controllers\Api\TeethRecordController::class, 'firstStep']);
     Route::post('appointment/store/record', [App\Http\Controllers\Api\TeethRecordController::class, 'storeWholeRecord']);
     Route::get('record/case/{case}', [App\Http\Controllers\Api\TeethRecordController::class, 'CaseRecords']);

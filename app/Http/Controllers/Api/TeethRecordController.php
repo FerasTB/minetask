@@ -15,6 +15,7 @@ use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\OperationResource;
 use App\Http\Resources\PatientCaseResource;
+use App\Http\Resources\TeethRecordForAppointmentResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Appointment;
@@ -242,5 +243,13 @@ class TeethRecordController extends Controller
         $fields = $request->validated();
         $record->update($fields);
         return new TeethRecordResource($record);
+    }
+
+    public function closeTheRecord(TeethRecord $record)
+    {
+        $record->update([
+            'is_closed' => True,
+        ]);
+        return new TeethRecordForAppointmentResource($record);
     }
 }

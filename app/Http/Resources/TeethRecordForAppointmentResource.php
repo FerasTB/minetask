@@ -18,6 +18,7 @@ class TeethRecordForAppointmentResource extends JsonResource
             'id' => $this->id,
             'description' => $this->description,
             'number_of_teeth' => $this->number_of_teeth,
+            'is_closed' => $this->is_closed,
             'after_treatment_instruction' => $this->after_treatment_instruction,
             'anesthesia_type' => $this->anesthesia_type,
             'diagnosis' => new DiagnosisResource($this->whenLoaded('diagnosis')),

@@ -10,7 +10,7 @@ class TeethRecord extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['description', 'appointment_id', 'patientCase_id', 'report_id', 'number_of_teeth', 'after_treatment_instruction', 'anesthesia_type'];
+    protected $fillable = ['is_closed', 'description', 'appointment_id', 'patientCase_id', 'report_id', 'number_of_teeth', 'after_treatment_instruction', 'anesthesia_type'];
 
     public function report()
     {
