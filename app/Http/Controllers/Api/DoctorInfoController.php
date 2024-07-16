@@ -182,7 +182,6 @@ class DoctorInfoController extends Controller
                 $PatientCase = PatientCase::where([
                     'case_id' => $defaultCase->id,
                     'patient_id' => $patient->id,
-                    'office_id' => $office->id
                 ])->with([
                     'teethRecords',
                     'teethRecords.operations',
