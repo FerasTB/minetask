@@ -190,7 +190,7 @@ class DoctorInfoController extends Controller
                     'teethRecords.diagnosis.teeth'
                 ])->first();
 
-                $accountProfile->cases = new PatientDefaultCaseResource($PatientCase);
+                $accountProfile->default_case = new PatientDefaultCaseResource($PatientCase);
             }
         }
         return response()->json($response);
