@@ -117,9 +117,11 @@ class InvoiceItemController extends Controller
                 'data_of_invoice' => now(),
             ]);
         }
-        $description = $fields['description'] ?
-            $fields['description'] :
-            null;
+        if ($fields->has('description')) {
+            $description = $fields['description'];
+        } else {
+            $description = null;
+        }
         // Create a new invoice item
         $invoiceItem = new InvoiceItem([
             'name' => $fields['name'],
