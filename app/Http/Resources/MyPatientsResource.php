@@ -22,6 +22,7 @@ class MyPatientsResource extends JsonResource
             $patient = $this->roleable;
             return [
                 'id' => $patient->id,
+                'parent_id' => $patient->parent_id,
                 'first_name' => $patient->first_name,
                 'last_name' => $patient->last_name,
                 'phone' => 0 . $patient->phone,
@@ -44,6 +45,7 @@ class MyPatientsResource extends JsonResource
             $originalPatient = $this->roleable;
             return [
                 'id' => $originalPatient->id,
+                'parent_id' => $originalPatient->parent_id,
                 'first_name' => $patient->first_name,
                 'last_name' => $patient->last_name,
                 'phone' => 0 . $originalPatient->phone,

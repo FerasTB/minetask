@@ -26,6 +26,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                 $patient = $this->patient;
                 return [
                     'id' => $patient->id,
+                    'parent_id' => $patient->parent_id,
                     'first_name' => $patient->first_name,
                     'last_name' => $patient->last_name,
                     'phone' => 0 . $patient->phone,
@@ -50,6 +51,8 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                 $originalPatient = $this->patient;
                 return [
                     'id' => $originalPatient->id,
+                    'parent_id' => $originalPatient->parent_id,
+
                     'first_name' => $patient->first_name,
                     'last_name' => $patient->last_name,
                     'phone' => 0 . $originalPatient->phone,
