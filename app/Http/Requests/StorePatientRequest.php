@@ -30,12 +30,14 @@ class StorePatientRequest extends FormRequest
             'marital' => ['nullable', Rule::in(MaritalStatus::getKeys())],
             'mother_name' => 'string|nullable',
             'last_name' => 'string|required',
-            'phone' => 'integer|required',
+            'phone' => 'required_if:is_child,false|integer|unique:patients,phone',
             'email' => 'email|nullable',
             'birth_date' => 'date|nullable',
             'note' => 'nullable|string',
             'gender' => ['required', Rule::in(Gender::getValues())],
             'office_id' => 'integer|required',
+            'is_child' => 'nullable|boolean',
+            'parent_id' => 'nullable|exists:patients,id',
         ];
     }
 }

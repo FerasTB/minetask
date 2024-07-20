@@ -89,4 +89,14 @@ class Patient extends Model
     {
         return $this->hasMany(DoctorImage::class, 'patient_id');
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Patient::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Patient::class, 'parent_id');
+    }
 }

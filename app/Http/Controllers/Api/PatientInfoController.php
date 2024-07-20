@@ -50,6 +50,14 @@ class PatientInfoController extends Controller
         if ($request->marital) {
             $fields['marital'] = MaritalStatus::getValue($request->marital);
         }
+        // Check if the patient is a child
+        $isChild = $request->has('is_child') && $request->is_child == true;
+
+        // Set parent_id if it's a child
+        if ($isChild) {
+            $fields['parent_id'] = $request->parent_id;
+            unset($fields['phone']); // Remove phone field for child
+        }
         if (auth()->user()->role == Role::Patient) {
             $patient = Patient::where('phone', $request->phone)->first();
             if ($patient || auth()->user()->patient) {
