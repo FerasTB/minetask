@@ -44,6 +44,7 @@ class InvoiceResource extends JsonResource
             'supplier' => new SupplierNameResource($this->whenLoaded('account')),
             'invoice_number' => $this->invoice_number,
             'created_at' => $this->created_at,
+            'teeth_record_id' => $this->teeth_record_id,
         ];
     }
 }
