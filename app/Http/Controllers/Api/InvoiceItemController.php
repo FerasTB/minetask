@@ -121,7 +121,9 @@ class InvoiceItemController extends Controller
         // Create a new invoice item
         $invoiceItem = new InvoiceItem([
             'name' => $fields['name'],
-            'description' => $fields['description'],
+            'description' => $fields['description'] != null ?
+                $fields['description'] :
+                null,
             'amount' => $fields['amount'],
             'total_price' => $fields['total_price'],
             'price_per_one' => $fields['price_per_one'],
