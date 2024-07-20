@@ -13,6 +13,7 @@ use App\Http\Requests\StoreAppointmentNewFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
 use App\Http\Requests\UpdateAfterTreatmentRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\OperationResource;
 use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\TeethRecordForAppointmentResource;
@@ -22,6 +23,7 @@ use App\Models\Appointment;
 use App\Models\Diagnosis;
 use App\Models\DiagnosisList;
 use App\Models\Doctor;
+use App\Models\Invoice;
 use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\Operation;
@@ -251,5 +253,20 @@ class TeethRecordController extends Controller
             'is_closed' => True,
         ]);
         return new TeethRecordForAppointmentResource($record);
+    }
+
+    public function getInvoiceByRecord(TeethRecord $record)
+    {
+        // Retrieve the invoice associated with the given record ID
+        $invoice = Invoice::where('teeth_record_id', $record->id)
+            ->with('items')
+            ->first();
+        // Check if the invoice was found
+        if (!$invoice) {
+            return response()->json(['error' => 'Invoice not found'], 404);
+        }
+
+        // Return the invoice as a JSON response
+        return new InvoiceResource($invoice);
     }
 }
