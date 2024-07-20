@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use App\Enums\OfficeType;
 use App\Enums\ReportType;
@@ -55,8 +56,17 @@ class PatientInfoController extends Controller
 
         // Set parent_id if it's a child
         if ($isChild) {
-            $fields['parent_id'] = $request->parent_id;
+            $parent = Patient::findOrFail($request->parent_id);
+
+            // Set father or mother name based on parent's gender
+            if ($parent->gender == Gender::Male) {
+                $fields['father_name'] = $parent->first_name . ' ' . $parent->last_name;
+            } elseif ($parent->gender == Gender::Female) {
+                $fields['mother_name'] = $parent->first_name . ' ' . $parent->last_name;
+            }
+
             unset($fields['phone']); // Remove phone field for child
+            $fields['parent_id'] = $parent->id;
         }
         if (auth()->user()->role == Role::Patient) {
             $patient = Patient::where('phone', $request->phone)->first();
