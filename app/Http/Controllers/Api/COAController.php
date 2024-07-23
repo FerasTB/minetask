@@ -159,9 +159,9 @@ class COAController extends Controller
         $accountingProfiles = AccountingProfile::with('patient')
             ->where('office_id', $officeId)
             ->where('doctor_id', $doctorId)
-            ->get(['id', 'supplier_name', 'patient_id', 'type'])
+            ->get(['id', 'supplier_name', 'patient_id', 'type', 'dental_lab_id'])
             ->map(function ($item) {
-                $name = $item->supplier_name ?? ($item->patient ? $item->patient->first_name . " " . $item->patient->last_name : null);
+                $name = $item->supplier_name ?? ($item->patient ? $item->patient->first_name . " " . $item->patient->last_name : $item->lab->name);
                 return [
                     'id' => $item->id,
                     'name' => $name,
