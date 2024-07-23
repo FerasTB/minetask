@@ -151,7 +151,7 @@ class COAController extends Controller
                     'id' => $item->id,
                     'name' => $item->name,
                     'is_coa' => true,
-                    'type' => COAGeneralType::getValue($item->general_type),
+                    'type' => COAGeneralType::getKey($item->general_type),
                 ];
             });
 
