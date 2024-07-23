@@ -151,11 +151,11 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $doctor = auth()->user()->doctor;
             $accounts = $doctor->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'doubleEntries', 'directDoubleEntries',]);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
         } else {
             $accounts = $office->accountingProfiles;
-            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner']);
+            $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'doubleEntries', 'directDoubleEntries',]);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
         }
     }

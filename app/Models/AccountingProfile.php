@@ -74,13 +74,21 @@ class AccountingProfile extends Model
 
     public function getTotalBalanceAttribute()
     {
-        // Use the loaded relationship to avoid N+1 queries
+        // Use the loaded relationships to avoid N+1 queries
         $doubleEntries = $this->relationLoaded('doubleEntries')
             ? $this->doubleEntries
             : $this->doubleEntries()->get();
 
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        $directDoubleEntries = $this->relationLoaded('directDoubleEntries')
+            ? $this->directDoubleEntries
+            : $this->directDoubleEntries()->get();
+
+        // Sum positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return $totalPositive - $totalNegative;
     }

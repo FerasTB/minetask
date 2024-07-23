@@ -146,7 +146,7 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries',
+                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries', 'directDoubleEntries',
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([
@@ -176,7 +176,7 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries',
+                'office', 'patient', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries', 'directDoubleEntries',
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([
