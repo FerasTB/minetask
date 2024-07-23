@@ -326,7 +326,7 @@ class ReceiptController extends Controller
 
         DoubleEntry::create([
             'accounting_profile_id' => $accountingProfileId,
-            'receipt' => $itemId,
+            'receipt_id' => $itemId,
             'total_price' => $totalPrice,
             'type' => $type,
             'running_balance' => $runningBalance

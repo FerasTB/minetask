@@ -385,8 +385,8 @@ class InvoiceController extends Controller
         $serviceCoa = COA::findOrFail($itemData['coa_id']);
         $this->createDoubleEntry($serviceCoa, $item->id, $item->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
 
-        // Add negative double entry for the accounting profile
-        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Negative);
+        // Add Positive double entry for the accounting profile
+        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
 
         $bindingCharge->delete();
     }
