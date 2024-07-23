@@ -34,6 +34,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class InvoiceController extends Controller
 {
@@ -276,7 +277,7 @@ class InvoiceController extends Controller
             // Validate the main invoice fields
             $fields = $request->validated();
             $office = Office::findOrFail($request->office_id);
-            $transactionNumber = $this->getTransactionNumber($office);
+            $transactionNumber = $this->getTransactionNumber($office, TransactionType::PatientInvoice);
 
             // Determine the doctor and profile based on office type
             $profile = $this->getAccountingProfile($office, $patient, $request->doctor_id);
@@ -315,12 +316,12 @@ class InvoiceController extends Controller
         }
     }
 
-    private function getTransactionNumber($office)
+    private function getTransactionNumber($office, $type)
     {
         return TransactionPrefix::where([
             'office_id' => $office->id,
             'doctor_id' => auth()->user()->doctor->id,
-            'type' => TransactionType::PatientInvoice
+            'type' => $type
         ])->first();
     }
 
@@ -497,6 +498,49 @@ class InvoiceController extends Controller
             return response('something went wrong', 404);
         }
     }
+
+    public function storeSupplierInvoiceWithItems(StoreSupplierInvoiceRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $fields = $request->validated();
+            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+            $office = $profile->office;
+
+            // Fetch transaction number
+            $transactionNumber = $this->getTransactionNumber($office, TransactionType::SupplierInvoice);
+
+            // Set fields for the invoice
+            $fields['running_balance'] = $this->calculatePatientBalance($profile->id, $fields['total_price']);
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+            $fields['date_of_invoice'] = $request->has('date_of_invoice') ? $request->date_of_invoice : now();
+
+            // Create the invoice
+            $invoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+
+            // Process each item
+            foreach ($request->items as $itemData) {
+                $item = $invoice->items()->create($itemData);
+
+                // Create double entry for payable
+                $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
+
+                // Create double entry for expense
+                $expensesCoa = COA::findOrFail($itemData['item_coa']);
+                $this->createDoubleEntry($expensesCoa, $item, DoubleEntryType::Positive, $profile->id, $profile->id);
+            }
+
+            DB::commit();
+            return new InvoiceResource($invoice->load(['doctor', 'office', 'items']));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating supplier invoice with items: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
 
     public function storeSupplierInvoice(StoreSupplierInvoiceRequest $request)
     {
