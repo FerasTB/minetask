@@ -155,14 +155,16 @@ class COAController extends Controller
                 ];
             });
 
-        // Query AccountingProfile table
-        $accountingProfiles = AccountingProfile::where('office_id', $officeId)
+        // Query AccountingProfile table with eager loading
+        $accountingProfiles = AccountingProfile::with('patient')
+            ->where('office_id', $officeId)
             ->where('doctor_id', $doctorId)
-            ->get(['id', 'name', 'type'])
+            ->get(['id', 'supplier_name', 'patient_id', 'type'])
             ->map(function ($item) {
+                $name = $item->supplier_name ?? $item->patient->name;
                 return [
                     'id' => $item->id,
-                    'name' => $item->name,
+                    'name' => $name,
                     'is_coa' => false,
                     'type' => AccountingProfileType::getKey($item->type),
                 ];
