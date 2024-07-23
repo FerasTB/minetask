@@ -104,59 +104,94 @@ class ReceiptController extends Controller
         //
     }
 
+    // public function storeSupplierReceipt(StoreSupplierReceiptRequest $request)
+    // {
+    //     $fields = $request->validated();
+    //     // if ($request->invoice_id) {
+    //     //     $invoice = Invoice::findOrFail($request->invoice_id);
+    //     //     $this->authorize('myInvoice', [Receipt::class, $invoice]);
+    //     // }
+    //     $office = Office::findOrFail($request->office_id);
+    //     $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+    //     $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
+    //     $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
+    //     if ($office->type == OfficeType::Combined) {
+    //         // $profile = AccountingProfile::where([
+    //         //     'supplier_name' => $request->supplier_name,
+    //         //     'office_id' => $office->id, 'doctor_id' => null
+    //         // ])->first();
+    //         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+    //         $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
+    //         if (!$request->has('date_of_payment')) {
+    //             $fields['date_of_payment'] = now();
+    //         }
+    //         $receipt = $profile->receipts()->create($fields);
+    //         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+    //         // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+    //         $payable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => null, 'sub_type' => COASubType::Payable
+    //         ])->first();
+    //         $cash = COA::findOrFail($request->cash_coa);
+    //     } else {
+    //         // $profile = AccountingProfile::where([
+    //         //     'supplier_name' => $request->supplier_name,
+    //         //     'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+    //         // ])->first();
+    //         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+    //         $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
+    //         $receipt = $profile->receipts()->create($fields);
+    //         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+    //         // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
+    //         $doctor = Doctor::find($request->doctor_id);
+    //         $payable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+    //         ])->first();
+    //         $cash = COA::findOrFail($request->cash_coa);
+    //     }
+    //     $doubleEntryFields['receipt_id'] = $receipt->id;
+    //     $doubleEntryFields['total_price'] = $receipt->total_price;
+    //     $doubleEntryFields['type'] = DoubleEntryType::Negative;
+    //     $payable->doubleEntries()->create($doubleEntryFields);
+    //     $cash->doubleEntries()->create($doubleEntryFields);
+    //     return new ReceiptResource($receipt);
+    // }
+
     public function storeSupplierReceipt(StoreSupplierReceiptRequest $request)
     {
-        $fields = $request->validated();
-        // if ($request->invoice_id) {
-        //     $invoice = Invoice::findOrFail($request->invoice_id);
-        //     $this->authorize('myInvoice', [Receipt::class, $invoice]);
-        // }
-        $office = Office::findOrFail($request->office_id);
-        $profile = AccountingProfile::findOrFail($request->supplier_account_id);
-        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
-        $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
-        if ($office->type == OfficeType::Combined) {
-            // $profile = AccountingProfile::where([
-            //     'supplier_name' => $request->supplier_name,
-            //     'office_id' => $office->id, 'doctor_id' => null
-            // ])->first();
-            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-            $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
-            if (!$request->has('date_of_payment')) {
-                $fields['date_of_payment'] = now();
-            }
+        DB::beginTransaction();
+        try {
+            $fields = $request->validated();
+            $office = Office::findOrFail($request->office_id);
+            $profile = AccountingProfile::findOrFail($request->supplier_account_id);
+
+            // Fetch transaction number
+            $transactionNumber = $this->getTransactionNumber($office, TransactionType::PaymentVoucher);
+
+            // Set fields for the receipt
+            $fields = $this->setReceiptFields($request, $profile, $transactionNumber, $fields);
+
+            // Create the receipt
             $receipt = $profile->receipts()->create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-            // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Payable
-            ])->first();
+
+            // Fetch COAs
             $cash = COA::findOrFail($request->cash_coa);
-        } else {
-            // $profile = AccountingProfile::where([
-            //     'supplier_name' => $request->supplier_name,
-            //     'office_id' => $office->id, 'doctor_id' => $request->doctor_id
-            // ])->first();
-            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-            $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
-            $receipt = $profile->receipts()->create($fields);
-            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-            // $receipt->invoices()->attach($invoice, ['total_price' => $receipt->total_price]);
-            $doctor = Doctor::find($request->doctor_id);
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
-            ])->first();
-            $cash = COA::findOrFail($request->cash_coa);
+
+            // Create double entries
+            $this->createProfileDoubleEntry($receipt->accounting_profile_id, $receipt->id, $receipt->total_price, DoubleEntryType::Negative);
+            $this->createDoubleEntry($cash, $receipt, DoubleEntryType::Positive);
+
+            DB::commit();
+            return new ReceiptResource($receipt);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating supplier receipt: ' . $e->getMessage());
+            throw $e;
         }
-        $doubleEntryFields['receipt_id'] = $receipt->id;
-        $doubleEntryFields['total_price'] = $receipt->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Negative;
-        $payable->doubleEntries()->create($doubleEntryFields);
-        $cash->doubleEntries()->create($doubleEntryFields);
-        return new ReceiptResource($receipt);
     }
+
 
     public function storeDentalLabReceipt(StoreDentalLabReceiptForDoctorRequest $request, AccountingProfile $profile)
     {
@@ -302,6 +337,15 @@ class ReceiptController extends Controller
         $fields['running_balance'] = $this->calculatePatientBalance($profile->id, -$fields['total_price']);
         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
         $fields['type'] = DentalDoctorTransaction::ResetVoucher;
+        $fields['date_of_payment'] = $request->has('date_of_payment') ? $request->date_of_payment : now();
+        return $fields;
+    }
+
+    private function setSupplierReceiptFields($request, $profile, $transactionNumber, $fields)
+    {
+        $fields['running_balance'] = $this->calculatePatientBalance($profile->id, -$fields['total_price']);
+        $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
         $fields['date_of_payment'] = $request->has('date_of_payment') ? $request->date_of_payment : now();
         return $fields;
     }

@@ -542,22 +542,6 @@ class InvoiceController extends Controller
     }
 
 
-    public function storeSupplierInvoice(StoreSupplierInvoiceRequest $request)
-    {
-        $fields = $request->validated();
-        $profile = AccountingProfile::findOrFail($request->supplier_account_id);
-        $fields['running_balance'] = $this->supplierBalance($profile->id, $fields['total_price']);
-        $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
-        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-        $fields['type'] = DentalDoctorTransaction::PercherInvoice;
-        if (!$request->has('date_of_invoice')) {
-            $fields['date_of_invoice'] = now();
-        }
-        $invoice = $profile->invoices()->create($fields);
-        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
-        return new PatientInvoiceResource($invoice);
-    }
-
     public function storeDentalLabInvoice(StoreDentalLabInvoiceForDoctorRequest $request, AccountingProfile $profile)
     {
         $fields = $request->validated();
@@ -579,7 +563,6 @@ class InvoiceController extends Controller
         }
         $invoice = $profile->invoices()->create($fields);
         $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
-        // $invoice->load(['doctor', 'office', 'items', 'lab']);
         return new InvoiceResource($invoice);
     }
 
