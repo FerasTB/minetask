@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DoubleEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -66,24 +67,15 @@ class AccountingProfile extends Model
         return $this->hasMany(DoubleEntry::class, 'accounting_profile_id');
     }
 
-    public function scopeWithTotalBalance($query)
-    {
-        $query->with(['doubleEntries' => function ($query) {
-            $query->select('accounting_profile_id', \DB::raw('SUM(CASE WHEN type = "positive" THEN total_price ELSE 0 END) as total_positive'), \DB::raw('SUM(CASE WHEN type = "negative" THEN total_price ELSE 0 END) as total_negative'))
-                ->groupBy('accounting_profile_id');
-        }]);
-    }
-
     public function getTotalBalanceAttribute()
     {
-        if (!array_key_exists('doubleEntries', $this->relations)) {
-            return null;
-        }
+        // Use the loaded relationship to avoid N+1 queries
+        $doubleEntries = $this->relationLoaded('doubleEntries')
+            ? $this->doubleEntries
+            : $this->doubleEntries()->get();
 
-        $doubleEntries = $this->doubleEntries->first();
-
-        $totalPositive = $doubleEntries->total_positive ?? 0;
-        $totalNegative = $doubleEntries->total_negative ?? 0;
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return $totalPositive - $totalNegative;
     }
