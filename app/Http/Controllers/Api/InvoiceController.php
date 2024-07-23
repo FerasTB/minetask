@@ -529,7 +529,7 @@ class InvoiceController extends Controller
 
                 // Create double entry for expense
                 $expensesCoa = COA::findOrFail($itemData['item_coa']);
-                $this->createDoubleEntry($expensesCoa, $item, DoubleEntryType::Positive, $profile->id, $profile->id);
+                $this->createDoubleEntry($expensesCoa, $item->id, DoubleEntryType::Positive, $profile->id, $profile->id);
             }
 
             DB::commit();
