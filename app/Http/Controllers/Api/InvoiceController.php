@@ -293,8 +293,8 @@ class InvoiceController extends Controller
 
     private function determineTransactionType($accountType, $transactionNature)
     {
-        $debitPositive = ['Asset', 'Expense'];
-        $creditPositive = ['Liability', 'Equity', 'Revenue'];
+        $debitPositive = ['Asset', 'Expense', 'PatientAccount'];
+        $creditPositive = ['Liability', 'Equity', 'Revenue', 'SupplierAccount', 'DentalLabDoctorAccount'];
 
         if (in_array($accountType, $debitPositive)) {
             return $transactionNature === 'debit' ? 'positive' : 'negative';
@@ -307,7 +307,7 @@ class InvoiceController extends Controller
         throw new \Exception('Invalid account type or transaction nature.');
     }
 
-    public function storeInvoiceWithTransactions(storeJournalInvoiceRequest $request)
+    public function storeJVWithTransactions(storeJournalInvoiceRequest $request)
     {
         $fields = $request->validated();
 
