@@ -340,7 +340,7 @@ class InvoiceController extends Controller
             $fields['doctor_id'] = $request->doctor_id;
 
             $invoice = DirectDoubleEntryInvoice::create($fields);
-            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
 
             // Process debit transactions
             foreach ($debitTransactions as $transaction) {
