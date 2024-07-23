@@ -133,6 +133,47 @@ class COAController extends Controller
         return new COAResource($coa);
     }
 
+    public function JournalVoucherCOA(Request $request)
+    {
+        $officeId = $request->input('office_id');
+        $doctorId = $request->input('doctor_id');
+
+        if (!$officeId || !$doctorId) {
+            return response()->json(['error' => 'office_id and doctor_id are required'], 400);
+        }
+
+        // Query COA table
+        $coaAccounts = COA::where('office_id', $officeId)
+            ->where('doctor_id', $doctorId)
+            ->get(['id', 'name', 'general_type'])
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'is_coa' => true,
+                    'type' => $item->general_type,
+                ];
+            });
+
+        // Query AccountingProfile table
+        $accountingProfiles = AccountingProfile::where('office_id', $officeId)
+            ->where('doctor_id', $doctorId)
+            ->get(['id', 'name', 'type'])
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'is_coa' => false,
+                    'type' => AccountingProfileType::getKey($item->type),
+                ];
+            });
+
+        // Combine results
+        $combinedResults = $coaAccounts->merge($accountingProfiles);
+
+        return response()->json($combinedResults);
+    }
+
     public function coaOutcome(COA $coa)
     {
         $this->authorize('view', [$coa]);

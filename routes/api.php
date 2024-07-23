@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('patient/info', App\Http\Controllers\Api\PatientInfoController::class);
     Route::get('patient/{patient}/medical_info', [App\Http\Controllers\Api\PatientInfoController::class, 'showMedicalInformation']);
     Route::get('office/coa', [App\Http\Controllers\Api\COAController::class, 'indexOwner']);
+    Route::get('Journal-voucher/coa', [App\Http\Controllers\Api\COAController::class, 'JournalVoucherCOA']);
     Route::apiResource('office', App\Http\Controllers\Api\OfficeController::class);
     Route::apiResource('office/{office}/room', App\Http\Controllers\OfficeRoomController::class);
     Route::get('user/office', [App\Http\Controllers\Api\OfficeController::class, 'userOffice']);

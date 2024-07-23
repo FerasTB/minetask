@@ -108,6 +108,10 @@ class OfficeController extends Controller
             'type' => TransactionType::SupplierInvoice,
             'prefix' => 'SINV',
         ]);
+        $office->transactionPrefix()->create([
+            'type' => TransactionType::JournalVoucher,
+            'prefix' => 'JV',
+        ]);
         $doctor = auth()->user()->doctor;
         $doctor->cases()->create([
             'case_name' => Doctor::DefaultCase,
@@ -166,6 +170,11 @@ class OfficeController extends Controller
             $doctor->transactionPrefix()->create([
                 'type' => TransactionType::SupplierInvoice,
                 'prefix' => 'SINV',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::JournalVoucher,
+                'prefix' => 'JV',
                 'office_id' => $office->id,
             ]);
         }
@@ -288,6 +297,11 @@ class OfficeController extends Controller
             $doctor->transactionPrefix()->create([
                 'type' => TransactionType::SupplierInvoice,
                 'prefix' => 'SINV',
+                'office_id' => $office->id,
+            ]);
+            $doctor->transactionPrefix()->create([
+                'type' => TransactionType::JournalVoucher,
+                'prefix' => 'JV',
                 'office_id' => $office->id,
             ]);
         }

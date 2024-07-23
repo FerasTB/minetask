@@ -16,6 +16,7 @@ use App\Http\Requests\ProcessDraftInvoiceRequest;
 use App\Http\Requests\StoreDentalLabInvoiceForDoctorRequest;
 use App\Http\Requests\StoreDentalLabInvoiceRequest;
 use App\Http\Requests\StoreInvoiceAndItemForPatientRequest;
+use App\Http\Requests\storeJournalInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
 use App\Http\Requests\UpdatePatientInvoiceStatusRequest;
@@ -269,6 +270,94 @@ class InvoiceController extends Controller
     //     }
     //     return new PatientInvoiceResource($invoice);
     // }
+
+    private function createJVDoubleEntry($accountId, $invoiceId, $amount, $type, $isCoa)
+    {
+        if ($isCoa) {
+            $coa = COA::findOrFail($accountId);
+            $runningBalance = $this->calculateCOABalance($coa->id, $amount, $type);
+        } else {
+            $profile = AccountingProfile::findOrFail($accountId);
+            $runningBalance = $this->calculatePatientBalance($profile->id, $type == 'positive' ? $amount : -$amount);
+        }
+
+        DoubleEntry::create([
+            'COA_id' => $isCoa ? $accountId : null,
+            'accounting_profile_id' => !$isCoa ? $accountId : null,
+            'invoice_id' => $invoiceId,
+            'total_price' => $amount,
+            'type' => $type,
+            'running_balance' => $runningBalance
+        ]);
+    }
+
+    private function determineTransactionType($accountType, $transactionNature)
+    {
+        $debitPositive = ['Asset', 'Expense'];
+        $creditPositive = ['Liability', 'Equity', 'Revenue'];
+
+        if (in_array($accountType, $debitPositive)) {
+            return $transactionNature === 'debit' ? 'positive' : 'negative';
+        }
+
+        if (in_array($accountType, $creditPositive)) {
+            return $transactionNature === 'credit' ? 'positive' : 'negative';
+        }
+
+        throw new \Exception('Invalid account type or transaction nature.');
+    }
+
+    public function storeInvoiceWithTransactions(storeJournalInvoiceRequest $request)
+    {
+        $fields = $request->validated();
+
+        // Extract arrays from request
+        $debitTransactions = $request->debit_transactions;
+        $creditTransactions = $request->credit_transactions;
+
+        // Calculate total amounts
+        $totalDebit = array_sum(array_column($debitTransactions, 'amount'));
+        $totalCredit = array_sum(array_column($creditTransactions, 'amount'));
+
+        // Ensure the total amounts are equal
+        if ($totalDebit !== $totalCredit) {
+            throw new \Exception('Total debit and credit amounts must be equal.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $office = Office::findOrFail($request->office_id);
+            $transactionNumber = $this->getTransactionNumber($office, TransactionType::JournalVoucher);
+            // Create the invoice
+            $fields['total_price'] = $totalDebit;
+            $fields['date_of_invoice'] = $request->has('date_of_invoice') ? $request->date_of_invoice : now();
+            $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+
+            $invoice = Invoice::create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+
+            // Process debit transactions
+            foreach ($debitTransactions as $transaction) {
+                $transactionType = $this->determineTransactionType($transaction['type'], 'debit');
+                $this->createJVDoubleEntry($transaction['account_id'], $invoice->id, $transaction['amount'], $transactionType, $transaction['is_coa']);
+            }
+
+            // Process credit transactions
+            foreach ($creditTransactions as $transaction) {
+                $transactionType = $this->determineTransactionType($transaction['type'], 'credit');
+                $this->createJVDoubleEntry($transaction['account_id'], $invoice->id, $transaction['amount'], $transactionType, $transaction['is_coa']);
+            }
+
+            DB::commit();
+            return new InvoiceResource($invoice);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating invoice with transactions: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
 
     public function storePatientInvoiceWithItems(StoreInvoiceAndItemForPatientRequest $request, Patient $patient)
     {

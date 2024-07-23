@@ -119,31 +119,12 @@ class TransactionPrefixController extends Controller
     public function temprary(Office $office, Doctor $doctor)
     {
         $office->transactionPrefix()->create([
-            'type' => TransactionType::PaymentVoucher,
-            'prefix' => 'PVOC',
-        ]);
-        $office->transactionPrefix()->create([
-            'type' => TransactionType::SupplierInvoice,
-            'prefix' => 'SINV',
+            'type' => TransactionType::JournalVoucher,
+            'prefix' => 'JV',
         ]);
         $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PatientInvoice,
-            'prefix' => 'PINV',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PatientReceipt,
-            'prefix' => 'PREC',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::PaymentVoucher,
-            'prefix' => 'PVOC',
-            'office_id' => $office->id,
-        ]);
-        $doctor->transactionPrefix()->create([
-            'type' => TransactionType::SupplierInvoice,
-            'prefix' => 'SINV',
+            'type' => TransactionType::JournalVoucher,
+            'prefix' => 'JV',
             'office_id' => $office->id,
         ]);
         return response('Done', 201);
