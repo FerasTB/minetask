@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class AccountingProfile extends Model
 {
@@ -63,6 +64,28 @@ class AccountingProfile extends Model
     public function doubleEntries()
     {
         return $this->hasMany(DoubleEntry::class, 'accounting_profile_id');
+    }
+
+    public function scopeWithTotalBalance($query)
+    {
+        $query->with(['doubleEntries' => function ($query) {
+            $query->select('accounting_profile_id', \DB::raw('SUM(CASE WHEN type = "positive" THEN total_price ELSE 0 END) as total_positive'), \DB::raw('SUM(CASE WHEN type = "negative" THEN total_price ELSE 0 END) as total_negative'))
+                ->groupBy('accounting_profile_id');
+        }]);
+    }
+
+    public function getTotalBalanceAttribute()
+    {
+        if (!array_key_exists('doubleEntries', $this->relations)) {
+            return null;
+        }
+
+        $doubleEntries = $this->doubleEntries->first();
+
+        $totalPositive = $doubleEntries->total_positive ?? 0;
+        $totalNegative = $doubleEntries->total_negative ?? 0;
+
+        return $totalPositive - $totalNegative;
     }
 
     public function accountOutcome()

@@ -33,12 +33,6 @@ class AccountingProfileResource extends JsonResource
             $ownerUser = $this->office->owner->user;
             $ownerDoctor = $ownerUser->doctor;
         }
-        $positive = $this->invoices;
-        $totalPositive = $positive != null ?
-            $positive->sum('total_price') : 0;
-        $negative = $this->receipts;
-        $totalNegative = $negative != null ?
-            $negative->sum('total_price') : 0;
         // return [
         //     'id' => $this->id,
         //     // 'patient' => new MyPatientsResource($role),
@@ -73,8 +67,7 @@ class AccountingProfileResource extends JsonResource
                 'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
                 'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
                 'office_id' => $this->office_id,
-                'total' => $this->type == AccountingProfileType::PatientAccount ? $totalPositive - $totalNegative + $this->initial_balance
-                    : $totalNegative - $totalPositive + $this->initial_balance,
+                'total' => $this->total_balance + $this->initial_balance,
             ],
             'default_case' => $this->when(isset($this->default_case), function () {
                 return new PatientDefaultCaseResource($this->default_case);
