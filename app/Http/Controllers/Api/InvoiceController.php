@@ -297,11 +297,11 @@ class InvoiceController extends Controller
         $creditPositive = ['Liability', 'Equity', 'Revenue', 'SupplierAccount', 'DentalLabDoctorAccount'];
 
         if (in_array($accountType, $debitPositive)) {
-            return $transactionNature === 'debit' ? 'positive' : 'negative';
+            return $transactionNature === 'debit' ? DoubleEntryType::Positive : DoubleEntryType::Negative;
         }
 
         if (in_array($accountType, $creditPositive)) {
-            return $transactionNature === 'credit' ? 'positive' : 'negative';
+            return $transactionNature === 'credit' ? DoubleEntryType::Positive : DoubleEntryType::Negative;
         }
 
         throw new \Exception('Invalid account type or transaction nature.');
