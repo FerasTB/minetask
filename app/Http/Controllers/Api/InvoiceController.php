@@ -20,6 +20,7 @@ use App\Http\Requests\storeJournalInvoiceRequest;
 use App\Http\Requests\StorePatientInvoiceRequest;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
 use App\Http\Requests\UpdatePatientInvoiceStatusRequest;
+use App\Http\Resources\DirectDoubleEntryResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PatientInvoiceResource;
 use App\Models\AccountingProfile;
@@ -354,7 +355,7 @@ class InvoiceController extends Controller
             }
 
             DB::commit();
-            return new InvoiceResource($invoice);
+            return new DirectDoubleEntryResource($invoice);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating invoice with transactions: ' . $e->getMessage());
