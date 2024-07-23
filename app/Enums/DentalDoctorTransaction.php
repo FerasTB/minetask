@@ -17,12 +17,15 @@ final class DentalDoctorTransaction extends Enum
     const ResetVoucher = 6;
     const SellInvoice = 7;
     const PercherInvoice = 8;
+    const JournalVoucher = 9; // percher invoice
+
 
     public static $types = [
         self::SellInvoice => 'PINV',
         self::ResetVoucher => 'PREC',
         self::PaymentVoucher => 'PVOC',
         self::PercherInvoice => 'SINV',
+        self::JournalVoucher => 'JV',
     ];
 
     public static function getNewValue($type)

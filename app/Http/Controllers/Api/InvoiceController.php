@@ -331,7 +331,7 @@ class InvoiceController extends Controller
             // Create the invoice
             $fields['total_price'] = $totalDebit;
             $fields['date_of_invoice'] = $request->has('date_of_invoice') ? $request->date_of_invoice : now();
-            $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+            $fields['type'] = DentalDoctorTransaction::JournalVoucher;
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
 
             $invoice = Invoice::create($fields);
