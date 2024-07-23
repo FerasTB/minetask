@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\COASubType;
+use App\Enums\DoubleEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -62,5 +64,49 @@ class COA extends Model
     public function supplierItem()
     {
         return $this->hasMany(SupplierItem::class, 'COA_id');
+    }
+
+    public function getTotalAttribute()
+    {
+        $initialBalance = $this->initial_balance;
+        $doubleEntries = $this->doubleEntries;
+
+        // General Calculation
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        $generalTotal = $initialBalance + $totalPositive - $totalNegative;
+
+        // Fetch related accounting profiles based on doctor_id and office_id
+        $relatedProfilesQuery = AccountingProfile::where('doctor_id', $this->doctor_id)
+            ->where('office_id', $this->office_id);
+
+        // Special Calculation for Payable Accounts
+        if ($this->sub_type == COASubType::Payable) {
+            $relatedProfiles = $relatedProfilesQuery->whereIn('type', ['SupplierAccount', 'DentalLabDoctorAccount'])->get();
+
+            $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) {
+                $profilePositive = $profile->doubleEntries()->where('type', DoubleEntryType::Positive)->sum('total_price');
+                $profileNegative = $profile->doubleEntries()->where('type', DoubleEntryType::Negative)->sum('total_price');
+                return $carry + $profile->initial_balance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $generalTotal + $profileTotal;
+        }
+
+        // Special Calculation for Receivable Accounts
+        if ($this->sub_type == COASubType::Receivable) {
+            $relatedProfiles = $relatedProfilesQuery->where('type', 'PatientAccount')->get();
+
+            $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) {
+                $profilePositive = $profile->doubleEntries()->where('type', DoubleEntryType::Positive)->sum('total_price');
+                $profileNegative = $profile->doubleEntries()->where('type', DoubleEntryType::Negative)->sum('total_price');
+                return $carry + $profile->initial_balance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $generalTotal + $profileTotal;
+        }
+
+        // Return general total if no special case applies
+        return $generalTotal;
     }
 }
