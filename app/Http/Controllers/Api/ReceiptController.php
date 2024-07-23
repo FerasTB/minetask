@@ -206,54 +206,54 @@ class ReceiptController extends Controller
         return new ReceiptResource($receipt);
     }
 
-    public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
-    {
-        $fields = $request->validated();
-        $office = Office::findOrFail($request->office_id);
-        $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientReceipt])->first();
-        if ($office->type == OfficeType::Combined) {
-            $profile = AccountingProfile::where([
-                'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => null
-            ])->first();
-            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
-            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-            $fields['type'] = DentalDoctorTransaction::ResetVoucher;
-            if (!$request->has('date_of_payment')) {
-                $fields['date_of_payment'] = now();
-            }
-            $receipt = $profile->receipts()->create($fields);
-            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Receivable
-            ])->first();
-            $cash = COA::findOrFail($request->cash_coa);
-        } else {
-            $profile = AccountingProfile::where([
-                'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
-            ])->first();
-            $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
-            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-            $fields['type'] = DentalDoctorTransaction::ResetVoucher;
-            $receipt = $profile->receipts()->create($fields);
-            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-            $doctor = Doctor::find($request->doctor_id);
-            $receivable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
-            ])->first();
-            $cash = COA::findOrFail($request->cash_coa);
-        }
-        $doubleEntryFields['receipt_id'] = $receipt->id;
-        $doubleEntryFields['total_price'] = $receipt->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Negative;
-        $receivable->doubleEntries()->create($doubleEntryFields);
-        $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $cash->doubleEntries()->create($doubleEntryFields);
-        return new ReceiptResource($receipt);
-    }
+    // public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
+    // {
+    //     $fields = $request->validated();
+    //     $office = Office::findOrFail($request->office_id);
+    //     $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::PatientReceipt])->first();
+    //     if ($office->type == OfficeType::Combined) {
+    //         $profile = AccountingProfile::where([
+    //             'patient_id' => $patient->id,
+    //             'office_id' => $office->id, 'doctor_id' => null
+    //         ])->first();
+    //         $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+    //         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+    //         $fields['type'] = DentalDoctorTransaction::ResetVoucher;
+    //         if (!$request->has('date_of_payment')) {
+    //             $fields['date_of_payment'] = now();
+    //         }
+    //         $receipt = $profile->receipts()->create($fields);
+    //         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+    //         $receivable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => null, 'sub_type' => COASubType::Receivable
+    //         ])->first();
+    //         $cash = COA::findOrFail($request->cash_coa);
+    //     } else {
+    //         $profile = AccountingProfile::where([
+    //             'patient_id' => $patient->id,
+    //             'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+    //         ])->first();
+    //         $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
+    //         $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+    //         $fields['type'] = DentalDoctorTransaction::ResetVoucher;
+    //         $receipt = $profile->receipts()->create($fields);
+    //         $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+    //         $doctor = Doctor::find($request->doctor_id);
+    //         $receivable = COA::where([
+    //             'office_id' => $office->id,
+    //             'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
+    //         ])->first();
+    //         $cash = COA::findOrFail($request->cash_coa);
+    //     }
+    //     $doubleEntryFields['receipt_id'] = $receipt->id;
+    //     $doubleEntryFields['total_price'] = $receipt->total_price;
+    //     $doubleEntryFields['type'] = DoubleEntryType::Negative;
+    //     $receivable->doubleEntries()->create($doubleEntryFields);
+    //     $doubleEntryFields['type'] = DoubleEntryType::Positive;
+    //     $cash->doubleEntries()->create($doubleEntryFields);
+    //     return new ReceiptResource($receipt);
+    // }
 
     public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
     {
