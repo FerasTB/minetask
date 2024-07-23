@@ -9,7 +9,7 @@ class DirectDoubleEntry extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['accounting_profile_id', 'COA_id', 'direct_double_entry_invoice_id', 'total_price', 'type'];
+    protected $fillable = ['running_balance', 'accounting_profile_id', 'COA_id', 'direct_double_entry_invoice_id', 'total_price', 'type'];
 
     public function directDoubleEntryInvoice()
     {
