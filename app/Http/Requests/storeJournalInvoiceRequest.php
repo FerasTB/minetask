@@ -27,7 +27,6 @@ class storeJournalInvoiceRequest extends FormRequest
             'invoice_number' => 'nullable|integer',
             'doctor_id' => 'required|integer',
             'office_id' => 'required|integer',
-            'supplier_account_id' => 'required|integer',
             'debit_transactions' => 'required|array',
             'debit_transactions.*.account_id' => 'required|integer',
             'debit_transactions.*.amount' => 'required|integer',
