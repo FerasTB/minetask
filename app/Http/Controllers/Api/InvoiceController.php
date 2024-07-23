@@ -24,6 +24,8 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PatientInvoiceResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
+use App\Models\DirectDoubleEntry;
+use App\Models\DirectDoubleEntryInvoice;
 use App\Models\Doctor;
 use App\Models\DoubleEntry;
 use App\Models\Invoice;
@@ -281,10 +283,10 @@ class InvoiceController extends Controller
             $runningBalance = $this->calculatePatientBalance($profile->id, $type == 'positive' ? $amount : -$amount);
         }
 
-        DoubleEntry::create([
+        DirectDoubleEntry::create([
             'COA_id' => $isCoa ? $accountId : null,
             'accounting_profile_id' => !$isCoa ? $accountId : null,
-            'invoice_id' => $invoiceId,
+            'direct_double_entry_invoice_id' => $invoiceId,
             'total_price' => $amount,
             'type' => $type,
             'running_balance' => $runningBalance
@@ -330,11 +332,13 @@ class InvoiceController extends Controller
             $transactionNumber = $this->getTransactionNumber($office, TransactionType::JournalVoucher);
             // Create the invoice
             $fields['total_price'] = $totalDebit;
-            $fields['date_of_invoice'] = $request->has('date_of_invoice') ? $request->date_of_invoice : now();
+            $fields['date_of_transaction'] = $request->has('date_of_invoice') ? $request->date_of_invoice : now();
             $fields['type'] = DentalDoctorTransaction::JournalVoucher;
-            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['office_id'] = $request->office_id;
+            $fields['doctor_id'] = $request->doctor_id;
 
-            $invoice = Invoice::create($fields);
+            $invoice = DirectDoubleEntryInvoice::create($fields);
             $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
 
             // Process debit transactions
@@ -436,9 +440,13 @@ class InvoiceController extends Controller
     {
         $patient = AccountingProfile::findOrFail($id);
         $doubleEntries = $patient->doubleEntries()->get();
+        $directDoubleEntries = $patient->directDoubleEntries()->get();
 
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        // Sum the positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return $totalPositive - $totalNegative + $thisTransaction + $patient->initial_balance;
     }
@@ -446,12 +454,16 @@ class InvoiceController extends Controller
     private function calculateCOABalance(int $coaId, int $thisTransaction, string $type)
     {
         $doubleEntries = DoubleEntry::where('COA_id', $coaId)->get();
+        $directDoubleEntries = DirectDoubleEntry::where('COA_id', $coaId)->get();
 
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return ($totalPositive - $totalNegative) + ($type == DoubleEntryType::Positive ? $thisTransaction : -$thisTransaction);
     }
+
 
 
     private function processBindingCharge($bindingChargeId, $invoice)

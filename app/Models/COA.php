@@ -70,10 +70,12 @@ class COA extends Model
     {
         $initialBalance = $this->initial_balance;
         $doubleEntries = $this->doubleEntries;
+        $directDoubleEntries = $this->directDoubleEntries;
+
 
         // General Calculation
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') + $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') + $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
         $generalTotal = $initialBalance + $totalPositive - $totalNegative;
 
         // Fetch related accounting profiles based on doctor_id and office_id
@@ -85,8 +87,10 @@ class COA extends Model
             $relatedProfiles = $relatedProfilesQuery->whereIn('type', ['SupplierAccount', 'DentalLabDoctorAccount'])->get();
 
             $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) {
-                $profilePositive = $profile->doubleEntries()->where('type', DoubleEntryType::Positive)->sum('total_price');
-                $profileNegative = $profile->doubleEntries()->where('type', DoubleEntryType::Negative)->sum('total_price');
+                $profileDoubleEntries = $profile->doubleEntries;
+                $profileDirectDoubleEntries = $profile->directDoubleEntries;
+                $profilePositive = $profileDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +  $profileDirectDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+                $profileNegative = $profileDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') + $profileDirectDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
                 return $carry + $profile->initial_balance + $profilePositive - $profileNegative;
             }, 0);
 

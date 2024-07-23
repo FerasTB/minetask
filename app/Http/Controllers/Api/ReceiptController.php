@@ -22,6 +22,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ReceiptResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
+use App\Models\DirectDoubleEntry;
 use App\Models\Doctor;
 use App\Models\DoubleEntry;
 use App\Models\HasRole;
@@ -389,9 +390,13 @@ class ReceiptController extends Controller
     {
         $patient = AccountingProfile::findOrFail($id);
         $doubleEntries = $patient->doubleEntries()->get();
+        $directDoubleEntries = $patient->directDoubleEntries()->get();
 
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        // Sum the positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return $totalPositive - $totalNegative + $thisTransaction + $patient->initial_balance;
     }
@@ -399,12 +404,16 @@ class ReceiptController extends Controller
     private function calculateCOABalance(int $coaId, int $thisTransaction, string $type)
     {
         $doubleEntries = DoubleEntry::where('COA_id', $coaId)->get();
+        $directDoubleEntries = DirectDoubleEntry::where('COA_id', $coaId)->get();
 
-        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
-        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
         return ($totalPositive - $totalNegative) + ($type == DoubleEntryType::Positive ? $thisTransaction : -$thisTransaction);
     }
+
 
 
 

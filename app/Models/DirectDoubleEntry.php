@@ -9,7 +9,7 @@ class DirectDoubleEntry extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['COA_id', 'direct_double_entry_invoice_id', 'total_price', 'type'];
+    protected $fillable = ['accounting_profile_id', 'COA_id', 'direct_double_entry_invoice_id', 'total_price', 'type'];
 
     public function directDoubleEntryInvoice()
     {
@@ -19,5 +19,10 @@ class DirectDoubleEntry extends Model
     public function COA()
     {
         return $this->belongsTo(COA::class, 'COA_id');
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
 }

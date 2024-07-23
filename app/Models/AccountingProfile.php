@@ -67,6 +67,11 @@ class AccountingProfile extends Model
         return $this->hasMany(DoubleEntry::class, 'accounting_profile_id');
     }
 
+    public function directDoubleEntries()
+    {
+        return $this->hasMany(DirectDoubleEntry::class, 'accounting_profile_id');
+    }
+
     public function getTotalBalanceAttribute()
     {
         // Use the loaded relationship to avoid N+1 queries
