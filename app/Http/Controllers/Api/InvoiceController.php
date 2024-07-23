@@ -285,6 +285,8 @@ class InvoiceController extends Controller
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             $fields['date_of_invoice'] = $fields['date_of_invoice'] ?? now();
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['running_balance'] = $this->calculatePatientBalance($profile->id, $fields['total_price']);
+
 
             // Create the invoice
             $invoice = $profile->invoices()->create($fields);

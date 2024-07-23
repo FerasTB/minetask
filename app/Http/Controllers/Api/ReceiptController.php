@@ -23,6 +23,7 @@ use App\Http\Resources\ReceiptResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
+use App\Models\DoubleEntry;
 use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceReceipt;
@@ -33,6 +34,8 @@ use App\Models\Role;
 use App\Models\TransactionPrefix;
 use App\Notifications\ReceiptCreated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReceiptController extends Controller
 {
@@ -251,6 +254,107 @@ class ReceiptController extends Controller
         $cash->doubleEntries()->create($doubleEntryFields);
         return new ReceiptResource($receipt);
     }
+
+    public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
+    {
+        DB::beginTransaction();
+        try {
+            $fields = $request->validated();
+            $office = Office::findOrFail($request->office_id);
+            $transactionNumber = TransactionPrefix::where([
+                'office_id' => $office->id,
+                'doctor_id' => auth()->user()->doctor->id,
+                'type' => TransactionType::PatientReceipt
+            ])->firstOrFail();
+
+            $profile = $this->getAccountingProfile($office, $patient, $request->doctor_id);
+            $fields = $this->setReceiptFields($request, $profile, $transactionNumber, $fields);
+
+            $receipt = $profile->receipts()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+
+
+            $cash = COA::findOrFail($request->cash_coa);
+
+            $this->createDoubleEntry($cash, $receipt, DoubleEntryType::Positive);
+            $this->createProfileDoubleEntry($receipt->accounting_profile_id, $receipt->id, $receipt->total_price, DoubleEntryType::Negative);
+
+            DB::commit();
+            return new ReceiptResource($receipt);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating patient receipt: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function getAccountingProfile($office, $patient, $doctorId = null)
+    {
+        return AccountingProfile::where([
+            'patient_id' => $patient->id,
+            'office_id' => $office->id,
+            'doctor_id' => $office->type == OfficeType::Combined ? null : $doctorId
+        ])->firstOrFail();
+    }
+
+    private function setReceiptFields($request, $profile, $transactionNumber, $fields)
+    {
+        $fields['running_balance'] = $this->calculatePatientBalance($profile->id, -$fields['total_price']);
+        $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $fields['type'] = DentalDoctorTransaction::ResetVoucher;
+        $fields['date_of_payment'] = $request->has('date_of_payment') ? $request->date_of_payment : now();
+        return $fields;
+    }
+
+    private function createDoubleEntry($coa, $receipt, $type)
+    {
+        $doubleEntryFields = [
+            'COA_id' => $coa->id,
+            'receipt_id' => $receipt->id,
+            'total_price' => $receipt->total_price,
+            'type' => $type,
+            // 'accounting_profile_id' => $receipt->accounting_profile_id,
+            'running_balance' => $this->calculateCOABalance($coa->id, $receipt->total_price, $type)
+        ];
+
+        $coa->doubleEntries()->create($doubleEntryFields);
+    }
+
+    private function createProfileDoubleEntry($accountingProfileId, $itemId, $totalPrice, $type)
+    {
+        $runningBalance = $this->calculatePatientBalance($accountingProfileId, $type == DoubleEntryType::Positive ? $totalPrice : -$totalPrice);
+
+        DoubleEntry::create([
+            'accounting_profile_id' => $accountingProfileId,
+            'receipt' => $itemId,
+            'total_price' => $totalPrice,
+            'type' => $type,
+            'running_balance' => $runningBalance
+        ]);
+    }
+
+    private function calculatePatientBalance(int $id, int $thisTransaction)
+    {
+        $patient = AccountingProfile::findOrFail($id);
+        $doubleEntries = $patient->doubleEntries()->get();
+
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return $totalPositive - $totalNegative + $thisTransaction + $patient->initial_balance;
+    }
+
+    private function calculateCOABalance(int $coaId, int $thisTransaction, string $type)
+    {
+        $doubleEntries = DoubleEntry::where('COA_id', $coaId)->get();
+
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return ($totalPositive - $totalNegative) + ($type == DoubleEntryType::Positive ? $thisTransaction : -$thisTransaction);
+    }
+
+
 
     public function addReceiptToInvoice(AddReceiptToInvoiceRequest $request, Receipt $receipt, Invoice $invoice)
     {
