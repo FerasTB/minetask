@@ -35,7 +35,7 @@ class StoreInvoiceAndItemForPatientRequest extends FormRequest
             'items.*.amount' => 'required_with:items|integer',
             'items.*.total_price' => 'required_with:items|integer',
             'items.*.price_per_one' => 'required_with:items|integer',
-            'items.*.service_coa' => 'required_with:items|integer',
+            'items.*.coa_id' => 'required_with:items|integer',
             'items.*.service_percentage' => 'nullable|integer',
             'binding_charges' => 'array|nullable',
             'binding_charges.*' => 'integer|exists:invoice_items,id',

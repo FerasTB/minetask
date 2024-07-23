@@ -9,11 +9,16 @@ class DoubleEntry extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['COA_id', 'invoice_id', 'invoice_item_id', 'receipt_id', 'total_price', 'type'];
+    protected $fillable = ['running_balance', 'accounting_profile_id', 'COA_id', 'invoice_id', 'invoice_item_id', 'receipt_id', 'total_price', 'type'];
 
     public function COA()
     {
         return $this->belongsTo(COA::class, 'COA_id');
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(AccountingProfile::class, 'accounting_profile_id');
     }
 
     public function invoice()
