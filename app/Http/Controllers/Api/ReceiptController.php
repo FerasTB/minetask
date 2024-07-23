@@ -170,7 +170,7 @@ class ReceiptController extends Controller
             $transactionNumber = $this->getTransactionNumber($office, TransactionType::PaymentVoucher);
 
             // Set fields for the receipt
-            $fields = $this->setReceiptFields($request, $profile, $transactionNumber, $fields);
+            $fields = $this->setSupplierReceiptFields($request, $profile, $transactionNumber, $fields);
 
             // Create the receipt
             $receipt = $profile->receipts()->create($fields);
@@ -323,6 +323,14 @@ class ReceiptController extends Controller
         }
     }
 
+    private function getTransactionNumber($office, $type)
+    {
+        return TransactionPrefix::where([
+            'office_id' => $office->id,
+            'doctor_id' => auth()->user()->doctor->id,
+            'type' => $type
+        ])->first();
+    }
     private function getAccountingProfile($office, $patient, $doctorId = null)
     {
         return AccountingProfile::where([
