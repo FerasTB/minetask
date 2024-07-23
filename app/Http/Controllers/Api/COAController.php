@@ -161,7 +161,7 @@ class COAController extends Controller
             ->where('doctor_id', $doctorId)
             ->get(['id', 'supplier_name', 'patient_id', 'type'])
             ->map(function ($item) {
-                $name = $item->supplier_name ?? $item->patient->name;
+                $name = $item->supplier_name ?? $item->patient->first_name . " " . $item->patient->last_name;
                 return [
                     'id' => $item->id,
                     'name' => $name,
