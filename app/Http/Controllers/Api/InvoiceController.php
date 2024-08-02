@@ -506,7 +506,7 @@ class InvoiceController extends Controller
         $this->createDoubleEntry($serviceCoa, $item->id, $item->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
 
         // Add negative double entry for the accounting profile
-        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Negative);
+        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
     }
 
 
