@@ -39,10 +39,18 @@ class StoreInvoiceAndItemForPatientRequest extends FormRequest
             'items.*.service_percentage' => 'nullable|integer',
             'binding_charges' => 'array|nullable',
             'binding_charges.*' => 'integer|exists:invoice_items,id',
+            'paid_done' => 'required|boolean',
+            'cash_coa' => 'integer|required_if:paid_done,true',
         ];
     }
     public function withValidator($validator)
     {
+        // Add conditional validation for items.*.coa_id
+        $validator->sometimes('items.*.coa_id', 'nullable', function ($input) {
+            return $input->paid_done === true;
+        });
+
+        // Add custom validation logic
         $validator->after(function ($validator) {
             $items = $this->input('items');
             $bindingCharges = $this->input('binding_charges');
@@ -52,5 +60,12 @@ class StoreInvoiceAndItemForPatientRequest extends FormRequest
                 $validator->errors()->add('binding_charges', 'Either items or binding_charges must be provided.');
             }
         });
+    }
+
+    public function messages()
+    {
+        return [
+            'cash_coa.required_if' => 'The cash_coa field is required when paid_done is true.',
+        ];
     }
 }

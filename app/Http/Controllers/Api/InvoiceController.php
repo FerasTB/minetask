@@ -380,24 +380,29 @@ class InvoiceController extends Controller
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             $fields['date_of_invoice'] = $fields['date_of_invoice'] ?? now();
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-            $fields['running_balance'] = $this->calculatePatientBalance($profile->id, $fields['total_price']);
-
-
-            // Create the invoice
-            $invoice = $profile->invoices()->create($fields);
+            if ($request->paid_done) {
+                $fields['running_balance'] = $this->calculatePatientBalance($profile->id, 0);
+                $invoice = $profile->invoiceReceipt()->create($fields);
+                $cashCOA = COA::findOrFail($request->cash_coa);
+                $this->createPaidDoubleEntry($cashCOA, $invoice->id, $request->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
+            } else {
+                $fields['running_balance'] = $this->calculatePatientBalance($profile->id, $fields['total_price']);
+                // Create the invoice
+                $invoice = $profile->invoices()->create($fields);
+            }
             $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
 
             // Process binding charges
             if ($request->has('binding_charges')) {
                 foreach ($request->binding_charges as $bindingChargeId) {
-                    $this->processBindingCharge($bindingChargeId, $invoice);
+                    $this->processBindingCharge($bindingChargeId, $invoice, $request->paid_done);
                 }
             }
 
             // Process invoice items
             if ($request->has('items')) {
                 foreach ($request->items as $itemData) {
-                    $this->processInvoiceItem($itemData, $invoice);
+                    $this->processInvoiceItem($itemData, $invoice, $request->paid_done);
                 }
             }
 
@@ -467,7 +472,7 @@ class InvoiceController extends Controller
 
 
 
-    private function processBindingCharge($bindingChargeId, $invoice)
+    private function processBindingCharge($bindingChargeId, $invoice, $paid_done)
     {
         $bindingCharge = InvoiceItem::findOrFail($bindingChargeId);
         $itemData = [
@@ -487,15 +492,15 @@ class InvoiceController extends Controller
 
         $serviceCoa = COA::findOrFail($itemData['coa_id']);
         $this->createDoubleEntry($serviceCoa, $item->id, $item->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
-
-        // Add Positive double entry for the accounting profile
-        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
-
+        if (!$paid_done) {
+            // Add Positive double entry for the accounting profile
+            $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
+        }
         $bindingCharge->delete();
     }
 
 
-    private function processInvoiceItem($itemData, $invoice)
+    private function processInvoiceItem($itemData, $invoice, $paid_done)
     {
         $item = $invoice->items()->create($itemData);
 
@@ -504,9 +509,10 @@ class InvoiceController extends Controller
 
         $serviceCoa = COA::findOrFail($itemData['coa_id']);
         $this->createDoubleEntry($serviceCoa, $item->id, $item->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
-
-        // Add negative double entry for the accounting profile
-        $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
+        if (!$paid_done) {
+            // Add positive double entry for the accounting profile
+            $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
+        }
     }
 
 
@@ -548,6 +554,20 @@ class InvoiceController extends Controller
         DoubleEntry::create([
             'COA_id' => $coa->id,
             'invoice_item_id' => $itemId,
+            'total_price' => $totalPrice,
+            'type' => $type,
+            // 'accounting_profile_id' => $accountingProfileId,
+            'running_balance' => $runningBalance
+        ]);
+    }
+
+    private function createPaidDoubleEntry($coa, $itemId, $totalPrice, $type, $accountingProfileId)
+    {
+        $runningBalance = $this->calculateCOABalance($coa->id, $totalPrice, $type);
+
+        DoubleEntry::create([
+            'COA_id' => $coa->id,
+            'invoice_receipt_id' => $itemId,
             'total_price' => $totalPrice,
             'type' => $type,
             // 'accounting_profile_id' => $accountingProfileId,
