@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AccountingProfileType;
 use App\Enums\COASubType;
 use App\Enums\DoubleEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -84,7 +85,7 @@ class COA extends Model
 
         // Special Calculation for Payable Accounts
         if ($this->sub_type == COASubType::Payable) {
-            $relatedProfiles = $relatedProfilesQuery->whereIn('type', ['SupplierAccount', 'DentalLabDoctorAccount'])->get();
+            $relatedProfiles = $relatedProfilesQuery->whereIn('type', [AccountingProfileType::SupplierAccount, AccountingProfileType::DentalLabDoctorAccount])->get();
 
             $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) {
                 $profileDoubleEntries = $profile->doubleEntries;
@@ -99,7 +100,7 @@ class COA extends Model
 
         // Special Calculation for Receivable Accounts
         if ($this->sub_type == COASubType::Receivable) {
-            $relatedProfiles = $relatedProfilesQuery->where('type', 'PatientAccount')->get();
+            $relatedProfiles = $relatedProfilesQuery->where('type', AccountingProfileType::PatientAccount)->get();
 
             $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) {
                 $profilePositive = $profile->doubleEntries()->where('type', DoubleEntryType::Positive)->sum('total_price');
