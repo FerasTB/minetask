@@ -94,7 +94,7 @@ class COA extends Model
                 return $carry + $profile->initial_balance + $profilePositive - $profileNegative;
             }, 0);
 
-            return $generalTotal + $profileTotal;
+            return $profileTotal;
         }
 
         // Special Calculation for Receivable Accounts
@@ -107,7 +107,7 @@ class COA extends Model
                 return $carry + $profile->initial_balance + $profilePositive - $profileNegative;
             }, 0);
 
-            return $generalTotal + $profileTotal;
+            return $profileTotal;
         }
 
         // Return general total if no special case applies
