@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('temporary_tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('set null');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->longText('data')->nullable();
             $table->smallInteger('task_type')->nullable();
             $table->timestamps();
