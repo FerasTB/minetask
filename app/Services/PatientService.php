@@ -185,7 +185,7 @@ class PatientService
                 $extractedData = json_decode($responseData['extracted_data'], true);
                 if ($oldData != null) {
                     $oldData = json_decode($oldData, true);
-                    $extractedData = array_merge($oldData, $extractedData);
+                    $extractedData = array_merge($extractedData, $oldData);
                 }
                 return response()->json([
                     'extractedData' => $extractedData,
