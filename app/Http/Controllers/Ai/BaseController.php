@@ -31,7 +31,8 @@ class BaseController extends Controller
         ]);
 
         // Get the response from Flask
-        $result = $response->json();
+        // $result = $response->json();
+        $result = json_decode($response->json(), true);
 
         // Process the task based on the result
         $task = $result['task'];
