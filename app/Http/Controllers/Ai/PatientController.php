@@ -36,7 +36,7 @@ class PatientController extends Controller
             $responseData = json_decode($response->getBody()->getContents(), true);
 
             if (isset($responseData['extracted_data'])) {
-                $extractedData = $responseData['extracted_data'];
+                $extractedData = json_decode($responseData['extracted_data'], true);
                 // Get the doctor ID from the authenticated user
                 $doctorId = auth()->user()->doctor->id;
 
