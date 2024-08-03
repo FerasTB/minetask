@@ -8,9 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Patient;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
+use App\Services\PatientService;
 
 class PatientController extends Controller
 {
+    protected $patientService;
+
+    public function __construct(PatientService $patientService)
+    {
+        $this->patientService = $patientService;
+    }
     public function startAddingPatientTask(Request $request)
     {
         // Ensure the request contains 'text'
@@ -29,6 +36,7 @@ class PatientController extends Controller
             $response = $client->post($url . "/extract", [
                 'json' => [
                     'text' => $validated['text'],
+                    'office_id' => 'required|integer|exists:offices,id',
                 ],
             ]);
 
@@ -39,24 +47,10 @@ class PatientController extends Controller
                 $extractedData = json_decode($responseData['extracted_data'], true);
                 // Get the doctor ID from the authenticated user
                 $doctorId = auth()->user()->doctor->id;
+                // Use the patient service to create a new patient
+                $patientResponse = $this->patientService->createPatient($extractedData, $doctorId, $validated['office_id']);
 
-                // Create a new patient with the extracted data
-                $patient = Patient::create([
-                    'first_name' => $extractedData['first_name'],
-                    'last_name' => $extractedData['last_name'],
-                    'gender' => $extractedData['gender'],
-                    'note' => $extractedData['note'],
-                    'phone' => $extractedData['phone'],
-                    'birth_date' => $extractedData['birth_date'],
-                    'marital' => $extractedData['marital'],
-                    'father_name' => $extractedData['father_name'],
-                    'mother_name' => $extractedData['mother_name'],
-                    'doctor_id' => $doctorId, // Associate with the doctor ID
-                ]);
-                return response()->json([
-                    'status' => 'success',
-                    'patient' => $patient
-                ]);
+                return $patientResponse;
             } else {
                 // Return an error if extracted_data is not present
                 return response()->json([
