@@ -49,6 +49,7 @@ class BaseController extends Controller
         // Return the task ID as the result
         return response()->json([
             'error' => "went wrong",
+            'task' => $result['task'],
         ]);
     }
 
