@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Psy\TabCompletion\Matcher\FunctionsMatcher;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -111,5 +112,10 @@ class User extends Authenticatable implements FilamentUser
                 ]);
             }
         )->first() != null;
+    }
+
+    public function temporaryTasks()
+    {
+        return $this->hasMany(TemporaryTask::class, 'user_id');
     }
 }

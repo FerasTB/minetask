@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Ai\PatientController;
 use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Api\DentalLab\CoaController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
@@ -163,6 +164,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('/doctor/mark/read/notification', [DoctorInfoController::class, 'markAsRead']);
     Route::get('/doctor/all/notification', [DoctorInfoController::class, 'allNotification']);
     Route::put('/order/lab/update/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
+
+    Route::post('/start-task', [PatientController::class, 'startAddingPatientTask']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
