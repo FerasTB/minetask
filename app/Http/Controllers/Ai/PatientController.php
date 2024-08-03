@@ -26,7 +26,7 @@ class PatientController extends Controller
 
         try {
             // Make the POST request to the Flask endpoint
-            $response = $client->post($url, [
+            $response = $client->post($url . "/extract", [
                 'json' => [
                     'text' => $validated['text'],
                 ],
