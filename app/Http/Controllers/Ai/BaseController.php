@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Ai;
 
+use App\Enums\AiTaskType;
 use App\Http\Controllers\Controller;
+use App\Models\TemporaryTask;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -42,7 +44,29 @@ class BaseController extends Controller
         // This is a placeholder for actual task processing logic
         // You need to implement the logic for each task in your database
         if ($task == 'إضافة مريض') {
-            return $this->patientService->startAddingPatientTask($request);
+            return $this->patientService->startAddingPatientTask($request, null);
+        }
+        // Return the task ID as the result
+        return response()->json([
+            'error' => "went wrong",
+        ]);
+    }
+
+    public function continueTask(Request $request, TemporaryTask $task)
+    {
+        // Validate the request input
+        $request->validate([
+            'text' => 'required|string',
+            'office_id' => 'required|integer|exists:offices,id',
+        ]);
+
+        $text = $request->input('text');
+        // Perform actions based on the determined task
+        // This is a placeholder for actual task processing logic
+        // You need to implement the logic for each task in your database
+        if ($task->task_type == AiTaskType::AddingPatient) {
+
+            return $this->patientService->startAddingPatientTask($request, $task->data);
         }
         // Return the task ID as the result
         return response()->json([

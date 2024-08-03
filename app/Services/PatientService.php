@@ -154,7 +154,7 @@ class PatientService
         }
     }
 
-    public function startAddingPatientTask(Request $request)
+    public function startAddingPatientTask(Request $request, $oldData)
     {
         // Ensure the request contains 'text'
         $validated = $request->validate([
@@ -183,7 +183,10 @@ class PatientService
 
             if (isset($responseData['extracted_data'])) {
                 $extractedData = json_decode($responseData['extracted_data'], true);
-
+                if ($oldData != null) {
+                    $oldData = json_decode($oldData, true);
+                    $extractedData = array_merge($oldData, $extractedData);
+                }
                 // Validate the required non-null keys
                 $requiredKeys = ["first_name", "last_name", "gender", "phone"];
                 $validationResult = ValidationHelper::validateNonNullKeys($extractedData, $requiredKeys);

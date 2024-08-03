@@ -168,6 +168,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Route::post('/start-task', [PatientController::class, 'startAddingPatientTask']);
     Route::post('/start-task', [BaseController::class, 'determineTask']);
+    Route::post('/continue-task/{task}', [BaseController::class, 'continueTask']);
 });
 Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::apiResource('dental/lab', DentalLabController::class);
