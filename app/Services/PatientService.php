@@ -153,7 +153,18 @@ class PatientService
             }
         }
     }
+    protected function customMerge(array $oldData, array $newData)
+    {
+        $mergedData = $oldData;
 
+        foreach ($newData as $key => $value) {
+            if ($value !== null) {
+                $mergedData[$key] = $value;
+            }
+        }
+
+        return $mergedData;
+    }
     public function startAddingPatientTask(Request $request, $oldData)
     {
         // Ensure the request contains 'text'
@@ -185,7 +196,7 @@ class PatientService
                 $extractedData = json_decode($responseData['extracted_data'], true);
                 if ($oldData != null) {
                     $oldData = json_decode($oldData, true);
-                    $extractedData = array_merge($extractedData, $oldData);
+                    $extractedData = $this->customMerge($extractedData, $oldData);
                 }
                 return response()->json([
                     'extractedData' => $extractedData,
