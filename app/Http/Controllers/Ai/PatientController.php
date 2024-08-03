@@ -23,6 +23,8 @@ class PatientController extends Controller
         // Ensure the request contains 'text'
         $validated = $request->validate([
             'text' => 'required|string',
+            'office_id' => 'required|integer|exists:offices,id',
+
         ]);
 
         // Define the endpoint URL
