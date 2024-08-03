@@ -187,6 +187,10 @@ class PatientService
                     $oldData = json_decode($oldData, true);
                     $extractedData = array_merge($oldData, $extractedData);
                 }
+                return response()->json([
+                    'extractedData' => $extractedData,
+                    'oldData' => $oldData,
+                ]);
                 // Validate the required non-null keys
                 $requiredKeys = ["first_name", "last_name", "gender", "phone"];
                 $validationResult = ValidationHelper::validateNonNullKeys($extractedData, $requiredKeys);
