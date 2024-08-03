@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('temporary_tasks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->json('data')->nullable();
-            $table->json('task_type')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('set null');
+            $table->longText('data')->nullable();
+            $table->smallInteger('task_type')->nullable();
             $table->timestamps();
         });
     }
