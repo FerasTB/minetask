@@ -34,7 +34,7 @@ class EmployeeInOfficeResource extends JsonResource
         $existingToken = $user->tokens()->first();
         if ($existingToken) {
             // If the existing token is still valid, return it
-            return $existingToken->plainTextToken;
+            return $existingToken;
         }
 
         // If no valid token exists, create a new one
