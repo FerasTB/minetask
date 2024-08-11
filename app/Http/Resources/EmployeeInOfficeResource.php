@@ -6,6 +6,7 @@ use App\Enums\SubRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeInOfficeResource extends JsonResource
 {
@@ -30,14 +31,25 @@ class EmployeeInOfficeResource extends JsonResource
 
     private function getOrCreateToken(User $user)
     {
-        // Check if the user already has a valid token for this app
-        $existingToken = $user->tokens()->first();
-        if ($existingToken) {
-            // If the existing token is still valid, return it
-            return $existingToken;
-        }
+        // Generate a cache key based on the user's ID
+        $cacheKey = 'user_token_' . $user->id;
 
-        // If no valid token exists, create a new one
-        return $user->createToken("medcare_app")->plainTextToken;
+        // Check if the token exists in the cache
+        $cachedToken = Cache::get($cacheKey);
+
+        if ($cachedToken) {
+            // Return the cached token
+            return response()->json([
+                'token' => $cachedToken,
+                'message' => 'Cached token returned.',
+            ]);
+        } else {
+            // Create a new token for the user
+            $newToken = $user->createToken('medcare_app')->plainTextToken;
+
+            // Store the new token in the cache for 24 hours
+            Cache::put($cacheKey, $newToken, now()->addHours(24));
+            return $newToken;
+        }
     }
 }
