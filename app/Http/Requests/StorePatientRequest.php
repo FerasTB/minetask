@@ -30,6 +30,8 @@ class StorePatientRequest extends FormRequest
             'marital' => ['nullable', Rule::in(MaritalStatus::getKeys())],
             'mother_name' => 'string|nullable',
             'last_name' => 'string|required',
+            'country' => 'string|nullable',
+            'numberPrefix' => 'string|nullable',
             'phone' => 'required_if:is_child,false|integer',
             'email' => 'email|nullable',
             'birth_date' => 'date|nullable',

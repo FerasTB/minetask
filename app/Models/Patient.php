@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ReportType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Patient extends Model
@@ -23,6 +24,11 @@ class Patient extends Model
     public function users(): MorphToMany
     {
         return $this->morphToMany(user::class, 'roleable');
+    }
+
+    public function info(): HasOne
+    {
+        return $this->hasOne(UserInfo::class, 'patient_id');
     }
 
     public function doctor()

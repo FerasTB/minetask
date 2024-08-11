@@ -22,6 +22,11 @@ class UserInfo extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
+
     public function allLanguage()
     {
         return $this->morphToMany(Language::class, 'languageable', 'model_has_languages', 'languageable_id');
