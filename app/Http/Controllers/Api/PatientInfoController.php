@@ -80,7 +80,7 @@ class PatientInfoController extends Controller
             return response()->json($patientInfo);
         } elseif (auth()->user()->role == Role::Doctor) {
             $patient = Patient::where('phone', $request->phone)->first();
-            return $patient;
+            // return $patient;
             $office = Office::findOrFail($request->office_id);
             $ownerUser = User::find($office->owner->user_id);
             $ownerDoctor = $ownerUser->doctor;
