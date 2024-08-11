@@ -30,7 +30,15 @@ class EmployeeInOfficeResource extends JsonResource
 
     private function getOrCreateToken(User $user)
     {
-        // Logic to check for existing token or create a new one
+        // Check if the user already has a valid token for this app
+        $existingToken = $user->tokens()->where('name', 'medcare_app')->first();
+
+        if ($existingToken) {
+            // If the existing token is still valid, return it
+            return $existingToken->plainTextToken;
+        }
+
+        // If no valid token exists, create a new one
         return $user->createToken("medcare_app")->plainTextToken;
     }
 }
