@@ -69,7 +69,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'image' => $originalPatient->doctorImage != null ?
                         DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                         : "no image",
-                    'medical_info' => MedicalInformationResource::collection($patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id)),
+                    'medical_info' => new MedicalInformationResource($this->patient->allMedicalInformation->where('doctor_id', auth()->user()->doctor->id)),
                 ];
             }
         }
