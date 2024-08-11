@@ -39,10 +39,7 @@ class EmployeeInOfficeResource extends JsonResource
 
         if ($cachedToken) {
             // Return the cached token
-            return response()->json([
-                'token' => $cachedToken,
-                'message' => 'Cached token returned.',
-            ]);
+            return $cachedToken;
         } else {
             // Create a new token for the user
             $newToken = $user->createToken('medcare_app')->plainTextToken;
