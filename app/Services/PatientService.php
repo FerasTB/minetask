@@ -198,10 +198,7 @@ class PatientService
                     $oldData = json_decode($oldData, true);
                     $extractedData = $this->customMerge($extractedData, $oldData);
                 }
-                // return response()->json([
-                //     'extractedData' => $extractedData,
-                //     'oldData' => $oldData,
-                // ]);
+
                 // Validate the required non-null keys
                 $requiredKeys = ["first_name", "last_name", "gender", "phone"];
                 $validationResult = ValidationHelper::validateNonNullKeys($extractedData, $requiredKeys);
@@ -249,5 +246,125 @@ class PatientService
                 'task_id' => $task->id
             ], $e->getResponse() ? $e->getResponse()->getStatusCode() : 500);
         }
+    }
+
+    public function store(Request $request)
+    {
+
+        // Ensure the request contains 'text'
+        $validated = $request->validate([
+            'text' => 'required|string',
+            'office_id' => 'required|integer|exists:offices,id',
+
+        ]);
+
+        // Define the endpoint URL
+        $url = 'https://abbc-34-125-41-4.ngrok-free.app';
+
+        // Create a Guzzle HTTP client
+        $client = new Client();
+
+        try {
+            // Make the POST request to the Flask endpoint
+            $response = $client->post($url . "/extract", [
+                'json' => [
+                    'text' => $validated['text'],
+                    'office_id' => 'required|integer|exists:offices,id',
+                ],
+            ]);
+
+            // Parse the response
+            $responseData = json_decode($response->getBody()->getContents(), true);
+
+            if (isset($responseData['extracted_data'])) {
+                $extractedData = json_decode($responseData['extracted_data'], true);
+                if ($oldData != null) {
+                    $oldData = json_decode($oldData, true);
+                    $extractedData = $this->customMerge($extractedData, $oldData);
+                }
+
+                // Validate the required non-null keys
+                $requiredKeys = ["first_name", "last_name", "gender", "phone"];
+                $validationResult = ValidationHelper::validateNonNullKeys($extractedData, $requiredKeys);
+
+                if (!$validationResult['success']) {
+                    // Save the task data
+                    $task = TemporaryTask::create([
+                        'user_id' => auth()->id(),
+                        'data' => json_encode($extractedData),
+                        'task_type' => AiTaskType::AddingPatient,
+                    ]);
+
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $validationResult['message'],
+                        'task_id' => $task->id
+                    ], 400);
+                }
+
+                // Get the doctor ID from the authenticated user
+                $doctorId = auth()->user()->doctor->id;
+                // Use the patient service to create a new patient
+                $patientResponse = $this->createPatient($extractedData, $doctorId, $validated['office_id']);
+
+                return $patientResponse;
+            } else {
+                // Return an error if extracted_data is not present
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No extracted data found'
+                ], 400);
+            }
+        } catch (RequestException $e) {
+            // Handle errors
+            $responseBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null;
+            $errorMessage = $responseBody ? json_decode($responseBody, true)['error'] ?? 'An error occurred while processing the request' : 'An error occurred while processing the request';
+            $extractedData = $responseBody ? json_decode($responseBody, true)['extracted_data'] ?? 'An error occurred while processing the request' : 'An error occurred while processing the request';
+            $task = auth()->user()->temporaryTasks()->create([
+                'data' => $extractedData,
+                'task_type' => AiTaskType::AddingPatient,
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $errorMessage,
+                'task_id' => $task->id
+            ], $e->getResponse() ? $e->getResponse()->getStatusCode() : 500);
+        }
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (!$request->doctor_id) {
+            $doctor = auth()->user()->doctor;
+            $fields['doctor_id'] = $doctor->id;
+        } else {
+            $doctor = Doctor::find($request->doctor_id);
+        }
+        $this->authorize('createForDoctor', [Appointment::class, $office, $doctor]);
+        if ($request->patientCase_id) {
+            $patientCase = PatientCase::findOrFail($request->patientCase_id);
+            $this->authorize('update', $patientCase);
+        }
+        if ($request->office_room_id) {
+            $room = OfficeRoom::findOrFail($request->office_room_id);
+            abort_unless($room->office_id == $office->id, 403);
+        }
+        $appointment = $doctor->appointments()->create($fields);
+        $appointment = Appointment::find($appointment->id);
+        $appointment->load(
+            'patient',
+            'patient.doctorImage',
+            'doctor',
+            'office',
+            'room',
+            'case',
+            'case.case',
+            'case.teethRecords',
+            'record',
+            'record.diagnosis',
+            'record.diagnosis.drug',
+            'record.operations',
+            'record.diagnosis.teeth',
+            'record.operations.teeth',
+        );
+        return new AppointmentResource($appointment);
     }
 }

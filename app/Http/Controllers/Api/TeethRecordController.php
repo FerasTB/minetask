@@ -12,6 +12,7 @@ use App\Http\Requests\StoreAppointmentFirstStep;
 use App\Http\Requests\StoreAppointmentNewFirstStep;
 use App\Http\Requests\StoreTeethRecordRequest;
 use App\Http\Requests\UpdateAfterTreatmentRequest;
+use App\Http\Requests\UpdateRecordOrDiagnosisRequest;
 use App\Http\Resources\AppointmentFirstStepResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\OperationResource;
@@ -213,19 +214,12 @@ class TeethRecordController extends Controller
                 }
             }
         }
-        // $diagnosis = Diagnosis::find($diagnosis->id);
         foreach ($fields['diagnosis_teeth'] as $diagnosis_tooth) {
             $tooth = $diagnosis->teeth()->create(['number_of_tooth' => $diagnosis_tooth]);
         }
         $cases = $doctor->PatientCases()->where('patient_id', $patient->id)
             ->with(['case', 'teethRecords', 'teethRecords.operations', 'teethRecords.diagnosis', 'teethRecords.operations.teeth', 'teethRecords.diagnosis.teeth'])->get();
         return PatientCaseResource::collection($cases);
-        // return response()->json([
-        //     'patientCase_id' => $patientCase->id,
-        //     'closable' => $case->case_name != Doctor::DefaultCase,
-        //     'record_id' => $record->id,
-        //     'diagnosis_id' => $record->diagnosis->id,
-        // ]);
     }
 
     public function firstStep(StoreAppointmentNewFirstStep $request)
@@ -268,5 +262,39 @@ class TeethRecordController extends Controller
 
         // Return the invoice as a JSON response
         return new InvoiceResource($invoice);
+    }
+
+    public function editRecordOrDiagnosis(UpdateRecordOrDiagnosisRequest $request, TeethRecord $record)
+    {
+        // Retrieve the doctor ID from the authenticated user
+        $doctorId = auth()->user()->doctor->id;
+
+        // Ensure the office_id matches the request
+        if ($request->input('office_id') != $record->PatientCase->case->office_id) {
+            return response()->json(['message' => 'Unauthorized office access.'], 403);
+        }
+
+        // Ensure the doctor_id matches the authenticated doctor
+        if ($doctorId != $record->PatientCase->case->doctor_id) {
+            return response()->json(['message' => 'Unauthorized doctor access.'], 403);
+        }
+
+        // Update the record description if provided
+        if ($request->has('record_description')) {
+            $record->description = $request->input('record_description');
+            $record->save();
+        }
+
+        // Update the diagnosis description if provided
+        if ($request->has('diagnosis_description') && $record->diagnosis) {
+            $record->diagnosis->description = $request->input('diagnosis_description');
+            $record->diagnosis->save();
+        }
+
+        return response()->json([
+            'message' => 'Record and/or Diagnosis updated successfully.',
+            'record' => $record,
+            'diagnosis' => $record->diagnosis
+        ]);
     }
 }
