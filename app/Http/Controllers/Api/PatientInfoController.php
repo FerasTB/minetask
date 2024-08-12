@@ -54,18 +54,17 @@ class PatientInfoController extends Controller
         try {
             $fields = $request->validated();
 
-            if ($request->has('numberPrefix')) {
+            if (!$request->has('numberPrefix')) {
                 $fields['numberPrefix'] = '+963';
             }
 
-            if ($request->has('country')) {
+            if (!$request->has('country')) {
                 $fields['country'] = 'Syria';
             }
 
             if ($request->marital) {
                 $fields['marital'] = MaritalStatus::getValue($request->marital);
             }
-
             // Check if the patient is a child
             $isChild = $request->has('is_child') && $request->is_child == true;
 
@@ -86,8 +85,8 @@ class PatientInfoController extends Controller
 
             if (auth()->user()->role == Role::Patient) {
                 $patient = Patient::whereHas('info', function ($query) use ($fields) {
-                    $query->where('phone_prefix', $fields['numberPrefix'])
-                        ->where('phone', $fields['country']);
+                    $query->where('numberPrefix', $fields['numberPrefix'])
+                        ->where('phone', $fields['phone']);
                 })->first();
 
                 if ($patient || auth()->user()->patient) {
@@ -99,7 +98,7 @@ class PatientInfoController extends Controller
 
                 // Create or update the user info with phone prefix and country
                 $patientInfo->info()->create([
-                    'phone_prefix' => $fields['numberPrefix'],
+                    'numberPrefix' => $fields['numberPrefix'],
                     'country' => $fields['country'],
                 ]);
 
@@ -112,8 +111,8 @@ class PatientInfoController extends Controller
                 return response()->json($patientInfo);
             } elseif (auth()->user()->role == Role::Doctor) {
                 $patient = Patient::whereHas('info', function ($query) use ($fields) {
-                    $query->where('phone_prefix', $fields['numberPrefix'])
-                        ->where('phone', $fields['country']);
+                    $query->where('numberPrefix', $fields['numberPrefix'])
+                        ->where('phone', $fields['phone']);
                 })->first();
 
                 $office = Office::findOrFail($request->office_id);
@@ -153,7 +152,7 @@ class PatientInfoController extends Controller
 
                         // Create UserInfo for the new patient
                         $patientInfo->info()->create([
-                            'phone_prefix' => $fields['numberPrefix'],
+                            'numberPrefix' => $fields['numberPrefix'],
                             'country' => $fields['country'],
                         ]);
 
@@ -215,7 +214,7 @@ class PatientInfoController extends Controller
                         $patientInfo = $doctor->patients()->create($fields);
 
                         $patientInfo->info()->create([
-                            'phone_prefix' => $fields['numberPrefix'],
+                            'numberPrefix' => $fields['numberPrefix'],
                             'country' => $fields['country'],
                         ]);
 
