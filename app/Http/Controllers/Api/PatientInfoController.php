@@ -327,6 +327,13 @@ class PatientInfoController extends Controller
         if ($request->marital) {
             $fields['marital'] = MaritalStatus::getValue($request->marital);
         }
+        if (!$request->has('numberPrefix')) {
+            $fields['numberPrefix'] = '+963';
+        }
+
+        if (!$request->has('country')) {
+            $fields['country'] = 'Syria';
+        }
         $patient = Patient::where('phone', $request->phone)->first();
         if ($patient || auth()->user()->patient) {
             return response()->noContent();
@@ -334,6 +341,11 @@ class PatientInfoController extends Controller
         $patientInfo = auth()->user()->patient()->create($fields);
         $patientTeethReport = $patientInfo->report()->create([
             'report_type' => ReportType::TeethReport,
+        ]);
+        // Create or update the user info with phone prefix and country
+        $patientInfo->info()->create([
+            'numberPrefix' => $fields['numberPrefix'],
+            'country' => $fields['country'],
         ]);
         return response()->json($patientInfo);
     }
