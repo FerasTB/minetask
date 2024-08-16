@@ -109,6 +109,6 @@ class Patient extends Model
 
     public function roles(): MorphMany
     {
-        return $this->morphMany(Role::class, 'roleable');
+        return $this->morphMany(HasRole::class, 'roleable');
     }
 }
