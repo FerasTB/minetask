@@ -16,16 +16,17 @@ class PatientInfoForDoctorResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
-        $role = auth()->user()->roles->where('roleable_id', $this->id)->where('roleable_type', 'App\Models\Patient')->first();
+        $role = $this->roles->firstWhere('roleable_type', 'App\Models\Patient');
+
         if ($role) {
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
                 return [
                     'id' => $this->id,
                     'first_name' => $this->first_name,
                     'last_name' => $this->last_name,
-                    'phone' => 0 . $this->phone,
+                    'phone' => '0' . $this->phone,
                     'email' => $this->email,
                     'birth_date' => $this->birth_date,
                     'gender' => $this->gender,
@@ -33,13 +34,14 @@ class PatientInfoForDoctorResource extends JsonResource
                     'status' => 'Approve'
                 ];
             }
+
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-                $patient = $this->temporaries->where('patient_id', $this->id)->where('doctor_id', auth()->user()->doctor->id)->first();
+                $patient = $this->temporaries->first();
                 return [
                     'id' => $this->id,
                     'first_name' => $patient->first_name,
                     'last_name' => $patient->last_name,
-                    'phone' => 0 . $this->phone,
+                    'phone' => '0' . $this->phone,
                     'email' => $patient->email,
                     'birth_date' => $patient->birth_date,
                     'note' => $patient->note,
@@ -49,6 +51,6 @@ class PatientInfoForDoctorResource extends JsonResource
                 ];
             }
         }
-        return [];
+        return null;
     }
 }

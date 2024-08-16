@@ -6,6 +6,7 @@ use App\Enums\ReportType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Patient extends Model
@@ -104,5 +105,10 @@ class Patient extends Model
     public function children()
     {
         return $this->hasMany(Patient::class, 'parent_id');
+    }
+
+    public function roles(): MorphMany
+    {
+        return $this->morphMany(Role::class, 'roleable');
     }
 }

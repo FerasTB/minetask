@@ -21,99 +21,148 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     if ($request->doctor) {
+    //         $office = Office::findOrFail($request->office);
+    //         $this->authorize('viewAny', [Appointment::class, $office]);
+    //         if ($request->room) {
+    //             $room = OfficeRoom::findOrFail($request->room);
+    //             $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
+    //             $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor, 'office_room_id' => $room->id])
+    //                 ->with([
+    //                     'patient',
+    //                     'patient.doctorImage',
+    //                     'doctor',
+    //                     'office',
+    //                     'case',
+    //                     'room',
+    //                     'case.case',
+    //                     // 'case.teethRecords',
+    //                     'record',
+    //                     'record.diagnosis',
+    //                     'record.diagnosis.drug',
+    //                     'record.operations',
+    //                     'record.diagnosis.teeth',
+    //                     'record.operations.teeth',
+    //                 ])
+    //                 ->get();
+    //             return AppointmentResource::collection($appointments);
+    //         }
+    //         $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])
+    //             ->with([
+    //                 'patient',
+    //                 'patient.doctorImage',
+    //                 'doctor',
+    //                 'office',
+    //                 'case',
+    //                 'room',
+    //                 'case.case',
+    //                 'case.teethRecords',
+    //                 'record',
+    //                 'record.diagnosis',
+    //                 'record.diagnosis.drug',
+    //                 'record.operations',
+    //                 'record.diagnosis.teeth',
+    //                 'record.operations.teeth',
+    //             ])
+    //             ->get();
+    //         return AppointmentResource::collection($appointments);
+    //     }
+    //     $office = Office::findOrFail($request->office);
+    //     if ($request->room) {
+    //         $room = OfficeRoom::findOrFail($request->room);
+    //         $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
+    //         $appointments = Appointment::where(['office_id' => $request->office, 'office_room_id' => $room->id])
+    //             ->with([
+    //                 'patient',
+    //                 'patient.doctorImage',
+    //                 'doctor',
+    //                 'office',
+    //                 'case',
+    //                 'room',
+    //                 'case.case',
+    //                 // 'case.teethRecords',
+    //                 'record',
+    //                 'record.diagnosis',
+    //                 'record.diagnosis.drug',
+    //                 'record.operations',
+    //                 'record.diagnosis.teeth',
+    //                 'record.operations.teeth',
+    //             ])
+    //             ->get();
+    //         return AppointmentResource::collection($appointments);
+    //     }
+    //     $this->authorize('viewAny', [Appointment::class, $office]);
+    //     $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])
+    //         ->with([
+    //             'patient',
+    //             'patient.doctorImage',
+    //             'doctor',
+    //             'office',
+    //             'case',
+    //             'room',
+    //             'case.case',
+    //             // 'case.teethRecords',
+    //             'record',
+    //             'record.diagnosis',
+    //             'record.diagnosis.drug',
+    //             'record.operations',
+    //             'record.diagnosis.teeth',
+    //             'record.operations.teeth',
+    //         ])
+    //         ->get();
+    //     return AppointmentResource::collection($appointments);
+    // }
     public function index(Request $request)
     {
-        if ($request->doctor) {
-            $office = Office::findOrFail($request->office);
-            $this->authorize('viewAny', [Appointment::class, $office]);
-            if ($request->room) {
-                $room = OfficeRoom::findOrFail($request->room);
-                $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
-                $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor, 'office_room_id' => $room->id])
-                    ->with([
-                        'patient',
-                        'patient.doctorImage',
-                        'doctor',
-                        'office',
-                        'case',
-                        'room',
-                        'case.case',
-                        // 'case.teethRecords',
-                        'record',
-                        'record.diagnosis',
-                        'record.diagnosis.drug',
-                        'record.operations',
-                        'record.diagnosis.teeth',
-                        'record.operations.teeth',
-                    ])
-                    ->get();
-                return AppointmentResource::collection($appointments);
-            }
-            $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => $request->doctor])
-                ->with([
-                    'patient',
-                    'patient.doctorImage',
-                    'doctor',
-                    'office',
-                    'case',
-                    'room',
-                    'case.case',
-                    'case.teethRecords',
-                    'record',
-                    'record.diagnosis',
-                    'record.diagnosis.drug',
-                    'record.operations',
-                    'record.diagnosis.teeth',
-                    'record.operations.teeth',
-                ])
-                ->get();
-            return AppointmentResource::collection($appointments);
-        }
+        // Authorize first before any querying
         $office = Office::findOrFail($request->office);
-        if ($request->room) {
-            $room = OfficeRoom::findOrFail($request->room);
-            $this->authorize('viewAnyWithRoom', [Appointment::class, $office, $room]);
-            $appointments = Appointment::where(['office_id' => $request->office, 'office_room_id' => $room->id])
-                ->with([
-                    'patient',
-                    'patient.doctorImage',
-                    'doctor',
-                    'office',
-                    'case',
-                    'room',
-                    'case.case',
-                    // 'case.teethRecords',
-                    'record',
-                    'record.diagnosis',
-                    'record.diagnosis.drug',
-                    'record.operations',
-                    'record.diagnosis.teeth',
-                    'record.operations.teeth',
-                ])
-                ->get();
-            return AppointmentResource::collection($appointments);
-        }
         $this->authorize('viewAny', [Appointment::class, $office]);
-        $appointments = Appointment::where(['office_id' => $request->office, 'doctor_id' => auth()->user()->doctor->id])
+
+        // Determine if a specific room is requested
+        $roomCondition = $request->room ? ['office_room_id' => $request->room] : [];
+        $doctorCondition = $request->doctor ? ['doctor_id' => $request->doctor] : ['doctor_id' => auth()->user()->doctor->id];
+
+        // Build the base query with eager loading
+        $appointmentsQuery = Appointment::where(array_merge(
+            ['office_id' => $request->office],
+            $doctorCondition,
+            $roomCondition
+        ))
             ->with([
-                'patient',
-                'patient.doctorImage',
+                'patient' => function ($query) {
+                    $query->with(['doctorImage', 'roles' => function ($query) {
+                        $query->where('roleable_type', 'App\Models\Patient')
+                            ->where('user_id', auth()->id()); // Specific user ID
+                    }, 'temporaries' => function ($query) {
+                        $query->where('doctor_id', auth()->user()->doctor->id);
+                    }]);
+                },
                 'doctor',
                 'office',
-                'case',
+                'case' => function ($query) {
+                    $query->with('case', 'teethRecords');
+                },
                 'room',
-                'case.case',
-                // 'case.teethRecords',
-                'record',
-                'record.diagnosis',
-                'record.diagnosis.drug',
-                'record.operations',
-                'record.diagnosis.teeth',
-                'record.operations.teeth',
-            ])
-            ->get();
+                'record' => function ($query) {
+                    $query->with([
+                        'diagnosis' => function ($query) {
+                            $query->with('drug', 'teeth');
+                        },
+                        'operations' => function ($query) {
+                            $query->with('teeth');
+                        }
+                    ]);
+                }
+            ]);
+
+        // Fetch the appointments
+        $appointments = $appointmentsQuery->get();
+
         return AppointmentResource::collection($appointments);
     }
+
 
     public function indexForPatient(Request $request)
     {
