@@ -64,4 +64,14 @@ class MedicalServiceController extends Controller
         $services = $office->services()->with('COA')->get();
         return MedicalServiceResource::collection($services);
     }
+
+    public function doctorService(Office $office)
+    {
+        abort_unless(auth()->user()->doctor, 403);
+        $services = $office->services()
+            ->where('doctor_id', auth()->user()->doctor->id)
+            ->with('COA')
+            ->get();
+        return MedicalServiceResource::collection($services);
+    }
 }

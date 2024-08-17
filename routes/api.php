@@ -82,6 +82,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('diagnosis/{diagnosis}/add_tooth', [App\Http\Controllers\Api\DiagnosisController::class, 'addTooth']);
     Route::apiResource('drug', App\Http\Controllers\Api\DrugController::class);
     Route::get('service/office/{office}', [App\Http\Controllers\Api\MedicalServiceController::class, 'officeService']);
+    Route::get('service/office/{office}/doctor', [App\Http\Controllers\Api\MedicalServiceController::class, 'doctorService']);
     Route::get('availability/office/{office}', [App\Http\Controllers\Api\AvailabilityController::class, 'officeAvailability']);
     Route::get('availability/doctor/{doctor}', [App\Http\Controllers\Api\AvailabilityController::class, 'doctorAvailability']);
     Route::post('office/{office}/add_doctor', [App\Http\Controllers\Api\OfficeController::class, 'AddDoctor']);
