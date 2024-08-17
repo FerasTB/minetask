@@ -29,7 +29,7 @@ class AppointmentController extends Controller
 
         // Determine if a specific room is requested
         $roomCondition = $request->room ? ['office_room_id' => $request->room] : [];
-        $doctorCondition = $request->doctor ? ['doctor_id' => $request->doctor] : ['doctor_id' => auth()->user()->doctor->id];
+        $doctorCondition = $request->doctor ? ['doctor_id' => $request->doctor] : [];
 
         // Build the base query with eager loading
         $appointmentsQuery = Appointment::where(array_merge(

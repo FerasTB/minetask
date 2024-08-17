@@ -123,7 +123,7 @@ class PatientInfoController extends Controller
                     if ($patient) {
                         $fields['doctor_id'] = $ownerDoctor->id;
                         $oldTemporary = $patient->temporaries()->where('doctor_id', $fields['doctor_id'])->first();
-                        abort_unless($oldTemporary == null, 403, 'the user found');
+                        abort_unless($oldTemporary == null, 403, 'the user is already exist');
                         $temporary = $patient->temporaries()->create($fields);
 
                         $role = HasRole::create([
@@ -188,7 +188,7 @@ class PatientInfoController extends Controller
                     if ($patient) {
                         $fields['doctor_id'] = auth()->user()->doctor->id;
                         $oldTemporary = $patient->temporaries()->where('doctor_id', $fields['doctor_id'])->first();
-                        abort_unless($oldTemporary == null, 403, 'the user found');
+                        abort_unless($oldTemporary == null, 403, 'the user is already exist');
                         $temporary = $patient->temporaries()->create($fields);
 
                         $role = HasRole::create([
