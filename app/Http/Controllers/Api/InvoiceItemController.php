@@ -77,13 +77,15 @@ class InvoiceItemController extends Controller
         if ($office->type == OfficeType::Combined) {
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Receivable
+                'doctor_id' => null,
+                'sub_type' => COASubType::Receivable
             ])->first();
         } else {
             $doctor = $invoice->doctor;
             $receivable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Receivable
+                'doctor_id' => $doctor->id,
+                'sub_type' => COASubType::Receivable
             ])->first();
         }
         $doubleEntryFields['COA_id'] = $receivable->id;
@@ -134,6 +136,30 @@ class InvoiceItemController extends Controller
         return response()->json(['invoice' => $invoice, 'invoiceItem' => $invoiceItem], 201);
     }
 
+    public function removeBindingCharge(Request $request)
+    {
+        $fields = $request->validate([
+            'item_id' => 'required|exists:invoice_items,id',
+        ]);
+
+        // Find the invoice item
+        $invoiceItem = InvoiceItem::where('id', $fields['item_id'])->first();
+        $invoice = $invoiceItem->invoice;
+        // If the invoice item doesn't exist, return an error
+        if (!$invoiceItem) {
+            return response()->json(['error' => 'Invoice item not found.'], 404);
+        }
+
+        // Remove the invoice item from the invoice
+        $invoiceItem->delete();
+
+        // Optionally, you can update the invoice's total price here
+        $invoice->total_price -= $invoiceItem->total_price;
+        $invoice->save();
+
+        return response()->json(['message' => 'Invoice item removed successfully.'], 200);
+    }
+
     public function storeSupplierInvoiceItem(StoreSupplierInvoiceItemRequest $request, Invoice $invoice)
     {
         $fields = $request->validated();
@@ -142,13 +168,15 @@ class InvoiceItemController extends Controller
         if ($office->type == OfficeType::Combined) {
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Payable
+                'doctor_id' => null,
+                'sub_type' => COASubType::Payable
             ])->first();
         } else {
             $doctor = auth()->user()->doctor;
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+                'doctor_id' => $doctor->id,
+                'sub_type' => COASubType::Payable
             ])->first();
         }
         $doubleEntryFields['invoice_item_id'] = $item->id;
@@ -167,13 +195,15 @@ class InvoiceItemController extends Controller
         if ($office->type == OfficeType::Combined) {
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Payable
+                'doctor_id' => null,
+                'sub_type' => COASubType::Payable
             ])->first();
         } else {
             $doctor = auth()->user()->doctor;
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+                'doctor_id' => $doctor->id,
+                'sub_type' => COASubType::Payable
             ])->first();
         }
         $expensesCoa = COA::findOrFail($request->item_coa);

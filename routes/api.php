@@ -129,6 +129,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);
     Route::post('invoice/patient/{patient}/item-binding', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoiceWithItems']);
     Route::post('invoice/patient/{record}/binding', [App\Http\Controllers\Api\InvoiceItemController::class, 'addBindingCharge']);
+    Route::delete('invoice/patient/binding/remove', [App\Http\Controllers\Api\InvoiceItemController::class, 'removeBindingCharge']);
     Route::get('invoice/patient/{record}/binding', [App\Http\Controllers\Api\TeethRecordController::class, 'getInvoiceByRecord']);
     Route::post('invoice/lap/accept/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'acceptDentalLabInvoice']);
     Route::get('invoice/lap/reject/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'rejectDentalLabInvoice']);
