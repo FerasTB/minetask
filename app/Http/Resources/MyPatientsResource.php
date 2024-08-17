@@ -41,7 +41,7 @@ class MyPatientsResource extends JsonResource
             ];
         }
         if ($this->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-            $patient = $this->roleable->where('doctor_id', auth()->user()->doctor->id)->first();
+            $patient = $this->roleable->temporaries()->where('doctor_id', auth()->user()->doctor->id)->first();
             $originalPatient = $this->roleable;
             return [
                 'id' => $originalPatient->id,
