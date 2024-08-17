@@ -252,7 +252,7 @@ class PatientInfoController extends Controller
             }
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Something went wrong, please try again later.'], 500);
+            return response()->json(['error' => $e->getMessage() ?? 'Something went wrong, please try again later.'], 500);
         }
     }
     /**
