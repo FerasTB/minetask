@@ -91,7 +91,8 @@ class InvoiceController extends Controller
             $owner = User::findOrFail($office->owner->user_id);
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                'office_id' => $office->id,
+                'doctor_id' => $owner->doctor->id
             ])->first();
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             if (!$request->has('date_of_invoice')) {
@@ -104,7 +105,8 @@ class InvoiceController extends Controller
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                'office_id' => $office->id,
+                'doctor_id' => $request->doctor_id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
@@ -395,6 +397,8 @@ class InvoiceController extends Controller
             // Process binding charges
             if ($request->has('binding_charges')) {
                 foreach ($request->binding_charges as $bindingChargeId) {
+                    $checkBinding = InvoiceItem::findOrFail($bindingChargeId);
+                    abort_if($checkBinding->coa->doctor->id != $request->doctor_id, 403, 'the coa have conflict');
                     $this->processBindingCharge($bindingChargeId, $invoice, $request->paid_done);
                 }
             }
@@ -402,6 +406,8 @@ class InvoiceController extends Controller
             // Process invoice items
             if ($request->has('items')) {
                 foreach ($request->items as $itemData) {
+                    $checkCOA = COA::findOrFail($itemData['coa_id']);
+                    abort_if($checkCOA->doctor_id != $request->doctor_id, 403, 'the coa have conflict');
                     $this->processInvoiceItem($itemData, $invoice, $request->paid_done);
                 }
             }
@@ -591,7 +597,8 @@ class InvoiceController extends Controller
                 $owner = User::findOrFail($office->owner->user_id);
                 $profile = AccountingProfile::where([
                     'patient_id' => $patient->id,
-                    'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                    'office_id' => $office->id,
+                    'doctor_id' => $owner->doctor->id
                 ])->first();
                 if (!$request->has('date_of_invoice')) {
                     $fields['date_of_invoice'] = now();
@@ -603,7 +610,8 @@ class InvoiceController extends Controller
             } else {
                 $profile = AccountingProfile::where([
                     'patient_id' => $patient->id,
-                    'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                    'office_id' => $office->id,
+                    'doctor_id' => $request->doctor_id
                 ])->first();
                 $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
                 $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
@@ -723,7 +731,8 @@ class InvoiceController extends Controller
             $owner = User::findOrFail($office->owner->user_id);
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                'office_id' => $office->id,
+                'doctor_id' => $owner->doctor->id
             ])->first();
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
             if (!$request->has('date_of_invoice')) {
@@ -737,7 +746,8 @@ class InvoiceController extends Controller
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $doctor->id
+                'office_id' => $office->id,
+                'doctor_id' => $doctor->id
             ])->first();
             $fields['running_balance'] = $this->patientBalance($profile->id, $fields['total_price']);
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
@@ -770,7 +780,8 @@ class InvoiceController extends Controller
         $expensesCoa = COA::findOrFail($request->coa);
         $payable = COA::where([
             'office_id' => $invoice->office->id,
-            'doctor_id' => $invoice->doctor->id, 'sub_type' => COASubType::Payable
+            'doctor_id' => $invoice->doctor->id,
+            'sub_type' => COASubType::Payable
         ])->first();
         abort_unless($payable != null && $expensesCoa != null, 403);
         abort_unless($expensesCoa->doctor->id != auth()->user()->decoct->id, 403);

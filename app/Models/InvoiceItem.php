@@ -16,6 +16,11 @@ class InvoiceItem extends Model
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
 
+    public function coa()
+    {
+        return $this->belongsTo(COA::class, 'coa_id');
+    }
+
     public function invoiceReceipt()
     {
         return $this->belongsTo(InvoiceReceipt::class, 'invoice_receipt_id');
