@@ -21,6 +21,7 @@ use App\Models\PatientCase;
 use App\Models\Record;
 use App\Models\TeethRecord;
 use App\Models\User;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\Constraint\Operator;
 
@@ -62,12 +63,14 @@ class OperationController extends Controller
             $owner = User::findOrFail($office->owner->user_id);
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                'office_id' => $office->id,
+                'doctor_id' => $owner->doctor->id
             ])->first();
         } else {
             $profile = AccountingProfile::where([
                 'patient_id' => $patient->id,
-                'office_id' => $office->id, 'doctor_id' => $doctor->id
+                'office_id' => $office->id,
+                'doctor_id' => $doctor->id
             ])->first();
         }
 
@@ -126,7 +129,20 @@ class OperationController extends Controller
      */
     public function destroy(Operation $operation)
     {
-        //
+        $this->authorize('update', $operation);
+        // Check if the related record's is_closed is false
+        if ($operation->record && $operation->record->is_closed === false) {
+            // Delete related teeth
+            $operation->teeth()->delete();
+
+            // Delete the operation
+            $operation->delete();
+
+            return response()->json(['message' => 'Operation and its associated teeth have been deleted.'], 200);
+        }
+
+        // If the record is closed or doesn't exist, return an error
+        return response()->json(['message' => 'Operation cannot be deleted because the record is closed or does not exist.'], 403);
     }
 
     public function RecordOperation(TeethRecord $record)
