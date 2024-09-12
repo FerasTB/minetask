@@ -130,8 +130,9 @@ class OperationController extends Controller
     public function destroy(Operation $operation)
     {
         $this->authorize('update', $operation);
+        $operation->load('record');
         // Check if the related record's is_closed is false
-        if ($operation->record && $operation->record->is_closed === false) {
+        if ($operation->record && boolval($operation->record->is_closed) == false) {
             // Delete related teeth
             $operation->teeth()->delete();
 
