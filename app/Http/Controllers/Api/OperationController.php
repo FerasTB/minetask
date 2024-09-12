@@ -120,7 +120,24 @@ class OperationController extends Controller
     {
         $this->authorize('update', $operation);
         $fields = $request->validated();
-        $operation->update($fields);
+        if ($request->has('number_of_tooth')) {
+            $tooth = $operation->teeth()->first();
+            if ($tooth) {
+                $tooth->update([
+                    'number_of_tooth' => $fields['number_of_tooth'],
+                ]);
+            } else {
+                return response()->json(['message' => 'something went wrong'], 403);
+            }
+        }
+        if ($request->has('operation_name')) {
+            $operation->operation_name = $request->input('operation_name');
+        }
+
+        if ($request->has('operation_description')) {
+            $operation->operation_description = $request->input('operation_description');
+        }
+        $operation->save();
         return new OperationResource($operation);
     }
 

@@ -23,8 +23,9 @@ class UpdateOperationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'operation_name' => 'required|string',
-            'operation_description' => 'nullable|string',
+            'operation_name' => 'nullable|string|required_without_all:operation_description,number_of_tooth',
+            'operation_description' => 'nullable|string|required_without_all:operation_name,number_of_tooth',
+            'number_of_tooth' => 'nullable|string|required_without_all:operation_name,operation_description',
         ];
     }
 }
