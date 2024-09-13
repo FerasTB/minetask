@@ -66,7 +66,7 @@ class PatientInfoController extends Controller
                 $fields['marital'] = MaritalStatus::getValue($request->marital);
             }
             // Check if the patient is a child
-            $isChild = $request->has('is_child') && $request->is_child == true;
+            $isChild = $request->has('is_child') && boolval($request->is_child) == true;
 
             // Set parent_id if it's a child
             if ($isChild) {
@@ -110,6 +110,9 @@ class PatientInfoController extends Controller
 
                 return response()->json($patientInfo);
             } elseif (auth()->user()->role == Role::Doctor) {
+                if ($isChild) {
+                    $patient = Patient::where('parent_id', $request->parent_id)->first();
+                }
                 $patient = Patient::whereHas('info', function ($query) use ($fields) {
                     $query->where('numberPrefix', $fields['numberPrefix'])
                         ->where('phone', $fields['phone']);
@@ -153,10 +156,13 @@ class PatientInfoController extends Controller
                         $patientInfo = $doctor->patients()->create($fields);
 
                         // Create UserInfo for the new patient
-                        $patientInfo->info()->create([
-                            'numberPrefix' => $fields['numberPrefix'],
-                            'country' => $fields['country'],
-                        ]);
+                        if (!$isChild) {
+                            $patientInfo->info()->create([
+                                'numberPrefix' => $fields['numberPrefix'],
+                                'country' => $fields['country'],
+                            ]);
+                        }
+
 
                         $role = $ownerUser->roles()->create([
                             'roleable_type' => 'App\Models\Patient',
@@ -216,11 +222,13 @@ class PatientInfoController extends Controller
                     } else {
                         $doctor = auth()->user()->doctor;
                         $patientInfo = $doctor->patients()->create($fields);
+                        if (!$isChild) {
+                            $patientInfo->info()->create([
+                                'numberPrefix' => $fields['numberPrefix'],
+                                'country' => $fields['country'],
+                            ]);
+                        }
 
-                        $patientInfo->info()->create([
-                            'numberPrefix' => $fields['numberPrefix'],
-                            'country' => $fields['country'],
-                        ]);
 
                         $role = auth()->user()->roles()->create([
                             'roleable_type' => 'App\Models\Patient',
