@@ -158,12 +158,10 @@ class PatientInfoController extends Controller
                         $patientInfo = $doctor->patients()->create($fields);
 
                         // Create UserInfo for the new patient
-                        if (!$isChild) {
-                            $patientInfo->info()->create([
-                                'numberPrefix' => $fields['numberPrefix'],
-                                'country' => $fields['country'],
-                            ]);
-                        }
+                        $patientInfo->info()->create([
+                            'numberPrefix' => $fields['numberPrefix'],
+                            'country' => $fields['country'],
+                        ]);
 
 
                         $role = $ownerUser->roles()->create([
@@ -224,12 +222,10 @@ class PatientInfoController extends Controller
                     } else {
                         $doctor = auth()->user()->doctor;
                         $patientInfo = $doctor->patients()->create($fields);
-                        if (!$isChild) {
-                            $patientInfo->info()->create([
-                                'numberPrefix' => $fields['numberPrefix'],
-                                'country' => $fields['country'],
-                            ]);
-                        }
+                        $patientInfo->info()->create([
+                            'numberPrefix' => $fields['numberPrefix'],
+                            'country' => $fields['country'],
+                        ]);
 
 
                         $role = auth()->user()->roles()->create([
