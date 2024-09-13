@@ -112,11 +112,13 @@ class PatientInfoController extends Controller
             } elseif (auth()->user()->role == Role::Doctor) {
                 if ($isChild) {
                     $patient = Patient::where('parent_id', $request->parent_id)->first();
+                } else {
+                    $patient = Patient::whereHas('info', function ($query) use ($fields) {
+                        $query->where('numberPrefix', $fields['numberPrefix'])
+                            ->where('phone', $fields['phone']);
+                    })->first();
                 }
-                $patient = Patient::whereHas('info', function ($query) use ($fields) {
-                    $query->where('numberPrefix', $fields['numberPrefix'])
-                        ->where('phone', $fields['phone']);
-                })->first();
+
 
                 $office = Office::findOrFail($request->office_id);
                 $ownerUser = User::find($office->owner->user_id);
