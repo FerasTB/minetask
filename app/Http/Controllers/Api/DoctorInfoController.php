@@ -28,6 +28,7 @@ use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
 use App\Models\Drug;
+use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
 use App\Models\Office;
@@ -125,9 +126,36 @@ class DoctorInfoController extends Controller
 
     public function showMyPatientAndProfile(Office $office = null)
     {
+        if (auth()->user()->current_role == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
 
-        // Ensure a valid doctor is authenticated
-        $doctor = auth()->user()->doctor;
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
@@ -146,7 +174,20 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'office.owner', 'office.owner.user', 'patient', 'patient.info', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries', 'directDoubleEntries',
+                'office',
+                'office.owner',
+                'office.owner.user',
+                'patient',
+                'patient.info',
+                'patient.doctorImage',
+                'invoices',
+                'invoices.items',
+                'receipts',
+                'invoices.receipts',
+                'invoiceReceipt',
+                'invoiceReceipt.items',
+                'doubleEntries',
+                'directDoubleEntries',
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([
@@ -176,7 +217,18 @@ class DoctorInfoController extends Controller
                 'office_id' => $office->id,
                 'type' => AccountingProfileType::PatientAccount
             ])->with([
-                'office', 'patient', 'patient.info', 'patient.doctorImage', 'invoices', 'invoices.items', 'receipts', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items', 'doubleEntries', 'directDoubleEntries',
+                'office',
+                'patient',
+                'patient.info',
+                'patient.doctorImage',
+                'invoices',
+                'invoices.items',
+                'receipts',
+                'invoices.receipts',
+                'invoiceReceipt',
+                'invoiceReceipt.items',
+                'doubleEntries',
+                'directDoubleEntries',
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([
@@ -194,7 +246,7 @@ class DoctorInfoController extends Controller
                 }
             ])->get();
             // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
-            $response['profile'] = AccountingProfileResource::collection($accountsSeparate);
+            $response['profile'] = AccountingProfileResource::collection($accountsSeparate, $user);
         }
         // Process each profile to include the default case
         foreach ($response['profile'] as $accountProfile) {

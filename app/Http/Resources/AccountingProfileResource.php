@@ -15,6 +15,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AccountingProfileResource extends JsonResource
 {
+
+    public $user;
+
+    public function __construct($resource, $user)
+    {
+        parent::__construct($resource);
+        $this->user = $user;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -54,7 +62,7 @@ class AccountingProfileResource extends JsonResource
         // ];
         return [
             'patient' => $this->office->type == OfficeType::Separate ?
-                new MyPatientSeparateThroughAccountingProfileResource($this) :
+                new MyPatientSeparateThroughAccountingProfileResource($this, $this->user) :
                 new MyPatientCombinedThroughAccountingProfileResource($this),
             'details' => [
                 'id' => $this->id,

@@ -12,6 +12,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
 {
+
+    protected $user;
+
+    public function __construct($resource, $user)
+    {
+        parent::__construct($resource);
+        $this->user = $user;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -20,7 +28,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         // $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
-        $role = auth()->user()->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
+        $role = $this->user->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
         if ($role) {
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {
                 $patient = $this->patient;
