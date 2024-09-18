@@ -56,7 +56,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
             }
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
                 // $patient = TemporaryInformation::where(['patient_id' => $role->roleable_id, 'doctor_id' => auth()->user()->doctor->id])->first();
-                $patient = $this->patient->temporaries->where('doctor_id', auth()->user()->doctor->id)->first();
+                $patient = $this->patient->temporaries->where('doctor_id', $this->doctorUser->doctor->id)->first();
                 $originalPatient = $this->patient;
                 return [
                     'id' => $originalPatient->id,
