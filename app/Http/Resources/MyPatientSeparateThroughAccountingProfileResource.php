@@ -27,9 +27,6 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'user' => $this->doctorUser->phone,
-        ];
         // $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
         $role = $this->user->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
         if ($role) {
