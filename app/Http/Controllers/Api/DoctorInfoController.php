@@ -246,7 +246,9 @@ class DoctorInfoController extends Controller
                 }
             ])->get();
             // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
-            $response['profile'] = AccountingProfileResource::collection($accountsSeparate, $user);
+            $response['profile'] = AccountingProfileResource::collection($accountsSeparate)->map(function ($accountProfile) use ($user) {
+                return new AccountingProfileResource($accountProfile, $user);
+            });
         }
         // Process each profile to include the default case
         foreach ($response['profile'] as $accountProfile) {
