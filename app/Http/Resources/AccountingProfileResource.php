@@ -16,12 +16,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class AccountingProfileResource extends JsonResource
 {
 
-    public $doctorUser;
+    protected $doctorUser;
 
-    public function __construct($resource, $user)
+    public function __construct($resource, $doctorUser)
     {
         parent::__construct($resource);
-        $this->doctorUser = $user;
+        $this->doctorUser = $doctorUser;
     }
     /**
      * Transform the resource into an array.
@@ -30,17 +30,17 @@ class AccountingProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if ($this->office->type == OfficeType::Separate) {
-            $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
-                ->where('roleable_type', 'App\Models\Patient')
-                ->where('user_id', auth()->id())->first();
-        } else {
-            $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
-                ->where('roleable_type', 'App\Models\Patient')
-                ->where('user_id', $this->office->owner->user_id)->first();
-            $ownerUser = $this->office->owner->user;
-            $ownerDoctor = $ownerUser->doctor;
-        }
+        // if ($this->office->type == OfficeType::Separate) {
+        //     $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
+        //         ->where('roleable_type', 'App\Models\Patient')
+        //         ->where('user_id', auth()->id())->first();
+        // } else {
+        //     $role = auth()->user()->roles->where('roleable_id', $this->patient_id)
+        //         ->where('roleable_type', 'App\Models\Patient')
+        //         ->where('user_id', $this->office->owner->user_id)->first();
+        //     $ownerUser = $this->office->owner->user;
+        //     $ownerDoctor = $ownerUser->doctor;
+        // }
         // return [
         //     'id' => $this->id,
         //     // 'patient' => new MyPatientsResource($role),

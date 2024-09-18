@@ -15,10 +15,10 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
 
     protected $doctorUser;
 
-    public function __construct($resource, $user)
+    public function __construct($resource, $doctorUser)
     {
         parent::__construct($resource);
-        $this->doctorUser = $user;
+        $this->doctorUser = $doctorUser;
     }
     /**
      * Transform the resource into an array.
