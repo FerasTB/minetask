@@ -13,12 +13,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
 {
 
-    protected $user;
+    protected $doctorUser;
 
     public function __construct($resource, $user)
     {
         parent::__construct($resource);
-        $this->user = $user;
+        $this->doctorUser = $user;
     }
     /**
      * Transform the resource into an array.
@@ -28,7 +28,7 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            $this->user,
+            $this->doctorUser,
         ];
         // $role = HasRole::where(['roleable_id' => $this->patient_id, 'roleable_type' => 'App\Models\Patient', 'user_id' => auth()->id()])->first();
         $role = $this->user->roles->where('roleable_id', $this->patient_id)->where('roleable_type', 'App\Models\Patient')->first();
