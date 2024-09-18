@@ -126,7 +126,7 @@ class DoctorInfoController extends Controller
 
     public function showMyPatientAndProfile(Office $office = null)
     {
-        if (auth()->user()->current_role == 'DentalDoctorTechnician') {
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
