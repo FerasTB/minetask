@@ -8,6 +8,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class InvoiceReceiptsResource extends JsonResource
 {
+    protected $user;
+
+    public function __construct($resource, $user)
+    {
+        parent::__construct($resource);
+        $this->user = $user;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -20,7 +27,7 @@ class InvoiceReceiptsResource extends JsonResource
             'note' => $this->note,
             'date_of_payment' => $this->date_of_payment,
             'total_price' => $this->total_price,
-            'account' => new AccountingProfileResource($this->whenLoaded('account')),
+            'account' => new AccountingProfileResource($this->whenLoaded('account'), $this->user),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'office' => new OfficeResource($this->whenLoaded('office')),
             'items' => InvoiceItemsResource::collection($this->whenLoaded('items')),
