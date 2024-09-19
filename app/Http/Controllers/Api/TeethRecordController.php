@@ -98,6 +98,8 @@ class TeethRecordController extends Controller
     public function storeWholeRecord(StoreAppointmentFirstStep $request)
     {
         $fields = $request->validated();
+        $patientCase = PatientCase::findOrFail($fields['patientCase']);
+
         $case = MedicalCase::find($patientCase->case->id);
         $office = $case->office;
 
@@ -135,7 +137,6 @@ class TeethRecordController extends Controller
             return response('You have to complete your info', 404);
         }
         $patient = Patient::findOrFail($request->patient_id);
-        $patientCase = PatientCase::findOrFail($fields['patientCase']);
         abort_unless($case->doctor_id == $doctor->id, 403);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
