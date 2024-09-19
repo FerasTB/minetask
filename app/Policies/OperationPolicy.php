@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Doctor;
 use App\Models\Operation;
 use App\Models\Record;
 use App\Models\TeethRecord;
@@ -24,10 +25,10 @@ class OperationPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Operation $operation): bool
+    public function view(User $user, Operation $operation, Doctor $doctor): bool
     {
         if ($user->doctor) {
-            return $operation->record->PatientCase->case->doctor->id == $user->doctor->id;
+            return $operation->record->PatientCase->case->doctor->id == $doctor->id;
         }
         return false;
     }
@@ -35,10 +36,10 @@ class OperationPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, TeethRecord $record): bool
+    public function create(User $user, TeethRecord $record, Doctor $doctor): bool
     {
         if ($user->doctor) {
-            return $record->PatientCase->case->doctor->id == $user->doctor->id;
+            return $record->PatientCase->case->doctor->id == $doctor->id;
         }
         return false;
     }
@@ -46,10 +47,10 @@ class OperationPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Operation $operation): bool
+    public function update(User $user, Operation $operation, Doctor $doctor): bool
     {
         if ($user->doctor) {
-            return $operation->record->PatientCase->case->doctor->id == $user->doctor->id;
+            return $operation->record->PatientCase->case->doctor->id == $doctor->id;
         }
         return false;
     }
