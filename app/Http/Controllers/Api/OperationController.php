@@ -14,6 +14,9 @@ use App\Http\Resources\OperationResource;
 use App\Http\Resources\PatientCaseResource;
 use App\Http\Resources\ToothResource;
 use App\Models\AccountingProfile;
+use App\Models\Doctor;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\Operation;
 use App\Models\Patient;
@@ -41,12 +44,46 @@ class OperationController extends Controller
     public function store(StoreOperationRequest $request)
     {
         $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $record = TeethRecord::findOrFail($request->record_id);
         $patientCase = $record->PatientCase;
         $patient = $patientCase->patient;
         $doctor = $patientCase->case->doctor;
-        abort_unless($doctor->id == auth()->user()->doctor->id, 403);
-        $office = Office::findOrFail($request->office_id);
+        abort_unless($doctor->id == $doctor->id, 403);
         foreach ($fields['operations'] as $operation_fields) {
             $operation = $record->operations()->create($operation_fields);
             $tooth = $operation->teeth()->create($operation_fields);
