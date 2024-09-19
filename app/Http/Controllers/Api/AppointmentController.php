@@ -73,20 +73,24 @@ class AppointmentController extends Controller
             $roomCondition
         ))
             ->with([
-                'patient' => function ($query, $doctor, $user) {
-                    $query->with(['doctorImage', 'roles' => function ($query, $user) {
-                        $query->where('roleable_type', 'App\Models\Patient')
-                            ->where('user_id', $user->id); // Specific user ID
-                    }, 'temporaries' => function ($query, $doctor) {
-                        $query->where('doctor_id', $doctor->id);
-                    }]);
+                'patient' => function ($query) use ($user, $doctor) {
+                    $query->with([
+                        'doctorImage',
+                        'roles' => function ($query) use ($user) {
+                            $query->where('roleable_type', 'App\Models\Patient')
+                                ->where('user_id', $user->id);
+                        },
+                        'temporaries' => function ($query) use ($doctor) {
+                            $query->where('doctor_id', $doctor->id);
+                        },
+                    ]);
                 },
                 'doctor',
                 'office',
                 'room',
                 'record' => function ($query) {
                     $query->with('diagnosis.drug', 'diagnosis.teeth', 'operations.teeth');
-                }
+                },
             ]);
 
         // Fetch the appointments
