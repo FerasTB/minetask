@@ -73,7 +73,7 @@ class AppointmentController extends Controller
             $roomCondition
         ))
             ->with([
-                'patient' => function ($query) {
+                'patient' => function ($query, $doctor, $user) {
                     $query->with(['doctorImage', 'roles' => function ($query, $user) {
                         $query->where('roleable_type', 'App\Models\Patient')
                             ->where('user_id', $user->id); // Specific user ID
