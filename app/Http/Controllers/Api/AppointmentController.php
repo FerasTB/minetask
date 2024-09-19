@@ -74,9 +74,9 @@ class AppointmentController extends Controller
         ))
             ->with([
                 'patient' => function ($query) {
-                    $query->with(['doctorImage', 'roles' => function ($query) {
+                    $query->with(['doctorImage', 'roles' => function ($query, $user) {
                         $query->where('roleable_type', 'App\Models\Patient')
-                            ->where('user_id', auth()->id()); // Specific user ID
+                            ->where('user_id', $user->id); // Specific user ID
                     }, 'temporaries' => function ($query, $doctor) {
                         $query->where('doctor_id', $doctor->id);
                     }]);
@@ -92,9 +92,7 @@ class AppointmentController extends Controller
         // Fetch the appointments
         $appointments = $appointmentsQuery->get();
 
-        return AppointmentResource::collection($appointments)->map(function ($accountProfile) use ($user) {
-            return new AppointmentResource($accountProfile, $user);
-        });
+        return AppointmentResource::collection($appointments);
     }
 
 

@@ -12,13 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PatientInfoForDoctorResource extends JsonResource
 {
 
-    protected $doctorUser;
 
-    public function __construct($resource, $doctorUser)
-    {
-        parent::__construct($resource);
-        $this->doctorUser = $doctorUser;
-    }
     /**
      * Transform the resource into an array.
      *
