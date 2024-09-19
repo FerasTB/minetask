@@ -18,7 +18,8 @@ class MedicalCasePolicy
     public function viewAny(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return ($user->doctor && $user->role == Role::Doctor && $role != null);
+        $technition = boolval(($user->doctor && $user->role == Role::Doctor) || $user->currentRole->name == 'DentalDoctorTechnician');
+        return ($technition && $role != null);
     }
 
     /**

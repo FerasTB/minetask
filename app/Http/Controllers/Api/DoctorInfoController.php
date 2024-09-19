@@ -206,7 +206,9 @@ class DoctorInfoController extends Controller
             ])->get();
 
             // $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
-            $response['profile'] = AccountingProfileResource::collection($accountsCombined);
+            $response['profile'] = AccountingProfileResource::collection($accountsCombined)->map(function ($accountProfile) use ($ownerUser) {
+                return new AccountingProfileResource($accountProfile, $ownerUser);
+            });
         } else {
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
             // Authorization and data retrieval for Separate office type
@@ -258,30 +260,6 @@ class DoctorInfoController extends Controller
                 $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
             }
         }
-        // // Fetch default case for each patient
-        // foreach ($response['profile'] as $accountProfile) {
-        //     $patient = $accountProfile->patient;
-        //     $defaultCase = MedicalCase::where([
-        //         'case_name' => Doctor::DefaultCase,
-        //         'doctor_id' => $doctor->id,
-        //         'office_id' => $office->id
-        //     ])->first();
-
-        //     if ($defaultCase) {
-        //         $PatientCase = PatientCase::where([
-        //             'case_id' => $defaultCase->id,
-        //             'patient_id' => $patient->id,
-        //         ])->with([
-        //             'teethRecords',
-        //             'teethRecords.operations',
-        //             'teethRecords.diagnosis',
-        //             'teethRecords.operations.teeth',
-        //             'teethRecords.diagnosis.teeth'
-        //         ])->first();
-
-        //         $accountProfile->default_case = new PatientDefaultCaseResource($PatientCase);
-        //     }
-        // }
         return response()->json($response);
     }
 
