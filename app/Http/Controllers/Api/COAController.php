@@ -65,7 +65,6 @@ class COAController extends Controller
         }
         $this->authorize('inOffice', [COA::class, $office]);
         if ($office->type == OfficeType::Separate) {
-            $doctor = auth()->user()->doctor;
             return COAResource::collection(
                 $doctor->COAS()
                     ->where('office_id', $office->id)
