@@ -15,6 +15,7 @@ use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Models\AccountingProfile;
 use App\Models\Doctor;
+use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\User;
@@ -126,7 +127,17 @@ class AccountingProfileController extends Controller
             // return $doctor->accountingProfiles;
             $accounts = AccountingProfile::where(['doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+                    'invoices',
+                    'invoices.items',
+                    'receipts',
+                    'office',
+                    'doctor',
+                    'office.owner',
+                    'patient',
+                    'patient.doctorImage',
+                    'invoices.receipts',
+                    'invoiceReceipt',
+                    'invoiceReceipt.items'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
@@ -136,7 +147,17 @@ class AccountingProfileController extends Controller
             $ownerDoctor = $ownerUser->doctor;
             $accounts = AccountingProfile::where(['doctor_id' => $ownerDoctor->id, 'office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount])
                 ->with([
-                    'invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'patient', 'patient.doctorImage', 'invoices.receipts', 'invoiceReceipt', 'invoiceReceipt.items'
+                    'invoices',
+                    'invoices.items',
+                    'receipts',
+                    'office',
+                    'doctor',
+                    'office.owner',
+                    'patient',
+                    'patient.doctorImage',
+                    'invoices.receipts',
+                    'invoiceReceipt',
+                    'invoiceReceipt.items'
                 ])
                 ->get();
             // return AccountingProfileResource::collection($office->accountingProfiles)->where('type', AccountingProfileType::PatientAccount);
@@ -178,17 +199,44 @@ class AccountingProfileController extends Controller
 
     public function labProfile(Office $office)
     {
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $this->authorize('inOffice', [AccountingProfile::class, $office]);
         // if ($office->type == OfficeType::Separate) {
-        $doctor = auth()->user()->doctor;
         $accounts = $doctor->accountingProfiles()->where('type', AccountingProfileType::DentalLabDoctorAccount)->get();
         $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps']);
         return DentalLabAccountingProfileResource::collection($accounts);
-        // } else {
-        //     $accounts = $office->accountingProfiles;
-        //     $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab']);
-        //     return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::DentalLabDoctorAccount);
-        // }
     }
 
     public function setInitialBalance(SetInitialBalanceRequest $request, AccountingProfile $accounting)
