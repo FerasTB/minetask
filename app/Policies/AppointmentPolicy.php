@@ -19,13 +19,13 @@ class AppointmentPolicy
     public function viewAny(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return ($user->doctor && $role != null);
+        return ($role != null);
     }
 
     public function viewAnyWithRoom(User $user, Office $office, OfficeRoom $room): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return ($user->doctor && $role != null && $room->office->id == $office->id);
+        return ($role != null && $room->office->id == $office->id);
     }
 
     /**
