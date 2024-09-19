@@ -24,6 +24,8 @@ use App\Models\Appointment;
 use App\Models\Diagnosis;
 use App\Models\DiagnosisList;
 use App\Models\Doctor;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\MedicalCase;
 use App\Models\Office;
@@ -96,18 +98,50 @@ class TeethRecordController extends Controller
     public function storeWholeRecord(StoreAppointmentFirstStep $request)
     {
         $fields = $request->validated();
-        $patient = Patient::findOrFail($request->patient_id);
-        // $case = MedicalCase::find($request->case_id);
-        $patientCase = PatientCase::findOrFail($fields['patientCase']);
         $case = MedicalCase::find($patientCase->case->id);
-        $doctor = auth()->user()->doctor;
+        $office = $case->office;
+
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+        $patient = Patient::findOrFail($request->patient_id);
+        $patientCase = PatientCase::findOrFail($fields['patientCase']);
         abort_unless($case->doctor_id == $doctor->id, 403);
         if ($request->appointment_id) {
             $appointment = Appointment::findOrFail($request->appointment_id);
             abort_unless($appointment->doctor_id == $doctor->id, 403);
         } else {
             $office = $case->office;
-            $doctor = auth()->user()->doctor;
             $appointment = $office->appointments()->create([
                 'start_time' => '03:00:00',
                 'end_time' => '04:00:00',
@@ -119,37 +153,6 @@ class TeethRecordController extends Controller
             ]);
             $fields['appointment_id'] = $appointment->id;
         }
-        // $patientCase = PatientCase::where(['case_id' => $request->case_id, 'patient_id' => $patient->id])->first();
-        // // $this->authorize('create', [Record::class, $case]);
-        // if ($patientCase) {
-        //     if ($patientCase->status == PatientCaseStatus::Closed) {
-        //         $patientCase = $case->patientCases()->create($fields);
-        //     }
-        //     $fields['report_id'] = $patientCase->patient->teethReport->id;
-        //     $record = $patientCase->teethRecords()->create($fields);
-        //     if ($record->description != null) {
-        //         $complaint = TeethComplaintList::firstOrCreate([
-        //             'complaint' => $record->description,
-        //         ]);
-        //     }
-        //     $fields['description'] = $request->diagnosis;
-        //     $diagnosis = $record->diagnosis()->create($fields);
-        //     if ($diagnosis->description != null) {
-        //         $diagnosis = DiagnosisList::firstOrCreate([
-        //             'description' => $diagnosis->description,
-        //         ]);
-        //     }
-        //     $appointment->update([
-        //         'patientCase_id' => $patientCase->id,
-        //     ]);
-        //     return response()->json([
-        //         'patientCase_id' => $patientCase->id,
-        //         'closable' => $case->case_name != Doctor::DefaultCase,
-        //         'record_id' => $record->id,
-        //         'diagnosis_id' => $record->diagnosis->id,
-        //     ]);
-        // }
-        // $patientCase = $case->patientCases()->create($fields);
         $fields['report_id'] = $patientCase->patient->teethReport->id;
         $record = $patientCase->teethRecords()->create($fields);
         if ($record->description != null) {
@@ -173,7 +176,8 @@ class TeethRecordController extends Controller
                 $owner = User::findOrFail($office->owner->user_id);
                 $profile = AccountingProfile::where([
                     'patient_id' => $patient->id,
-                    'office_id' => $office->id, 'doctor_id' => $owner->doctor->id
+                    'office_id' => $office->id,
+                    'doctor_id' => $owner->doctor->id
                 ])->first();
                 $fields['type'] = DentalDoctorTransaction::SellInvoice;
                 $fields['status'] = TransactionStatus::Draft;
@@ -184,7 +188,8 @@ class TeethRecordController extends Controller
             } else {
                 $profile = AccountingProfile::where([
                     'patient_id' => $patient->id,
-                    'office_id' => $office->id, 'doctor_id' => $request->doctor_id
+                    'office_id' => $office->id,
+                    'doctor_id' => $request->doctor_id
                 ])->first();
                 $fields['type'] = DentalDoctorTransaction::SellInvoice;
                 $fields['status'] = TransactionStatus::Draft;
