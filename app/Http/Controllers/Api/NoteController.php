@@ -76,17 +76,41 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request, Office $office)
     {
         $fields = $request->validated();
-        $this->authorize('inOffice', [Note::class, $office]);
-        if ($request->doctor_id) {
-            $doctor = Doctor::find($request->doctor_id);
-            $this->authorize('createForDoctor', [Note::class, $doctor]);
-            $note = $office->notes()->create($fields);
-            $note->load('patient');
-            $note->load('doctor');
-            $note->load('office');
-            return new NoteResource($note);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
         }
-        $this->authorize('officeOwner', [Note::class, $office]);
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+        $this->authorize('inOffice', [Note::class, $office]);
+        $fields['doctor_id'] = $doctor->id;
         $note = $office->notes()->create($fields);
         $note->load('patient');
         $note->load('doctor');

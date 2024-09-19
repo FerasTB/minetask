@@ -12,7 +12,7 @@ class StoreNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->role = Role::Doctor;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreNoteRequest extends FormRequest
     {
         return [
             'note' => 'required|string',
-            'doctor_id' => 'nullable|integer',
+            // 'doctor_id' => 'nullable|integer',
             'patient_id' => 'nullable|integer',
         ];
     }
