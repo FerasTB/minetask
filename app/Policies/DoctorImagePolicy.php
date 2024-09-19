@@ -10,6 +10,7 @@ use App\Models\Patient;
 use App\Models\TeethRecord;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use PhpParser\Comment\Doc;
 
 class DoctorImagePolicy
 {
@@ -24,9 +25,9 @@ class DoctorImagePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, DoctorImage $doctorImage): bool
+    public function view(User $user, DoctorImage $doctorImage, Doctor $doctor): bool
     {
-        return $user->doctor && $doctorImage->doctor_id == $user->doctor->id;
+        return  $doctorImage->doctor_id == $doctor->id;
     }
 
     /**
