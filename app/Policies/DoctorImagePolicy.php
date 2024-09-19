@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Doctor;
 use App\Models\DoctorImage;
 use App\Models\HasRole;
 use App\Models\Office;
@@ -68,17 +69,17 @@ class DoctorImagePolicy
         //
     }
 
-    public function inOfficeAndHavePatient(User $user, Patient $patient, Office $office): bool
+    public function inOfficeAndHavePatient(User $user, Patient $patient, Office $office, Doctor $doctor): bool
     {
         $officeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
+        $role = HasRole::where(['user_id' => $doctor->user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
         return $role != null && $officeRole != null;
     }
 
-    public function inOfficeAndHavePatientAndRecord(User $user, Patient $patient, Office $office, TeethRecord $record): bool
+    public function inOfficeAndHavePatientAndRecord(User $user, Patient $patient, Office $office, Doctor $doctor, TeethRecord $record): bool
     {
         $officeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        $role = HasRole::where(['user_id' => $user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
-        return $role != null && $officeRole != null && $user->doctor && $record->PatientCase->case->doctor->id == $user->doctor->id;
+        $role = HasRole::where(['user_id' => $doctor->user->id, 'roleable_id' => $patient->id, 'roleable_type' => 'App\Models\Patient'])->first();
+        return $role != null && $officeRole != null && $record->PatientCase->case->doctor->id == $doctor->id;
     }
 }
