@@ -29,6 +29,8 @@ use App\Models\DirectDoubleEntry;
 use App\Models\DirectDoubleEntryInvoice;
 use App\Models\Doctor;
 use App\Models\DoubleEntry;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Office;
@@ -368,15 +370,48 @@ class InvoiceController extends Controller
 
     public function storePatientInvoiceWithItems(StoreInvoiceAndItemForPatientRequest $request, Patient $patient)
     {
+        // Validate the main invoice fields
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         DB::beginTransaction();
         try {
-            // Validate the main invoice fields
-            $fields = $request->validated();
-            $office = Office::findOrFail($request->office_id);
             $transactionNumber = $this->getTransactionNumber($office, TransactionType::PatientInvoice);
 
             // Determine the doctor and profile based on office type
-            $profile = $this->getAccountingProfile($office, $patient, $request->doctor_id);
+            $profile = $this->getAccountingProfile($office, $patient, $doctor->id);
 
             // Set fields for invoice
             $fields['type'] = DentalDoctorTransaction::SellInvoice;
@@ -398,7 +433,7 @@ class InvoiceController extends Controller
             if ($request->has('binding_charges')) {
                 foreach ($request->binding_charges as $bindingChargeId) {
                     $checkBinding = InvoiceItem::findOrFail($bindingChargeId);
-                    abort_if($checkBinding->coa->doctor->id != $request->doctor_id, 403, 'the coa have conflict');
+                    abort_if($checkBinding->coa->doctor->id != $doctor->id, 403, 'the coa have conflict');
                     $this->processBindingCharge($bindingChargeId, $invoice, $request->paid_done);
                 }
             }
@@ -407,7 +442,7 @@ class InvoiceController extends Controller
             if ($request->has('items')) {
                 foreach ($request->items as $itemData) {
                     $checkCOA = COA::findOrFail($itemData['coa_id']);
-                    abort_if($checkCOA->doctor_id != $request->doctor_id, 403, 'the coa have conflict');
+                    abort_if($checkCOA->doctor_id != $doctor->id, 403, 'the coa have conflict');
                     $this->processInvoiceItem($itemData, $invoice, $request->paid_done);
                 }
             }
