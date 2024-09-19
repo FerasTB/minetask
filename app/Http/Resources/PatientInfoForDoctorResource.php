@@ -11,6 +11,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PatientInfoForDoctorResource extends JsonResource
 {
+
+    protected $doctorUser;
+
+    public function __construct($resource, $doctorUser)
+    {
+        parent::__construct($resource);
+        $this->doctorUser = $doctorUser;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -18,7 +26,7 @@ class PatientInfoForDoctorResource extends JsonResource
      */
     public function toArray($request)
     {
-        $role = $this->roles->firstWhere('roleable_type', 'App\Models\Patient');
+        $role = $this->doctorUser->roles->firstWhere('roleable_type', 'App\Models\Patient');
 
         if ($role) {
             if ($role->sub_role == DoctorRoleForPatient::DoctorWithApprove) {

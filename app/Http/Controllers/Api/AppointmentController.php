@@ -11,6 +11,8 @@ use App\Http\Requests\UpdateAppointmentStatusRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\OfficeRoom;
 use App\Models\PatientCase;
@@ -25,6 +27,39 @@ class AppointmentController extends Controller
     {
         // Authorize first before any querying
         $office = Office::findOrFail($request->office);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $this->authorize('viewAny', [Appointment::class, $office]);
 
         // Determine if a specific room is requested
@@ -42,35 +77,24 @@ class AppointmentController extends Controller
                     $query->with(['doctorImage', 'roles' => function ($query) {
                         $query->where('roleable_type', 'App\Models\Patient')
                             ->where('user_id', auth()->id()); // Specific user ID
-                    }, 'temporaries' => function ($query) {
-                        $query->where('doctor_id', auth()->user()->doctor->id);
+                    }, 'temporaries' => function ($query, $doctor) {
+                        $query->where('doctor_id', $doctor->id);
                     }]);
                 },
                 'doctor',
                 'office',
-                // 'case' => function ($query) {
-                //     $query->with('case', 'teethRecords');
-                // },
                 'room',
                 'record' => function ($query) {
                     $query->with('diagnosis.drug', 'diagnosis.teeth', 'operations.teeth');
                 }
-                // 'record' => function ($query) {
-                //     $query->with([
-                //         'diagnosis' => function ($query) {
-                //             $query->with('drug', 'teeth');
-                //         },
-                //         'operations' => function ($query) {
-                //             $query->with('teeth');
-                //         }
-                //     ]);
-                // }
             ]);
 
         // Fetch the appointments
         $appointments = $appointmentsQuery->get();
 
-        return AppointmentResource::collection($appointments);
+        return AppointmentResource::collection($appointments)->map(function ($accountProfile) use ($user) {
+            return new AppointmentResource($accountProfile, $user);
+        });
     }
 
 

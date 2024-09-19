@@ -17,6 +17,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppointmentResource extends JsonResource
 {
+
+    protected $doctorUser;
+
+    public function __construct($resource, $doctorUser)
+    {
+        parent::__construct($resource);
+        $this->doctorUser = $doctorUser;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -30,7 +38,7 @@ class AppointmentResource extends JsonResource
             'end_time' => $this->end_time,
             'taken_date' => $this->taken_date,
             'status' => EnumsAppointmentStatus::getKey($this->status),
-            'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
+            'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient'), $this->doctorUser),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'office' => new OfficeResource($this->whenLoaded('office')),
             // 'patientCase' => new PatientCaseResource($this->patientCase),
