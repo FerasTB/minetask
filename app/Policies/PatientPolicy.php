@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\Role;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\Patient;
@@ -78,10 +79,10 @@ class PatientPolicy
         return $user->patient;
     }
 
-    public function setInitialBalance(User $user, Patient $patient, Office $office): bool
+    public function setInitialBalance(User $user, Patient $patient, Office $office, Doctor $doctor): bool
     {
         $OfficeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        $patientRole = $user->roles->where('roleable_id', $patient->id)->where('roleable_type', 'App\Models\Patient')->first();
+        $patientRole = $doctor->user->roles->where('roleable_id', $patient->id)->where('roleable_type', 'App\Models\Patient')->first();
         return $OfficeRole != null && $patientRole != null;
     }
 }
