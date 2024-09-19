@@ -223,7 +223,7 @@ class OperationController extends Controller
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
-        $this->authorize('update', $operation, $doctor);
+        $this->authorize('update', [$operation, $doctor]);
         $fields = $request->validated();
         if ($request->has('number_of_tooth')) {
             $tooth = $operation->teeth()->first();
@@ -285,7 +285,7 @@ class OperationController extends Controller
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
-        $this->authorize('update', $operation, $doctor);
+        $this->authorize('update', [$operation, $doctor]);
         $operation->load('record');
         // Check if the related record's is_closed is false
         if ($operation->record && boolval($operation->record->is_closed) == false) {

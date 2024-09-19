@@ -12,7 +12,7 @@ class UpdateOperationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->role == Role::Doctor;
+        return true;
     }
 
     /**
