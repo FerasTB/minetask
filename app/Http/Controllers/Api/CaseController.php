@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMedicalCaseRequest;
 use App\Http\Requests\UpdateMedicalCaseRequest;
 use App\Http\Resources\MedicalCaseResource;
+use App\Models\Doctor;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\Patient;
@@ -21,16 +24,46 @@ class CaseController extends Controller
     public function index(Request $request)
     {
         $office = Office::findOrFail($request->office_id);
+
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $this->authorize('viewAny', [MedicalCase::class, $office]);
-        // if ($office->type == OfficeType::Separate) {
         $case = MedicalCase::where([
-            'doctor_id' => auth()->user()->doctor->id, 'office_id' => $office->id
+            'doctor_id' => $doctor->id,
+            'office_id' => $office->id
         ])->with(['doctor', 'office'])->get();
-        // return MedicalCaseResource::collection(auth()->user()->doctor->cases)->where('office.id');
         return MedicalCaseResource::collection($case);
-        // } else {
-        //     return MedicalCaseResource::collection($office->cases);
-        // }
     }
 
     /**
