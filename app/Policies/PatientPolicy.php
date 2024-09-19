@@ -79,10 +79,10 @@ class PatientPolicy
         return $user->patient;
     }
 
-    public function setInitialBalance(User $user, Patient $patient, Office $office, Doctor $doctor): bool
+    public function setInitialBalance(User $user, Patient $patient, Office $office, User $doctorUser): bool
     {
         $OfficeRole = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        $patientRole = $doctor->user->roles->where('roleable_id', $patient->id)->where('roleable_type', 'App\Models\Patient')->first();
+        $patientRole = $doctorUser->roles->where('roleable_id', $patient->id)->where('roleable_type', 'App\Models\Patient')->first();
         return $OfficeRole != null && $patientRole != null;
     }
 }

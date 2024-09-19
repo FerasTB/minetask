@@ -409,7 +409,7 @@ class PatientInfoController extends Controller
             return response('You have to complete your info', 404);
         }
         $fields = $request->validated();
-        $this->authorize('setInitialBalance', [$patient, $office, $doctor]);
+        $this->authorize('setInitialBalance', [$patient, $office, $doctor->user]);
         $accounting = AccountingProfile::where([
             'doctor_id' => $doctor->id,
             'office_id' => $office->id,
