@@ -5,9 +5,11 @@ namespace App\Policies;
 use App\Enums\SubRole;
 use App\Models\COA;
 use App\Models\DirectDoubleEntryInvoice;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use PhpParser\Comment\Doc;
 
 class DirectDoubleEntryInvoicePolicy
 {
@@ -30,14 +32,14 @@ class DirectDoubleEntryInvoicePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, COA $coa, COA $coa2): bool
+    public function create(User $user, COA $coa, COA $coa2, Doctor $doctor): bool
     {
         $sameCOA = $coa->doctor_id == $coa2->doctor_id && $coa->office_id == $coa2->office_id;
         if ($coa->doctor_id == null && $sameCOA) {
             $role = HasRole::where(['roleable_id' => $coa->office_id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
             return $role != null && $role->sub_role == SubRole::OfficeOwner;
         }
-        return $coa->doctor_id == $user->doctor->id && $sameCOA;
+        return $coa->doctor_id == $doctor->id && $sameCOA;
     }
 
     /**
