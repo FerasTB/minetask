@@ -77,7 +77,7 @@ class AccountingProfilePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AccountingProfile $accountingProfile): bool
+    public function update(User $user, AccountingProfile $accountingProfile, Doctor $doctor): bool
     {
         return $accountingProfile->doctor_id == $doctor->id;
     }
