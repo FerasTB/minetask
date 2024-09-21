@@ -25,6 +25,7 @@ use App\Models\COA;
 use App\Models\DirectDoubleEntry;
 use App\Models\Doctor;
 use App\Models\DoubleEntry;
+use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceReceipt;
@@ -161,14 +162,48 @@ class ReceiptController extends Controller
 
     public function storeSupplierReceipt(StoreSupplierReceiptRequest $request)
     {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         DB::beginTransaction();
         try {
-            $fields = $request->validated();
-            $office = Office::findOrFail($request->office_id);
+
             $profile = AccountingProfile::findOrFail($request->supplier_account_id);
 
             // Fetch transaction number
-            $transactionNumber = $this->getTransactionNumber($office, TransactionType::PaymentVoucher);
+            $transactionNumber = $this->getTransactionNumber($office, TransactionType::PaymentVoucher, $doctor);
 
             // Set fields for the receipt
             $fields = $this->setSupplierReceiptFields($request, $profile, $transactionNumber, $fields);
@@ -224,13 +259,15 @@ class ReceiptController extends Controller
         if ($profile->office->type == OfficeType::Combined) {
             $payable = COA::where([
                 'office_id' => $profile->office->id,
-                'doctor_id' => null, 'sub_type' => COASubType::Payable
+                'doctor_id' => null,
+                'sub_type' => COASubType::Payable
             ])->first();
         } else {
             $doctor = $profile->doctor;
             $payable = COA::where([
                 'office_id' => $office->id,
-                'doctor_id' => $doctor->id, 'sub_type' => COASubType::Payable
+                'doctor_id' => $doctor->id,
+                'sub_type' => COASubType::Payable
             ])->first();
         }
         $doubleEntryFields['receipt_id'] = $receipt->id;
@@ -293,17 +330,51 @@ class ReceiptController extends Controller
 
     public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)
     {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         DB::beginTransaction();
         try {
-            $fields = $request->validated();
-            $office = Office::findOrFail($request->office_id);
+
             $transactionNumber = TransactionPrefix::where([
                 'office_id' => $office->id,
-                'doctor_id' => auth()->user()->doctor->id,
+                'doctor_id' => $doctor->id,
                 'type' => TransactionType::PatientReceipt
             ])->firstOrFail();
 
-            $profile = $this->getAccountingProfile($office, $patient, $request->doctor_id);
+            $profile = $this->getAccountingProfile($office, $patient, $doctor->id);
             $fields = $this->setReceiptFields($request, $profile, $transactionNumber, $fields);
 
             $receipt = $profile->receipts()->create($fields);
@@ -324,11 +395,11 @@ class ReceiptController extends Controller
         }
     }
 
-    private function getTransactionNumber($office, $type)
+    private function getTransactionNumber($office, $type, $doctor)
     {
         return TransactionPrefix::where([
             'office_id' => $office->id,
-            'doctor_id' => auth()->user()->doctor->id,
+            'doctor_id' => $doctor->id,
             'type' => $type
         ])->first();
     }

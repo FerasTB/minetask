@@ -457,7 +457,7 @@ class DoctorInfoController extends Controller
         return InvoiceReceiptsResource::collection($doctor->invoiceReceipts()
             ->where('accounting_profiles.office_id', $office->id)
             ->with(['patient', 'doctor', 'office', 'account', 'items'])
-            ->get());
+            ->get(), $user);
     }
 
     public function myRecords()
