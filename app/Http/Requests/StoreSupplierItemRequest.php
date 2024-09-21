@@ -23,7 +23,7 @@ class StoreSupplierItemRequest extends FormRequest
     {
         return [
             'COA_id' => 'required|integer',
-            'doctor_id' => 'nullable|integer',
+            'doctor' => 'required|boolean',
             'name' => 'required|string',
             'description' => 'nullable|string',
             'cost' => 'nullable|integer',

@@ -22,7 +22,8 @@ class UpdateSupplierItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'doctor_id' => 'nullable|integer',
+            'doctor' => 'required|boolean',
+            'office_id' => 'nullable|integer',
             'name' => 'nullable|string',
             'description' => 'nullable|string',
             'cost' => 'nullable|integer',
