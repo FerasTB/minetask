@@ -27,7 +27,7 @@ class StorePatientReceiptRequest extends FormRequest
             'date_of_payment' => 'nullable|date',
             'total_price' => 'required|integer',
             'office_id' => 'required|integer',
-            'doctor_id' => 'required|integer',
+            // 'doctor_id' => 'required|integer',
             'cash_coa' => 'required|integer',
         ];
     }
