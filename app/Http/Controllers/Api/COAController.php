@@ -143,8 +143,42 @@ class COAController extends Controller
      */
     public function update(UpdateCoaRequest $request, COA $coa)
     {
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         if ($coa->doctor) {
-            $this->authorize('updateForDoctor', [$coa, auth()->user()->doctor]);
+            $this->authorize('updateForDoctor', [$coa, $doctor]);
             $fields = $request->validated();
             $coa->update($fields);
             $coa->load('group');

@@ -24,6 +24,7 @@ class UpdateCoaRequest extends FormRequest
         return [
             'name' => 'required|string',
             'group_id' => 'nullable|integer',
+            'office_id' => 'required|integer',
             'note' => 'nullable|string',
         ];
     }
