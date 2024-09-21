@@ -44,13 +44,13 @@ class COAPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, COA $coa): bool
+    public function update(User $user, COA $coa, Doctor $doctor): bool
     {
         if ($coa->doctor_id == null) {
             $role = HasRole::where(['roleable_id' => $coa->office_id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
             return $role != null && $role->sub_role == SubRole::OfficeOwner;
         }
-        return $coa->doctor_id == $user->doctor->id;
+        return $coa->doctor_id == $doctor->id;
     }
 
     public function updateBalanceForLab(User $user, COA $coa): bool

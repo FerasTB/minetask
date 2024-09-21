@@ -24,6 +24,7 @@ class SetInitialBalanceRequest extends FormRequest
     {
         return [
             'initial_balance' => 'integer|required',
+            'office_id' => 'integer|required',
         ];
     }
 }
