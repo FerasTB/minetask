@@ -23,6 +23,7 @@ class SetSecondaryInitialBalanceRequest extends FormRequest
     {
         return [
             'secondary_initial_balance' => 'integer|required',
+            'office_id' => 'integer|required',
         ];
     }
 }
