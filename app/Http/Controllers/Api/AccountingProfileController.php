@@ -205,11 +205,16 @@ class AccountingProfileController extends Controller
         if ($office->type == OfficeType::Separate) {
             $accounts = $doctor->accountingProfiles;
             $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'doubleEntries', 'directDoubleEntries',]);
-            return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
+            return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount)->map(function ($accountProfile) use ($user) {
+                return new AccountingProfileResource($accountProfile, $user);
+            });
         } else {
             $accounts = $office->accountingProfiles;
+            $ownerUser = $office->owner;
             $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'doubleEntries', 'directDoubleEntries',]);
-            return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
+            return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount)->map(function ($accountProfile) use ($ownerUser) {
+                return new AccountingProfileResource($accountProfile, $ownerUser);
+            });
         }
     }
 
