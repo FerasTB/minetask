@@ -26,7 +26,7 @@ class StoreSupplierAccountingProfileRequest extends FormRequest
         return [
             'supplier_name' => 'required|string',
             'office_id' => 'required|integer',
-            'doctor_id' => 'nullable|integer',
+            'doctor' => 'required|boolean',
             'note' => 'nullable|string',
             'initial_balance' => 'nullable|integer',
             'type' => ['required', Rule::in(['SupplierAccount'])],

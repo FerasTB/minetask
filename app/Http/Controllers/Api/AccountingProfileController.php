@@ -199,7 +199,7 @@ class AccountingProfileController extends Controller
 
     public function supplierProfile(Request $request)
     {
-        $office = Office::findOrFail($request->office_id);
+        $office = Office::findOrFail($request->office);
         if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
