@@ -130,7 +130,6 @@ class SupplierItemController extends Controller
     public function update(UpdateSupplierItemRequest $request, Office $office, SupplierItem $item)
     {
         $fields = $request->validated();
-        $office = Office::findOrFail($request->office);
         if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())

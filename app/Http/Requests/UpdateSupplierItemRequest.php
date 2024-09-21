@@ -23,7 +23,6 @@ class UpdateSupplierItemRequest extends FormRequest
     {
         return [
             'doctor' => 'required|boolean',
-            'office_id' => 'nullable|integer',
             'name' => 'nullable|string',
             'description' => 'nullable|string',
             'cost' => 'nullable|integer',
