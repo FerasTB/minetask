@@ -28,7 +28,7 @@ class StoreCOARequest extends FormRequest
         return [
             'name' => 'required|string',
             'office_id' => 'required|integer',
-            'doctor_id' => 'nullable|integer',
+            'doctor' => 'required|boolean',
             'group_id' => 'nullable|integer',
             'note' => 'nullable|string',
             'initial_balance' => 'nullable|integer',
