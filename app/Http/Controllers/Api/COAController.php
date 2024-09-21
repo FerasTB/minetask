@@ -144,7 +144,7 @@ class COAController extends Controller
         }
         if (boolval($request->doctor)) {
             // $doctor = Doctor::find($request->doctor_id);
-            $this->authorize('createForDoctor', [COA::class, $doctor]);
+            // $this->authorize('createForDoctor', [COA::class, $doctor]);
             $coa = $doctor->COAS()->create($fields);
             return new COAResource($coa);
         }

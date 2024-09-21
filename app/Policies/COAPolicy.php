@@ -88,7 +88,7 @@ class COAPolicy
 
     public function createForDoctor(User $user, Doctor $doctor): bool
     {
-        return $user->doctor->id == $doctor->id;
+        return $doctor->id == $doctor->id;
     }
 
     public function createForOffice(User $user, Office $office): bool
