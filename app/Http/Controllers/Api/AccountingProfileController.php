@@ -168,9 +168,41 @@ class AccountingProfileController extends Controller
     public function supplierProfile(Request $request)
     {
         $office = Office::findOrFail($request->office);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $this->authorize('inOffice', [AccountingProfile::class, $office]);
         if ($office->type == OfficeType::Separate) {
-            $doctor = auth()->user()->doctor;
             $accounts = $doctor->accountingProfiles;
             $accounts->load(['invoices', 'invoices.items', 'receipts', 'office', 'doctor', 'office.owner', 'doubleEntries', 'directDoubleEntries',]);
             return AccountingProfileResource::collection($accounts)->where('type', AccountingProfileType::SupplierAccount);
