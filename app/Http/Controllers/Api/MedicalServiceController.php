@@ -98,6 +98,7 @@ class MedicalServiceController extends Controller
             return response('You have to complete your info', 404);
         }
         $this->authorize('create', [MedicalService::class, $office]);
+        $fields['doctor_id'] = $doctor->id;
         $service = $office->services()->create($fields);
         return new MedicalServiceResource($service);
     }

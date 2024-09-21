@@ -23,7 +23,7 @@ class StoreMedicalServiceRequest extends FormRequest
     {
         return [
             'office_id' => 'required|integer',
-            'doctor_id' => 'required|integer',
+            // 'doctor_id' => 'required|integer',
             'cost' => 'nullable|integer',
             'description' => 'nullable|string',
             'name' => 'required|string',
