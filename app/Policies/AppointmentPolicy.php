@@ -54,9 +54,9 @@ class AppointmentPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Appointment $appointment): bool
+    public function update(User $user, Appointment $appointment, Doctor $doctor): bool
     {
-        return ($user->doctor && $user->doctor->id == $appointment->doctor->id);
+        return ($doctor->id == $appointment->doctor->id);
     }
 
     /**
