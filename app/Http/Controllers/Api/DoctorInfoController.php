@@ -458,7 +458,7 @@ class DoctorInfoController extends Controller
             ->where('accounting_profiles.office_id', $office->id)
             ->with(['patient', 'doctor', 'office', 'account', 'items'])
             ->get())->map(function ($accountProfile) use ($user) {
-            return new AccountingProfileResource($accountProfile, $user);
+            return new InvoiceReceiptsResource($accountProfile, $user);
         });
     }
 
