@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\SubRole;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\MedicalService;
 use App\Models\Office;
@@ -39,9 +40,9 @@ class MedicalServicePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, MedicalService $medicalService): bool
+    public function update(User $user, MedicalService $medicalService, Doctor $doctor): bool
     {
-        return $medicalService->doctor->id == $user->doctor->id;
+        return $medicalService->doctor->id == $doctor->id;
     }
 
     /**

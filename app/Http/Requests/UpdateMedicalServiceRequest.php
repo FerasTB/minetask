@@ -23,6 +23,7 @@ class UpdateMedicalServiceRequest extends FormRequest
     {
         return [
             'cost' => 'nullable|integer',
+            'office_id' => 'required|integer',
             'description' => 'nullable|string',
             'name' => 'required|string',
         ];
