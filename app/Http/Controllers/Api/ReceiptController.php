@@ -235,48 +235,104 @@ class ReceiptController extends Controller
         abort_unless($profile->type == AccountingProfileType::DentalLabDoctorAccount, 403);
         $this->authorize('createReceiptForDentalLab', [Receipt::class, $profile]);
         $office = $profile->office;
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $cash = COA::findOrFail($request->cash_coa);
         abort_unless($cash->sub_type == COASubType::Cash && $cash->office_id == $profile->office_id, 403);
         $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => $profile->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
-        $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
-        $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
-        $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
-        $role = HasRole::where(['roleable_id' => $profile->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => auth()->id()])->first();
-        if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
-            $fields['status'] = TransactionStatus::Approved;
-        } else {
-            $fields['status'] = TransactionStatus::Draft;
+        DB::beginTransaction();
+        try {
+            $fields['running_balance'] = $this->calculateLapBalance($profile->id, $fields['total_price']);
+            $fields['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::PaymentVoucher;
+            $role = HasRole::where(['roleable_id' => $profile->lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $doctor->user->id])->first();
+            if ($role != null && $role->sub_role == SubRole::DentalLabDraft) {
+                $fields['status'] = TransactionStatus::Approved;
+            } else {
+                $fields['status'] = TransactionStatus::Draft;
+            }
+            if (!$request->has('date_of_payment')) {
+                $fields['date_of_payment'] = now();
+            }
+            $receipt = $profile->receipts()->create($fields);
+            if ($profile->lab->type == DentalLabType::Real) {
+                $type = 'ReceiptFromDoctor';
+                $profile->lab->notify(new ReceiptCreated($receipt, $type));
+            }
+            $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
+            if ($profile->office->type == OfficeType::Combined) {
+                $payable = COA::where([
+                    'office_id' => $profile->office->id,
+                    'doctor_id' => null,
+                    'sub_type' => COASubType::Payable
+                ])->first();
+            } else {
+                $doctor = $profile->doctor;
+                $payable = COA::where([
+                    'office_id' => $office->id,
+                    'doctor_id' => $doctor->id,
+                    'sub_type' => COASubType::Payable
+                ])->first();
+            }
+            $doubleEntryFields['receipt_id'] = $receipt->id;
+            $doubleEntryFields['total_price'] = $receipt->total_price;
+            $doubleEntryFields['type'] = DoubleEntryType::Negative;
+            $this->createProfileDoubleEntry($receipt->accounting_profile_id, $receipt->id, $receipt->total_price, DoubleEntryType::Negative);
+            $cash->doubleEntries()->create($doubleEntryFields);
+            $receipt->load('lab');
+            DB::commit();
+            return new ReceiptResource($receipt);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating supplier invoice with items: ' . $e->getMessage());
+            throw $e;
         }
-        if (!$request->has('date_of_payment')) {
-            $fields['date_of_payment'] = now();
-        }
-        $receipt = $profile->receipts()->create($fields);
-        if ($profile->lab->type == DentalLabType::Real) {
-            $type = 'ReceiptFromDoctor';
-            $profile->lab->notify(new ReceiptCreated($receipt, $type));
-        }
-        $transactionNumber->update(['last_transaction_number' => $fields['receipt_number']]);
-        if ($profile->office->type == OfficeType::Combined) {
-            $payable = COA::where([
-                'office_id' => $profile->office->id,
-                'doctor_id' => null,
-                'sub_type' => COASubType::Payable
-            ])->first();
-        } else {
-            $doctor = $profile->doctor;
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id,
-                'sub_type' => COASubType::Payable
-            ])->first();
-        }
-        $doubleEntryFields['receipt_id'] = $receipt->id;
-        $doubleEntryFields['total_price'] = $receipt->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Negative;
-        $payable->doubleEntries()->create($doubleEntryFields);
-        $cash->doubleEntries()->create($doubleEntryFields);
-        $receipt->load('lab');
-        return new ReceiptResource($receipt);
+    }
+
+    private function calculateLapBalance(int $id, int $thisTransaction)
+    {
+        $lap = AccountingProfile::findOrFail($id);
+        $doubleEntries = $lap->doubleEntries()->get();
+        $directDoubleEntries = $lap->directDoubleEntries()->get();
+
+        // Sum the positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return $totalPositive - $totalNegative - $thisTransaction + $lap->initial_balance;
     }
 
     // public function storePatientReceipt(StorePatientReceiptRequest $request, Patient $patient)

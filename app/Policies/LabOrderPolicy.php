@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\AccountingProfile;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\LabOrder;
 use App\Models\Patient;
@@ -12,9 +13,9 @@ use Illuminate\Auth\Access\Response;
 class LabOrderPolicy
 {
 
-    public function storeForDoctor(User $user, AccountingProfile $profile): bool
+    public function storeForDoctor(User $user, AccountingProfile $profile, Doctor $doctor): bool
     {
-        return $profile->doctor->id == $user->doctor->id;
+        return $profile->doctor->id == $doctor->id;
     }
 
     public function storeForLab(User $user, AccountingProfile $profile): bool
