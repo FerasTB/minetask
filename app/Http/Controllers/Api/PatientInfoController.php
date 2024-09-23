@@ -261,7 +261,7 @@ class PatientInfoController extends Controller
                         ]);
 
 
-                        $role = $doctor->user()->roles()->create([
+                        $role = $user->roles()->create([
                             'roleable_type' => 'App\Models\Patient',
                             'roleable_id' => $patientInfo->id,
                             'sub_role' => DoctorRoleForPatient::DoctorWithApprove
