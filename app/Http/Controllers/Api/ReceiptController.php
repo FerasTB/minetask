@@ -233,7 +233,6 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         abort_unless($profile->type == AccountingProfileType::DentalLabDoctorAccount, 403);
-        $this->authorize('createReceiptForDentalLab', [Receipt::class, $profile]);
         $office = $profile->office;
         if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
             // Find the role based on user_id and office_id (roleable_id)
@@ -268,6 +267,8 @@ class ReceiptController extends Controller
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
+        $this->authorize('createReceiptForDentalLab', [Receipt::class, $profile, $doctor]);
+
         $cash = COA::findOrFail($request->cash_coa);
         abort_unless($cash->sub_type == COASubType::Cash && $cash->office_id == $profile->office_id, 403);
         $transactionNumber = TransactionPrefix::where(['office_id' => $office->id, 'doctor_id' => $profile->doctor->id, 'type' => TransactionType::PaymentVoucher])->first();
