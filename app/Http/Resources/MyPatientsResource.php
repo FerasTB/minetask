@@ -11,6 +11,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MyPatientsResource extends JsonResource
 {
+    protected $doctorFromController;
+
+    public function __construct($resource, $doctorFromController)
+    {
+        parent::__construct($resource);
+        $this->doctorFromController = $doctorFromController;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -35,13 +42,13 @@ class MyPatientsResource extends JsonResource
                 'father_name' => $patient->father_name,
                 'created_at' => $patient->created_at,
                 'image' => $patient->doctorImage != null ?
-                    DoctorImageResource::collection($patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
+                    DoctorImageResource::collection($patient->doctorImage->where('doctor_id', $this->doctorFromController->id))
                     : "no image",
                 'status' => 'Approve'
             ];
         }
         if ($this->sub_role == DoctorRoleForPatient::DoctorWithoutApprove) {
-            $patient = $this->roleable->temporaries()->where('doctor_id', auth()->user()->doctor->id)->first();
+            $patient = $this->roleable->temporaries()->where('doctor_id', $this->doctorFromController->id)->first();
             $originalPatient = $this->roleable;
             return [
                 'id' => $originalPatient->id,
@@ -60,7 +67,7 @@ class MyPatientsResource extends JsonResource
                 'status' => 'WithoutApprove',
                 'TemporaryId' => $patient->id,
                 'image' => $originalPatient->doctorImage != null ?
-                    DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
+                    DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', $this->doctorFromController->id))
                     : "no image",
             ];
         }

@@ -186,7 +186,7 @@ class PatientInfoController extends Controller
 
                         DB::commit(); // Commit the transaction
 
-                        return new MyPatientsResource($role);
+                        return new MyPatientsResource($role, $doctor);
                     } else {
                         $doctor = $ownerDoctor;
                         $patientInfo = $doctor->patients()->create($fields);
@@ -222,7 +222,7 @@ class PatientInfoController extends Controller
 
                         DB::commit(); // Commit the transaction
 
-                        return new MyPatientsResource($role);
+                        return new MyPatientsResource($role, $doctor);
                     }
                 } elseif ($office->type == OfficeType::Separate) {
                     if ($patient) {
@@ -252,7 +252,7 @@ class PatientInfoController extends Controller
 
                         DB::commit(); // Commit the transaction
 
-                        return new MyPatientsResource($role);
+                        return new MyPatientsResource($role, $doctor);
                     } else {
                         $patientInfo = $doctor->patients()->create($fields);
                         $patientInfo->info()->create([
@@ -285,7 +285,7 @@ class PatientInfoController extends Controller
 
                         DB::commit(); // Commit the transaction
 
-                        return new MyPatientsResource($role);
+                        return new MyPatientsResource($role, $doctor);
                     }
                 }
             }
