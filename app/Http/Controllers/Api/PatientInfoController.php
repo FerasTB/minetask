@@ -50,10 +50,44 @@ class PatientInfoController extends Controller
 
     public function store(StorePatientRequest $request)
     {
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         DB::beginTransaction();
 
         try {
-            $fields = $request->validated();
 
             if (!$request->has('numberPrefix')) {
                 $fields['numberPrefix'] = '+963';
@@ -84,7 +118,7 @@ class PatientInfoController extends Controller
                 $fields['parent_id'] = $parent->id;
             }
 
-            if (auth()->user()->role == Role::Patient) {
+            if (auth()->user()->role == Role::Patient && auth()->user()->currentRole->name != 'DentalDoctorTechnician') {
                 $patient = Patient::whereHas('info', function ($query) use ($fields) {
                     $query->where('numberPrefix', $fields['numberPrefix'])
                         ->where('phone', $fields['phone']);
@@ -110,7 +144,7 @@ class PatientInfoController extends Controller
                 DB::commit(); // Commit the transaction
 
                 return response()->json($patientInfo);
-            } elseif (auth()->user()->role == Role::Doctor) {
+            } elseif ((auth()->user()->role == Role::Doctor) || (auth()->user()->currentRole->name == 'DentalDoctorTechnician')) {
                 if ($isChild) {
                     $patient = Patient::where('parent_id', $request->parent_id)->first();
                 } else {
@@ -121,7 +155,6 @@ class PatientInfoController extends Controller
                 }
 
 
-                $office = Office::findOrFail($request->office_id);
                 $ownerUser = User::find($office->owner->user_id);
                 $ownerDoctor = $ownerUser->doctor;
 
@@ -193,13 +226,13 @@ class PatientInfoController extends Controller
                     }
                 } elseif ($office->type == OfficeType::Separate) {
                     if ($patient) {
-                        $fields['doctor_id'] = auth()->user()->doctor->id;
+                        $fields['doctor_id'] = $doctor->id;
                         $oldTemporary = $patient->temporaries()->where('doctor_id', $fields['doctor_id'])->first();
                         abort_unless($oldTemporary == null, 403, 'the user is already exist');
                         $temporary = $patient->temporaries()->create($fields);
 
                         $role = HasRole::create([
-                            'user_id' => auth()->user()->id,
+                            'user_id' => $doctor->user->id,
                             'roleable_type' => 'App\Models\Patient',
                             'roleable_id' => $patient->id,
                             'sub_role' => DoctorRoleForPatient::DoctorWithoutApprove
@@ -207,11 +240,11 @@ class PatientInfoController extends Controller
 
                         $patientAccountingProfile = $patient->accountingProfiles()->create([
                             'office_id' => $office->id,
-                            'doctor_id' => auth()->user()->doctor->id,
+                            'doctor_id' => $doctor->id,
                             'type' => AccountingProfileType::PatientAccount,
                         ]);
 
-                        $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                        $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $doctor->id])->first();
 
                         $defaultCase = $patient->cases()->create([
                             'case_id' => $case->id,
@@ -221,7 +254,6 @@ class PatientInfoController extends Controller
 
                         return new MyPatientsResource($role);
                     } else {
-                        $doctor = auth()->user()->doctor;
                         $patientInfo = $doctor->patients()->create($fields);
                         $patientInfo->info()->create([
                             'numberPrefix' => $fields['numberPrefix'],
@@ -229,7 +261,7 @@ class PatientInfoController extends Controller
                         ]);
 
 
-                        $role = auth()->user()->roles()->create([
+                        $role = $doctor->user->roles()->create([
                             'roleable_type' => 'App\Models\Patient',
                             'roleable_id' => $patientInfo->id,
                             'sub_role' => DoctorRoleForPatient::DoctorWithApprove
@@ -240,12 +272,12 @@ class PatientInfoController extends Controller
                         ]);
 
                         $patientAccountingProfile = $patientInfo->accountingProfiles()->create([
-                            'doctor_id' => auth()->user()->doctor->id,
+                            'doctor_id' => $doctor->id,
                             'office_id' => $office->id,
                             'type' => AccountingProfileType::PatientAccount,
                         ]);
 
-                        $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => auth()->user()->doctor->id])->first();
+                        $case = MedicalCase::where(['case_name' => Doctor::DefaultCase, 'doctor_id' => $doctor->id])->first();
 
                         $defaultCase = $patientInfo->cases()->create([
                             'case_id' => $case->id,
