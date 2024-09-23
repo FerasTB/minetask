@@ -778,6 +778,9 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
+        if ($request->has('items')) {
+            return $request;
+        }
         if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
@@ -871,7 +874,7 @@ class InvoiceController extends Controller
         $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
             $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
-        return $totalPositive - $totalNegative + $thisTransaction + $lap->initial_balance;
+        return $totalPositive - $totalNegative - $thisTransaction + $lap->initial_balance;
     }
 
     public function processDraftInvoice(ProcessDraftInvoiceRequest $request)
