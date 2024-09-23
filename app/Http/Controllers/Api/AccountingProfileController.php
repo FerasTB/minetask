@@ -304,7 +304,7 @@ class AccountingProfileController extends Controller
         $this->authorize('inOffice', [AccountingProfile::class, $office]);
         // if ($office->type == OfficeType::Separate) {
         $accounts = $doctor->accountingProfiles()->where('type', AccountingProfileType::DentalLabDoctorAccount)->get();
-        $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps']);
+        $accounts->load(['invoices', 'invoices.items', 'receipts', 'lab', 'labOrders', 'labOrders.details', 'labOrders.details.teeth', 'labOrders.orderSteps', 'directDoubleEntries', 'doubleEntries']);
         return DentalLabAccountingProfileResource::collection($accounts);
     }
 
