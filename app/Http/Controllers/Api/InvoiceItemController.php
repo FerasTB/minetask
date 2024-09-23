@@ -28,6 +28,8 @@ use App\Models\InvoiceItem;
 use App\Models\InvoiceReceipt;
 use App\Models\TeethRecord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceItemController extends Controller
 {
