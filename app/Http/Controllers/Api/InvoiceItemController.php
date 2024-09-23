@@ -19,6 +19,10 @@ use App\Http\Resources\InvoiceItemsResource;
 use App\Http\Resources\InvoiceResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
+use App\Models\Doctor;
+use App\Models\DoubleEntry;
+use App\Models\EmployeeSetting;
+use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\InvoiceReceipt;
@@ -192,31 +196,100 @@ class InvoiceItemController extends Controller
     {
         $fields = $request->validated();
         $office = $invoice->office;
-        if ($office->type == OfficeType::Combined) {
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => null,
-                'sub_type' => COASubType::Payable
-            ])->first();
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
         } else {
+            // Ensure a valid doctor is authenticated
             $doctor = auth()->user()->doctor;
-            $payable = COA::where([
-                'office_id' => $office->id,
-                'doctor_id' => $doctor->id,
-                'sub_type' => COASubType::Payable
-            ])->first();
+            $user = auth()->user();
         }
-        $expensesCoa = COA::findOrFail($request->item_coa);
-        abort_unless($payable != null && $expensesCoa != null, 403);
-        abort_unless($expensesCoa->doctor->id == auth()->user()->doctor->id, 403);
-        abort_unless($expensesCoa->general_type == COAGeneralType::Expenses, 403);
-        $item = $invoice->items()->create($fields);
-        $doubleEntryFields['invoice_item_id'] = $item->id;
-        $doubleEntryFields['total_price'] = $item->total_price;
-        $doubleEntryFields['type'] = DoubleEntryType::Positive;
-        $payable->doubleEntries()->create($doubleEntryFields);
-        $expensesCoa->doubleEntries()->create($doubleEntryFields);
-        return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items', 'lab'])->first());
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+        DB::beginTransaction();
+        try {
+
+            if ($office->type == OfficeType::Combined) {
+                $payable = COA::where([
+                    'office_id' => $office->id,
+                    'doctor_id' => null,
+                    'sub_type' => COASubType::Payable
+                ])->first();
+            } else {
+                $payable = COA::where([
+                    'office_id' => $office->id,
+                    'doctor_id' => $doctor->id,
+                    'sub_type' => COASubType::Payable
+                ])->first();
+            }
+            $expensesCoa = COA::findOrFail($request->item_coa);
+            abort_unless($payable != null && $expensesCoa != null, 403);
+            abort_unless($expensesCoa->doctor->id == $doctor->id, 403);
+            abort_unless($expensesCoa->general_type == COAGeneralType::Expenses, 403);
+            $item = $invoice->items()->create($fields);
+            $doubleEntryFields['invoice_item_id'] = $item->id;
+            $doubleEntryFields['total_price'] = $item->total_price;
+            $doubleEntryFields['type'] = DoubleEntryType::Positive;
+            $this->createProfileDoubleEntry($invoice->accounting_profile_id, $item->id, $item->total_price, DoubleEntryType::Positive);
+            $expensesCoa->doubleEntries()->create($doubleEntryFields);
+            DB::commit();
+            return new InvoiceResource($item->invoice()->with(['doctor', 'office', 'items', 'lab'])->first());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating supplier invoice with items: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function createProfileDoubleEntry($accountingProfileId, $itemId, $totalPrice, $type)
+    {
+        $runningBalance = $this->calculateLapBalance($accountingProfileId, $type == DoubleEntryType::Positive ? $totalPrice : -$totalPrice);
+
+        DoubleEntry::create([
+            'accounting_profile_id' => $accountingProfileId,
+            'invoice_item_id' => $itemId,
+            'total_price' => $totalPrice,
+            'type' => $type,
+            'running_balance' => $runningBalance
+        ]);
+    }
+
+    private function calculateLapBalance(int $id, int $thisTransaction)
+    {
+        $lap = AccountingProfile::findOrFail($id);
+        $doubleEntries = $lap->doubleEntries()->get();
+        $directDoubleEntries = $lap->directDoubleEntries()->get();
+
+        // Sum the positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return $totalPositive - $totalNegative - $thisTransaction + $lap->initial_balance;
     }
 
     public function storePatientInvoiceReceiptItem(StorePatientInvoiceReceiptItemRequest $request, InvoiceReceipt $invoice)

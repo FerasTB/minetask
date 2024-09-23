@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\AccountingProfile;
+use App\Models\Doctor;
 use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\User;
@@ -30,19 +31,19 @@ class InvoicePolicy
         return $role != null;
     }
 
-    public function acceptDentalLabInvoice(User $user, Invoice $invoice): bool
+    public function acceptDentalLabInvoice(User $user, Invoice $invoice, Doctor $doctor): bool
     {
         $role = HasRole::where(['roleable_id' => $invoice->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return $role != null && $invoice->doctor && auth()->user()->doctor;
+        return $role != null && $invoice->doctor->id && $doctor->id;
     }
 
-    public function storeDentalLabInvoiceForDoctor(User $user, AccountingProfile $profile): bool
+    public function storeDentalLabInvoiceForDoctor(User $user, AccountingProfile $profile, Doctor $doctor): bool
     {
         if ($profile->office == null) {
             return false;
         }
         $role = HasRole::where(['roleable_id' => $profile->office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        return $role != null && $profile->doctor->id == auth()->user()->doctor->id;
+        return $role != null && $profile->doctor->id == $doctor->id;
     }
 
     /**

@@ -777,25 +777,101 @@ class InvoiceController extends Controller
     public function storeDentalLabInvoice(StoreDentalLabInvoiceForDoctorRequest $request, AccountingProfile $profile)
     {
         $fields = $request->validated();
-        $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile]);
-        if ($request->invoice_id) {
-            $invoice2 = Invoice::findOrFail($request->invoice_id);
-            $this->authorize('acceptDentalLabInvoice', [$invoice2]);
-            $invoice2->update([
-                'status' => TransactionStatus::Approved,
-            ]);
+        $office = Office::findOrFail($request->office_id);
+        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
         }
-        $fields['running_balance'] = $this->labBalance($profile->id, $fields['total_price']);
-        $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => auth()->user()->doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
-        $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
-        $fields['type'] = DentalDoctorTransaction::PercherInvoice;
-        $fields['status'] = TransactionStatus::Approved;
-        if (!$request->has('date_of_invoice')) {
-            $fields['date_of_invoice'] = now();
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
         }
-        $invoice = $profile->invoices()->create($fields);
-        $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
-        return new InvoiceResource($invoice);
+        $this->authorize('storeDentalLabInvoiceForDoctor', [Invoice::class, $profile, $doctor]);
+        DB::beginTransaction();
+        try {
+            if ($request->invoice_id) {
+                $invoice2 = Invoice::findOrFail($request->invoice_id);
+                $this->authorize('acceptDentalLabInvoice', [$invoice2, $doctor]);
+                $invoice2->update([
+                    'status' => TransactionStatus::Approved,
+                ]);
+            }
+
+            $fields['running_balance'] = $this->calculateLapBalance($profile->id, $fields['total_price']);
+            $transactionNumber = TransactionPrefix::where(['office_id' => $profile->office->id, 'doctor_id' => $doctor->id, 'type' => TransactionType::SupplierInvoice])->first();
+            $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+            $fields['type'] = DentalDoctorTransaction::PercherInvoice;
+            $fields['status'] = TransactionStatus::Approved;
+            if (!$request->has('date_of_invoice')) {
+                $fields['date_of_invoice'] = now();
+            }
+            $invoice = $profile->invoices()->create($fields);
+            $transactionNumber->update(['last_transaction_number' => $fields['invoice_number']]);
+            // Process binding charges
+            // if ($request->has('binding_charges')) {
+            //     foreach ($request->binding_charges as $bindingChargeId) {
+            //         $checkBinding = InvoiceItem::findOrFail($bindingChargeId);
+            //         abort_if($checkBinding->coa->doctor->id != $doctor->id, 403, 'the coa have conflict');
+            //         $this->processBindingCharge($bindingChargeId, $invoice, $request->paid_done);
+            //     }
+            // }
+
+            // Process invoice items
+            // if ($request->has('items')) {
+            //     foreach ($request->items as $itemData) {
+            //         $checkCOA = COA::findOrFail($itemData['coa_id']);
+            //         abort_if($checkCOA->doctor_id != $doctor->id, 403, 'the coa have conflict');
+            //         $this->processInvoiceItem($itemData, $invoice, $request->paid_done);
+            //     }
+            // }
+
+            DB::commit();
+            return new InvoiceResource($invoice);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating lap invoice : ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function calculateLapBalance(int $id, int $thisTransaction)
+    {
+        $lap = AccountingProfile::findOrFail($id);
+        $doubleEntries = $lap->doubleEntries()->get();
+        $directDoubleEntries = $lap->directDoubleEntries()->get();
+
+        // Sum the positive and negative entries from both doubleEntries and directDoubleEntries
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return $totalPositive - $totalNegative - $thisTransaction + $lap->initial_balance;
     }
 
     public function processDraftInvoice(ProcessDraftInvoiceRequest $request)
