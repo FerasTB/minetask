@@ -871,7 +871,7 @@ class InvoiceController extends Controller
         $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
             $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
 
-        return $totalPositive - $totalNegative - $thisTransaction + $lap->initial_balance;
+        return $totalPositive - $totalNegative + $thisTransaction + $lap->initial_balance;
     }
 
     public function processDraftInvoice(ProcessDraftInvoiceRequest $request)
