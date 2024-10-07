@@ -111,4 +111,9 @@ class Patient extends Model
     {
         return $this->morphMany(HasRole::class, 'roleable');
     }
+
+    public function labOrders()
+    {
+        return $this->hasMany(LabOrder::class, 'patient_id');
+    }
 }

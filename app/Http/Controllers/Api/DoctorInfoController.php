@@ -180,6 +180,9 @@ class DoctorInfoController extends Controller
                 'patient',
                 'patient.info',
                 'patient.doctorImage',
+                'patient.labOrders',
+                'patient.labOrders.details',
+                'patient.labOrders.details.teeth',
                 'invoices',
                 'invoices.items',
                 'receipts',
@@ -202,10 +205,7 @@ class DoctorInfoController extends Controller
                         'teethRecords.operations.teeth',
                         'teethRecords.diagnosis.teeth'
                     ]);
-                },
-                'labOrders',
-                'labOrders.details',
-                'labOrders.details.teeth'
+                }
             ])->get();
 
             // $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
@@ -226,6 +226,9 @@ class DoctorInfoController extends Controller
                 'patient',
                 'patient.info',
                 'patient.doctorImage',
+                'patient.labOrders',
+                'patient.labOrders.details',
+                'patient.labOrders.details.teeth',
                 'invoices',
                 'invoices.items',
                 'receipts',
@@ -249,9 +252,6 @@ class DoctorInfoController extends Controller
                         'teethRecords.diagnosis.teeth'
                     ]);
                 },
-                'labOrders',
-                'labOrders.details',
-                'labOrders.details.teeth'
             ])->get();
             // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
             $response['profile'] = AccountingProfileResource::collection($accountsSeparate)->map(function ($accountProfile) use ($user) {
