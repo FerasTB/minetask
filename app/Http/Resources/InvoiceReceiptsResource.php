@@ -37,6 +37,7 @@ class InvoiceReceiptsResource extends JsonResource
             'type' => 'SellInvoice',
             'prefix' => 'PINV',
             'invoice_number' => $this->invoice_number,
+            'creator' => $this->creator ? $this->creator->full_name : null,
             'created_at' => $this->created_at,
         ];
     }

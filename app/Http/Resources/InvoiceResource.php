@@ -43,6 +43,8 @@ class InvoiceResource extends JsonResource
             // 'supplier' => $this->whenLoaded('account.supplier_name'),
             'supplier' => new SupplierNameResource($this->whenLoaded('account')),
             'invoice_number' => $this->invoice_number,
+            'creator' => $this->creator ? $this->creator->full_name : null,
+
             'created_at' => $this->created_at,
             'teeth_record_id' => $this->teeth_record_id,
         ];

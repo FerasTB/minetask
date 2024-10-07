@@ -4,14 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceReceipt extends Model
 {
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['accounting_profile_id', 'doctor_id', 'total_price', 'date_of_payment', 'note', 'running_balance', 'invoice_number'];
+    protected $fillable = ['created_by', 'accounting_profile_id', 'doctor_id', 'total_price', 'date_of_payment', 'note', 'running_balance', 'invoice_number'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($InvoiceReceipt) {
+            $InvoiceReceipt->created_by = Auth::check() ? Auth::id() : null;
+        });
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
     public function patient()
     {
         return $this->belongsToThrough(
