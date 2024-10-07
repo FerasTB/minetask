@@ -74,6 +74,7 @@ class AccountingProfileResource extends JsonResource
                 'invoice' => InvoiceResource::collection($this->whenLoaded('invoices')),
                 'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
                 'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
+                'lab_orders' => LabOrderResource::collection($this->whenLoaded('labOrders')),
                 'office_id' => $this->office_id,
                 'total' => $this->total_balance + $this->initial_balance,
             ],
