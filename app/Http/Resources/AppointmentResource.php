@@ -40,7 +40,7 @@ class AppointmentResource extends JsonResource
             'note' => $this->note,
             'step' => $this->step,
             'color' => $this->color,
-            'color' => $this->creator->full_name,
+            'color' => $this->creator ? $this->creator->full_name : null,
             'closable' => $this->case_name != Doctor::DefaultCase,
             'is_patient_in_clinic' => PatientInClinicStatus::getKey($this->is_patient_in_clinic),
         ];
