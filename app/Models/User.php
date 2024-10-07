@@ -59,6 +59,16 @@ class User extends Authenticatable implements FilamentUser
     // {
     //     return $this->morphTo();
     // }
+    public function getFullNameAttribute()
+    {
+        if ($this->doctor) {
+            return $this->doctor->first_name . ' ' . $this->doctor->last_name;
+        } elseif ($this->patient) {
+            return $this->patient->first_name . ' ' . $this->patient->last_name;
+        } else {
+            return $this->name; // Fallback if neither
+        }
+    }
 
     public function doctor()
     {
