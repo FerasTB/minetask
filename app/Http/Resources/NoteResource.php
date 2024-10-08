@@ -17,6 +17,7 @@ class NoteResource extends JsonResource
         return [
             'id' => $this->id,
             'note' => $this->note,
+            'primary' => $this->primary,
             'patient' => new PatientInfoForDoctorResource($this->whenLoaded('patient')),
             'doctor' => new DoctorResource($this->whenLoaded('doctor')),
             'office' => new OfficeResource($this->whenLoaded('office')),

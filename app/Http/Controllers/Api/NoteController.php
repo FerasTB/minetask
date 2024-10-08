@@ -111,6 +111,15 @@ class NoteController extends Controller
         }
         $this->authorize('inOffice', [Note::class, $office]);
         $fields['doctor_id'] = $doctor->id;
+
+        if (isset($fields['primary']) && $fields['primary']) {
+            // Reset existing primary notes for this doctor-patient pair
+            Note::where('doctor_id', $doctor->id)
+                ->where('patient_id', $fields['patient_id'])
+                ->where('office_id', $office->id)
+                ->where('primary', true)
+                ->update(['primary' => false]);
+        }
         $note = $office->notes()->create($fields);
         $note->load('patient');
         $note->load('doctor');
@@ -165,21 +174,31 @@ class NoteController extends Controller
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
+        // Authorization logic
         if ($note->doctor) {
             $this->authorize('updateForDoctor', [$note, $doctor]);
-            $fields = $request->validated();
-            $note->update($fields);
-            $note->load('patient');
-            $note->load('doctor');
-            $note->load('office');
-            return new NoteResource($note);
+        } else {
+            $this->authorize('updateForOffice', [$note, $note->office]);
         }
-        $this->authorize('updateForOffice', [$note, $note->office]);
+
         $fields = $request->validated();
+
+        if (isset($fields['primary'])) {
+            if ($fields['primary']) {
+                // Reset existing primary notes for this doctor-patient pair, excluding the current note
+                Note::where('doctor_id', $doctor->id)
+                    ->where('patient_id', $note->patient_id)
+                    ->where('primary', true)
+                    ->where('id', '!=', $note->id)
+                    ->update(['primary' => false]);
+            }
+            // No action needed if 'primary' is being set to false
+        }
+
+        // Update the note
         $note->update($fields);
-        $note->load('patient');
-        $note->load('doctor');
-        $note->load('office');
+        $note->load(['patient', 'doctor', 'office']);
+
         return new NoteResource($note);
     }
 

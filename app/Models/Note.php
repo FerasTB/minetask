@@ -9,7 +9,7 @@ class Note extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['note', 'patient_id', 'office_id', 'doctor_id'];
+    protected $fillable = ['note', 'patient_id', 'office_id', 'doctor_id', 'primary'];
 
     public function office()
     {

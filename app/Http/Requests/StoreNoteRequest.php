@@ -26,6 +26,7 @@ class StoreNoteRequest extends FormRequest
             'note' => 'required|string',
             // 'doctor_id' => 'nullable|integer',
             'patient_id' => 'nullable|integer',
+            'primary' => 'sometimes|boolean',
         ];
     }
 }

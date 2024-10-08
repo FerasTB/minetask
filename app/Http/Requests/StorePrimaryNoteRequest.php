@@ -2,17 +2,16 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateNoteRequest extends FormRequest
+class StorePrimaryNoteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,9 +22,7 @@ class UpdateNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'note' => 'required|string',
-            'patient_id' => 'nullable|integer',
-            'primary' => 'sometimes|boolean',
+            //
         ];
     }
 }
