@@ -43,6 +43,8 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
                     'info' => new UserInfoResource($this->whenLoaded('info')),
+                    'primary_note' => $patient->notes->first() ? new NoteResource($this->patient->notes->first()) : null,
+
                     'image' => $patient->doctorImage != null ?
                         DoctorImageResource::collection($patient->doctorImage->where('doctor_id', auth()->user()->doctor->id))
                         : "no image",
@@ -69,6 +71,8 @@ class MyPatientCombinedThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'WithoutApprove',
                     'info' => new UserInfoResource($this->whenLoaded('info')),
+                    'primary_note' => $originalPatient->notes->first() ? new NoteResource($this->patient->notes->first()) : null,
+
                     'TemporaryId' => $patient->id,
                     'image' => $originalPatient->doctorImage != null ?
                         DoctorImageResource::collection($originalPatient->doctorImage->where('doctor_id', auth()->user()->doctor->id))

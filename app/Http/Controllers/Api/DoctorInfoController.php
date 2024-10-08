@@ -191,6 +191,11 @@ class DoctorInfoController extends Controller
                 'invoiceReceipt.items',
                 'doubleEntries',
                 'directDoubleEntries',
+                'patient.notes' => function ($query) use ($doctor, $office) {
+                    $query->where('doctor_id', $doctor->id)
+                        ->where('office_id', $office->id)
+                        ->where('primary', true);
+                },
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([
@@ -237,6 +242,11 @@ class DoctorInfoController extends Controller
                 'invoiceReceipt.items',
                 'doubleEntries',
                 'directDoubleEntries',
+                'patient.notes' => function ($query) use ($doctor, $office) {
+                    $query->where('doctor_id', $doctor->id)
+                        ->where('office_id', $office->id)
+                        ->where('primary', true);
+                },
                 'patient.cases' => function ($query) use ($doctor, $office) {
                     $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
                         $query->where([

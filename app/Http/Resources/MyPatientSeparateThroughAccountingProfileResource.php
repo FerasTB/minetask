@@ -48,6 +48,8 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'Approve',
                     'info' => new UserInfoResource($this->patient->info),
+                    'primary_note' => $patient->notes->first() ? new NoteResource($this->patient->notes->first()) : null,
+
                     'image' => $patient->doctorImage != null ?
                         DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', $this->doctorUser->doctor->id))
                         : "no image",
@@ -75,6 +77,8 @@ class MyPatientSeparateThroughAccountingProfileResource extends JsonResource
                     'created_at' => $patient->created_at,
                     'status' => 'WithoutApprove',
                     'info' => new UserInfoResource($this->patient->info),
+                    'primary_note' => $originalPatient->notes->first() ? new NoteResource($this->patient->notes->first()) : null,
+
                     'TemporaryId' => $patient->id,
                     'image' => $originalPatient->doctorImage != null ?
                         DoctorImageResource::collection($this->patient->doctorImage->where('doctor_id', $this->doctorUser->doctor->id))
