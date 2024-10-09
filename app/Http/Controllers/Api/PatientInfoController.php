@@ -376,7 +376,7 @@ class PatientInfoController extends Controller
         }
         $patient = Patient::whereHas('info', function ($query) use ($fields) {
             $query->where('numberPrefix', $fields['numberPrefix'])
-                ->where('phone', $fields['phone'])
+                ->where('phone', auth()->user()->phone)
                 ->where('user_id', null);
         })->first();
 
