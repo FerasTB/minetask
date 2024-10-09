@@ -14,6 +14,7 @@ use App\Http\Requests\SetInitialBalanceForPatientRequest;
 use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StorePatientInfoForPatientRequest;
 use App\Http\Requests\StorePatientRequest;
+use App\Http\Requests\UpdateDoctorsAccessRequest;
 use App\Http\Requests\UpdatePatientInfoForPatientRequest;
 use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\DrugPatientIndexResource;
@@ -450,6 +451,79 @@ class PatientInfoController extends Controller
         });
 
         return response()->json(['doctors' => $doctors]);
+    }
+
+    public function updateDoctorsAccess(UpdateDoctorsAccessRequest $request)
+    {
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        if (!$patient) {
+            return response()->json(['error' => 'Patient profile not found'], 404);
+        }
+
+        $doctorsData = $request->input('doctors');
+        $responses = [];
+        $errors = [];
+
+        // Use a transaction to ensure all updates succeed or fail together
+        DB::beginTransaction();
+
+        try {
+            foreach ($doctorsData as $doctorData) {
+                $doctorId = $doctorData['doctor_id'];
+                $approve = $doctorData['approve'];
+
+                $role = HasRole::where('roleable_type', Patient::class)
+                    ->where('roleable_id', $patient->id)
+                    ->where('user_id', $doctorId)
+                    ->first();
+
+                if (!$role) {
+                    // Collect error but continue processing other doctors
+                    $errors[] = [
+                        'doctor_id' => $doctorId,
+                        'error' => 'Access request not found for this doctor.',
+                    ];
+                    continue;
+                }
+
+                // Update the sub_role based on approval
+                $role->sub_role = $approve
+                    ? DoctorRoleForPatient::DoctorWithApprove
+                    : DoctorRoleForPatient::DoctorWithoutApprove;
+
+                $role->save();
+
+                $responses[] = [
+                    'doctor_id' => $doctorId,
+                    'message' => 'Doctor access updated successfully.',
+                ];
+            }
+
+            // If there are errors, rollback the transaction
+            if (!empty($errors)) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Some doctor access updates failed.',
+                    'successes' => $responses,
+                    'errors' => $errors,
+                ], 207); // 207 Multi-Status
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'All doctor access updates succeeded.',
+                'successes' => $responses,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'An error occurred while updating doctor access.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 
