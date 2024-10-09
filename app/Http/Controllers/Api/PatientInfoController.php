@@ -472,11 +472,12 @@ class PatientInfoController extends Controller
         try {
             foreach ($doctorsData as $doctorData) {
                 $doctorId = $doctorData['doctor_id'];
+                $doctor = Doctor::findOrFail($doctorId);
                 $approve = $doctorData['approve'];
 
                 $role = HasRole::where('roleable_type', Patient::class)
                     ->where('roleable_id', $patient->id)
-                    ->where('user_id', $doctorId)
+                    ->where('user_id', $doctor->user->id)
                     ->first();
 
                 if (!$role) {
