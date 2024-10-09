@@ -84,6 +84,17 @@ class AuthController extends Controller
                         'user_id' => $user->id,
                     ]);
                 }
+                // assaign patient role to user
+                $patientRole = Role::where('name', 'Patient')->first();
+
+                abort_unless(!auth()->user()->hasRole($patientRole), 404);
+
+                $role = ModelHasRole::create([
+                    'role_id' => $patientRole->id,
+                    'roleable_id' => auth()->id(),
+                    'roleable_type' => 'App\Models\User',
+                ]);
+                $user->update(['current_role_id' => $patientRole->id]);
             }
         } else {
             $user = User::create([
@@ -95,18 +106,6 @@ class AuthController extends Controller
                 'roleable_id' => auth()->id(),
                 'roleable_type' => 'App\Models\User',
             ]);
-
-            // assaign patient role to user
-            $patientRole = Role::where('name', 'Patient')->first();
-
-            abort_unless(!auth()->user()->hasRole($patientRole), 404);
-
-            $role = ModelHasRole::create([
-                'role_id' => $patientRole->id,
-                'roleable_id' => auth()->id(),
-                'roleable_type' => 'App\Models\User',
-            ]);
-            $user->update(['current_role_id' => $patientRole->id]);
         }
         $token = $user->createToken("medcare_app")->plainTextToken;
         $user = User::find($user->id);
