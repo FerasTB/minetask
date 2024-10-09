@@ -366,7 +366,7 @@ class PatientInfoController extends Controller
 
     public function getPatientInfo(Request $request)
     {
-        $fields = $request->validated();
+        // $fields = $request->validated();
         if (!$request->has('numberPrefix')) {
             $fields['numberPrefix'] = '+963';
         }
