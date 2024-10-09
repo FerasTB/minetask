@@ -42,6 +42,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -277,7 +278,7 @@ class DoctorInfoController extends Controller
                     $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
                 }
             } else {
-                $accountProfile->default_case = $accountProfile->id;
+                Log::alert($accountProfile->id);
             }
         }
         return response()->json($response);
