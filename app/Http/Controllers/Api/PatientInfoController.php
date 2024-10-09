@@ -443,7 +443,7 @@ class PatientInfoController extends Controller
             return [
                 'doctor_id' => $doctor->id,
                 'name' => $doctorUser->full_name,
-                'email' => $doctorUser->email,
+                'phone' => $doctorUser->phone,
                 'approved' => $role->sub_role != DoctorRoleForPatient::DoctorWithoutApprove,
                 'role_id' => $role->id,
             ];
