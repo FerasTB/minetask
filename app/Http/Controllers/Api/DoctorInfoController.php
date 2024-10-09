@@ -271,9 +271,13 @@ class DoctorInfoController extends Controller
         // Process each profile to include the default case
         foreach ($response['profile'] as $accountProfile) {
             $patient = $accountProfile->patient;
-            $defaultCase = $patient->cases->first();
-            if ($defaultCase) {
-                $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
+            if ($patient) {
+                $defaultCase = $patient->cases->first();
+                if ($defaultCase) {
+                    $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
+                }
+            } else {
+                $accountProfile->default_case = $accountProfile->id;
             }
         }
         return response()->json($response);
