@@ -278,7 +278,7 @@ class DoctorInfoController extends Controller
                     $accountProfile->default_case = new PatientDefaultCaseResource($defaultCase);
                 }
             } else {
-                Log::alert($accountProfile->id);
+                return $accountProfile->id;
             }
         }
         return response()->json($response);
