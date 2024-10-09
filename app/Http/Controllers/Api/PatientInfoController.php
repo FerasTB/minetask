@@ -405,8 +405,15 @@ class PatientInfoController extends Controller
             $query->where('numberPrefix', $fields['numberPrefix'])
                 ->where('phone', $fields['phone']);
         })->first();
-        if (!$patient->user && !auth()->user()->patient) {
+        if ($patient) {
             $patient->update([
+                'first_name'   => $fields['first_name'],
+                'father_name'  => $fields['father_name'],
+                'marital'      => $fields['marital'],
+                'mother_name'  => $fields['mother_name'],
+                'last_name'    => $fields['last_name'],
+                'birth_date'   => $fields['birth_date'],
+                'gender'       => $fields['gender'],
                 'user_id' => auth()->id(),
             ]);
         } else {
@@ -528,17 +535,47 @@ class PatientInfoController extends Controller
     }
 
 
-    public function updatePatientsInfo(UpdatePatientInfoForPatientRequest $request)
-    {
-        $this->authorize('updatePatientInfo');
-        $fields = $request->validated();
-        $patient = auth()->user()->patient;
-        if ($request->marital) {
-            $fields['marital'] = MaritalStatus::getValue($request->marital);
-        }
-        $patient->update($fields);
-        return response()->json($patient);
-    }
+    // public function showProfile(Request $request)
+    // {
+    //     $user = auth()->user();
+    //     $patient = $user->patient;
+
+    //     if (!$patient) {
+    //         return response()->json(['error' => 'Patient profile not found'], 404);
+    //     }
+
+    //     // Eager load relationships
+    //     $patient->load([
+    //         'info',
+    //         'cases.medicalCase',
+    //         'cases.teethRecords.operations',
+    //         'cases.teethRecords.diagnosis',
+    //         'notes.doctor.user',
+    //     ]);
+
+    //     // Get doctors with access
+    //     $doctorRoles = HasRole::where('roleable_type', Patient::class)
+    //         ->where('roleable_id', $patient->id)
+    //         ->with('user.doctor')
+    //         ->get();
+
+    //     $doctors = $doctorRoles->map(function ($role) {
+    //         $doctorUser = $role->user;
+    //         $doctor = $doctorUser->doctor;
+
+    //         return [
+    //             'doctor_id' => $doctor->id,
+    //             'name' => $doctorUser->name,
+    //             'email' => $doctorUser->email,
+    //             'approved' => $role->sub_role != DoctorRoleForPatient::DoctorWithoutApprove,
+    //         ];
+    //     });
+
+    //     return new Pattient([
+    //         'patient' => $patient,
+    //         'doctors' => $doctors,
+    //     ]);
+    // }
 
     public function setInitialBalance(SetInitialBalanceForPatientRequest $request, Office $office, Patient $patient)
     {
