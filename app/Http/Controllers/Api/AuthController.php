@@ -85,7 +85,7 @@ class AuthController extends Controller
                     ]);
                 }
                 // assaign patient role to user
-                $user->update(['current_role_id' => $role->id]);
+                $user->update(['current_role_id' => Role::Patient]);
             }
         } else {
             $user = User::create([
