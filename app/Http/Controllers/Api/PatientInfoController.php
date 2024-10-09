@@ -410,7 +410,7 @@ class PatientInfoController extends Controller
             ]);
         } else {
             $patient = auth()->user()->patient()->create($fields);
-            $patientTeethReport = $patientInfo->report()->create([
+            $patientTeethReport = $patient->report()->create([
                 'report_type' => ReportType::TeethReport,
             ]);
             // Create or update the user info with phone prefix and country
@@ -422,7 +422,7 @@ class PatientInfoController extends Controller
         return response()->json($patient);
     }
 
-    public function updatePatientInfo(UpdatePatientInfoRequest $request)
+    public function listDoctors(Request $request)
     {
         $user = auth()->user();
         $patient = $user->patient;
@@ -431,10 +431,27 @@ class PatientInfoController extends Controller
             return response()->json(['error' => 'Patient profile not found'], 404);
         }
 
-        $patient->update($request->validated());
+        $doctorRoles = HasRole::where('roleable_type', Patient::class)
+            ->where('roleable_id', $patient->id)
+            ->with('user.doctor')
+            ->get();
 
-        return response()->json(['message' => 'Patient information updated successfully', 'patient' => $patient]);
+        $doctors = $doctorRoles->map(function ($role) {
+            $doctorUser = $role->user;
+            $doctor = $doctorUser->doctor;
+
+            return [
+                'doctor_id' => $doctor->id,
+                'name' => $doctorUser->name,
+                'email' => $doctorUser->email,
+                'approved' => $role->sub_role != DoctorRoleForPatient::DoctorWithoutApprove,
+                'role_id' => $role->id,
+            ];
+        });
+
+        return response()->json(['doctors' => $doctors]);
     }
+
 
     public function updatePatientsInfo(UpdatePatientInfoForPatientRequest $request)
     {
