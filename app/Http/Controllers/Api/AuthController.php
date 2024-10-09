@@ -77,7 +77,7 @@ class AuthController extends Controller
                 'roleable_id' => auth()->id(),
                 'roleable_type' => 'App\Models\User',
             ]);
-            if (Role::getValue($request->role) == Role::Patient) {
+            if ($request->role == 'Patient') {
                 $patient = Patient::where('phone', $request->phone)->first();
                 if ($patient) {
                     $patient->update([
@@ -85,16 +85,7 @@ class AuthController extends Controller
                     ]);
                 }
                 // assaign patient role to user
-                $patientRole = Role::where('name', 'Patient')->first();
-
-                abort_unless(!auth()->user()->hasRole($patientRole), 404);
-
-                $role = ModelHasRole::create([
-                    'role_id' => $patientRole->id,
-                    'roleable_id' => auth()->id(),
-                    'roleable_type' => 'App\Models\User',
-                ]);
-                $user->update(['current_role_id' => $patientRole->id]);
+                $user->update(['current_role_id' => $role->id]);
             }
         } else {
             $user = User::create([
