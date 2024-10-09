@@ -12,7 +12,7 @@ class StoreDentalLabForDoctorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->currentRole->id == Role::DentalDoctor;
+        return true;
     }
 
     /**
