@@ -364,7 +364,30 @@ class PatientInfoController extends Controller
         return DrugPatientIndexResource::collection($drugs);
     }
 
-    public function patientsInfo(StorePatientInfoForPatientRequest $request)
+    public function getPatientInfo(Request $request)
+    {
+        $fields = $request->validated();
+        if (!$request->has('numberPrefix')) {
+            $fields['numberPrefix'] = '+963';
+        }
+
+        if (!$request->has('country')) {
+            $fields['country'] = 'Syria';
+        }
+        $patient = Patient::whereHas('info', function ($query) use ($fields) {
+            $query->where('numberPrefix', $fields['numberPrefix'])
+                ->where('phone', $fields['phone'])
+                ->where('user_id', null);
+        })->first();
+
+        if (!$patient) {
+            return response()->json(['error' => 'Patient profile not found'], 404);
+        }
+
+        return response()->json($patient);
+    }
+
+    public function completePatientInfo(StorePatientInfoForPatientRequest $request)
     {
         $fields = $request->validated();
         if ($request->marital) {
@@ -377,20 +400,40 @@ class PatientInfoController extends Controller
         if (!$request->has('country')) {
             $fields['country'] = 'Syria';
         }
-        $patient = Patient::where('phone', $request->phone)->first();
-        if ($patient || auth()->user()->patient) {
-            return response()->noContent();
+        $patient = Patient::whereHas('info', function ($query) use ($fields) {
+            $query->where('numberPrefix', $fields['numberPrefix'])
+                ->where('phone', $fields['phone']);
+        })->first();
+        if (!$patient->user && !auth()->user()->patient) {
+            $patient->update([
+                'user_id' => auth()->id(),
+            ]);
+        } else {
+            $patient = auth()->user()->patient()->create($fields);
+            $patientTeethReport = $patientInfo->report()->create([
+                'report_type' => ReportType::TeethReport,
+            ]);
+            // Create or update the user info with phone prefix and country
+            $patient->info()->create([
+                'numberPrefix' => $fields['numberPrefix'],
+                'country' => $fields['country'],
+            ]);
         }
-        $patientInfo = auth()->user()->patient()->create($fields);
-        $patientTeethReport = $patientInfo->report()->create([
-            'report_type' => ReportType::TeethReport,
-        ]);
-        // Create or update the user info with phone prefix and country
-        $patientInfo->info()->create([
-            'numberPrefix' => $fields['numberPrefix'],
-            'country' => $fields['country'],
-        ]);
-        return response()->json($patientInfo);
+        return response()->json($patient);
+    }
+
+    public function updatePatientInfo(UpdatePatientInfoRequest $request)
+    {
+        $user = auth()->user();
+        $patient = $user->patient;
+
+        if (!$patient) {
+            return response()->json(['error' => 'Patient profile not found'], 404);
+        }
+
+        $patient->update($request->validated());
+
+        return response()->json(['message' => 'Patient information updated successfully', 'patient' => $patient]);
     }
 
     public function updatePatientsInfo(UpdatePatientInfoForPatientRequest $request)

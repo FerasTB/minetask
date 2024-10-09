@@ -155,7 +155,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('app/patient/record', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsRecord']);
     Route::get('app/patient/doctor', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsDoctor']);
     Route::get('app/patient/drug', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsDrug']);
-    Route::post('app/patient/complete/info', [App\Http\Controllers\Api\PatientInfoController::class, 'patientsInfo']);
+    Route::post('app/patient/complete/info', [App\Http\Controllers\Api\PatientInfoController::class, 'completePatientInfo']);
+    Route::get('app/patient/get/info', [App\Http\Controllers\Api\PatientInfoController::class, 'getPatientInfo']);
     Route::put('app/patient/update/info', [App\Http\Controllers\Api\PatientInfoController::class, 'updatePatientsInfo']);
     Route::get('/switch-role/{role}', [RoleController::class, 'switchRole']);
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
