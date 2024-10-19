@@ -92,4 +92,10 @@ class OfficePolicy
         $doctorRole = HasRole::where(['user_id' => $doctor->user->id, 'roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office'])->first();
         return $employeeRole != null && $doctorRole != null;
     }
+
+    public function inOffice(User $user, Office $office): bool
+    {
+        $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
 }
