@@ -36,7 +36,7 @@ class StoreLabInvoiceWithItems extends FormRequest
             'items.*.amount' => 'required|integer',
             'items.*.total_price' => 'required|integer',
             'items.*.price_per_one' => 'required|integer',
-            'items.*.item_coa' => 'required|integer',
+            'items.*.coa_id' => 'required|integer',
         ];
     }
 }
