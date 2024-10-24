@@ -217,7 +217,7 @@ class ReceiptController extends Controller
 
             // Create double entries
             $this->createProfileDoubleEntry($receipt->accounting_profile_id, $receipt->id, $receipt->total_price, DoubleEntryType::Negative);
-            $this->createDoubleEntry($cash, $receipt, DoubleEntryType::Positive);
+            $this->createDoubleEntry($cash, $receipt, DoubleEntryType::Negative);
 
             DB::commit();
             return new ReceiptResource($receipt);
