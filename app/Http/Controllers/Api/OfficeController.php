@@ -15,6 +15,7 @@ use App\Http\Requests\AddDoctorToOfficeRequest;
 use App\Http\Requests\AddEmployeeToOfficeRequest;
 use App\Http\Requests\StoreOfficeRequest;
 use App\Http\Requests\UpdateHasRolePropertyRequest;
+use App\Http\Requests\UpdateHasRoleSettingByOwnerRequest;
 use App\Http\Requests\UpdateHasRoleSettingRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
@@ -26,6 +27,7 @@ use App\Http\Resources\OfficeThroughHasRoleResource;
 use App\Http\Resources\OfficeWithDoctorsRecourse;
 use App\Models\COA;
 use App\Models\Doctor;
+use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\ModelHasRole;
 use App\Models\Office;
@@ -366,6 +368,16 @@ class OfficeController extends Controller
         $this->authorize('employeeUpdateSetting', [$office, $doctor]);
         abort_unless(auth()->user()->current_role_id == ModelsRole::DentalDoctorTechnician, 403);
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => auth()->id()])->first();
+        $relation->setting->update($fields);
+        return new EmployeeInOfficeResource($relation);
+    }
+
+    public function updateSettingByOwner(UpdateHasRoleSettingByOwnerRequest $request, Office $office, User $user)
+    {
+        $fields = $request->validated();
+        $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
+        abort_unless($relation && $relation->id != null, 403);
+        $this->authorize('officeOwner', [$office]);
         $relation->setting->update($fields);
         return new EmployeeInOfficeResource($relation);
     }

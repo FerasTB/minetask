@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('has_role_id')->constrained('has_roles')->onDelete('cascade');
             $table->integer("salary");
             $table->integer("rate")->default(0);
+            $table->integer("target")->default(0);
+            $table->integer("coa_id")->default(0);
             $table->integer("rate_type")->nullable();
             $table->integer("doctor_id")->default(0);
             $table->string("note")->nullable();

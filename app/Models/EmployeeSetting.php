@@ -9,7 +9,7 @@ class EmployeeSetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['doctors', 'note', 'doctor_id', 'rate_type', 'rate', 'salary', 'has_role_id'];
+    protected $fillable = ['coa_id', 'target', 'doctors', 'note', 'doctor_id', 'rate_type', 'rate', 'salary', 'has_role_id'];
 
     public function role()
     {

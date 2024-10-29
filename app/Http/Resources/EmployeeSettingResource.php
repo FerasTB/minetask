@@ -22,6 +22,8 @@ class EmployeeSettingResource extends JsonResource
             'rate' => $this->rate,
             'salary' => $this->salary,
             'doctors' => $this->doctors,
+            'coa_id' => $this->coa_id,
+            'target' => $this->target,
         ];
     }
 }
