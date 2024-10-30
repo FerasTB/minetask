@@ -20,7 +20,7 @@ class EmployeeInOfficeResource extends JsonResource
         $user = User::find($this->user_id);
         // $token = $this->getOrCreateToken($user);
         return [
-            'sub_role' => $this->setting->doctor_id == 0 ? "employee" : SubRole::getKey($this->sub_role),
+            'sub_role' => SubRole::getKey($this->sub_role) == "OfficeSecretary" && $this->setting->doctor_id == 0 ? "employee" : SubRole::getKey($this->sub_role),
             'user' => $this->sub_role == SubRole::OfficeSecretary ?  $user->patient :  new DoctorResource($user->doctor),
             'setting' => new EmployeeSettingResource($this->setting),
             // 'token' => $token,
