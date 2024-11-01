@@ -252,8 +252,8 @@ Route::group(['middleware' => ['auth:sanctum', 'isAdmin']], function () {
     // Get all users with their profiles (patients or doctors)
     Route::get('/admin/users', [AdminController::class, 'getUsers']);
 
-    // // Get all patients, including those without a connected user
-    // Route::get('/patients', [PatientController::class, 'index']);
+    // Get all patients, including those without a connected user
+    Route::get('/admin/patients', [AdminController::class, 'getPatients']);
 
     // // Get all offices with their doctors, owners, or employees
     // Route::get('/offices', [OfficeController::class, 'index']);

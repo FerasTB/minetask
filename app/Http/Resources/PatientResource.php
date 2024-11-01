@@ -28,6 +28,8 @@ class PatientResource extends JsonResource
             'mother_name' => $this->mother_name,
             'father_name' => $this->father_name,
             'created_at' => $this->created_at,
+            'info' => new MedicalInformationResource($this->whenLoaded('info')),
+            'user' => new UserToDisplayResource($this->whenLoaded('user')),
         ];
     }
 }
