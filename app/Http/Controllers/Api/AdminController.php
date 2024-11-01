@@ -27,7 +27,7 @@ class AdminController extends Controller
 
     public function getOffices()
     {
-        $offices = Office::with(['rooms', 'owner'])->get();
+        $offices = Office::with(['rooms', 'owner', 'owner.user', 'owner.user.doctor'])->get();
         return OfficeResource::collection($offices);
     }
 }
