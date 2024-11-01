@@ -23,6 +23,8 @@ class UserResource extends JsonResource
             'roles' => RoleResource::collection($this->allRoles),
             // 'info' => auth()->user()->info ?  new UserInfoResource(auth()->user()->info) : null,
             'created_at' => $this->created_at,
+            'patient' => $this->whenLoaded('patient'),
+            'doctor' => $this->whenLoaded('doctor'),
         ];
     }
 }

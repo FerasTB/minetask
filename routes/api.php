@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Ai\BaseController;
 use App\Http\Controllers\Ai\PatientController;
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\DentalLab\AccountingProfileController;
 use App\Http\Controllers\Api\DentalLab\CoaController;
 use App\Http\Controllers\Api\DentalLab\DentalLabController;
@@ -214,4 +215,57 @@ Route::group(['middleware' => ['auth:sanctum', 'IsDentalDoctorTechnician']], fun
     Route::get('dental/lab/accept/order/step/{step}/as-finished', [LabOrderStepController::class, 'markStepAsFinished']);
     Route::get('dental/lab/{lab}/my-doctor', [DoctorController::class, 'allDoctor']);
     Route::get('dental/lab/{lab}/my-step', [LabOrderStepController::class, 'index']);
+});
+
+Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
+    Route::apiResource('dental/lab', DentalLabController::class);
+    Route::get('dental/lab/{lab}/add/inventory', [DentalLabController::class, 'addInventory']);
+    Route::post('dental/lab/supplier/create', [AccountingProfileController::class, 'storeSupplier']);
+    Route::post('dental/lab/supplier/{profile}/create/invoice', [InvoiceController::class, 'storeSupplierInvoice']);
+    Route::post('dental/lab/supplier/create/invoice/{invoice}/item', [InvoiceItemController::class, 'storeSupplierInvoiceItem']);
+    Route::post('dental/lab/supplier/{profile}/create/receipt', [ReceiptController::class, 'storeSupplierReceipt']);
+    Route::post('dental/lab/{lab}/doctor/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForDoctor']);
+    Route::post('dental/lab/{lab}/doctor/not-exist/{doctor}/create', [AccountingProfileController::class, 'StoreAccountProfileForNotExistDoctor']);
+    Route::get('dental/lab/{lab}/only-me-doctor', [DoctorController::class, 'labDoctor']);
+    Route::post('dental/lab/{lab}/doctor/create', [DoctorController::class, 'storeDoctor']);
+    Route::apiResource('dental/lab/{lab}/coa', CoaController::class);
+    Route::put('dental/lab/{lab}/coa/{coa}/initial', [CoaController::class, 'setInitialBalance']);
+    Route::apiResource('dental/lab/{lab}/service', DentalLabServiceController::class);
+    Route::post('dental/lab/invoice/doctor/{profile}', [InvoiceController::class, 'storeDoctorInvoice']);
+    Route::post('dental/lab/invoice/doctor/{invoice}/item', [InvoiceController::class, 'storeDoctorInvoiceItem']);
+    Route::post('dental/lab/receipt/doctor/{profile}', [ReceiptController::class, 'storeDoctorReceipt']);
+    Route::post('dental/lab/accept/receipt/{receipt}', [ReceiptController::class, 'acceptDoctorReceipt']);
+    Route::post('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'storeSupplier']);
+    Route::get('dental/lab/{lab}/supplier/profile', [AccountingProfileController::class, 'supplierProfile']);
+    Route::apiResource('dental/lab/{lab}/supplier/item', DentalLabItemController::class);
+    Route::post('dental/lab/accept/order/{order}', [LabOrderController::class, 'acceptOrderFromDoctor']);
+    Route::post('dental/lab/reject/order/{order}', [LabOrderController::class, 'rejectOrderFromDoctor']);
+    Route::put('dental/lab/update/order/{order}/status', [LabOrderController::class, 'updateOrderStatus']);
+    Route::post('dental/lab/store/order/{profile}', [LabOrderController::class, 'store']);
+    Route::get('dental/lab/{lab}/unread/notification', [DentalLabController::class, 'unreadNotification']);
+    Route::put('dental/lab/{lab}/mark/read/notification', [DentalLabController::class, 'markAsRead']);
+    Route::get('dental/lab/{lab}/all/notification', [DentalLabController::class, 'allNotification']);
+    Route::get('dental/lab/{lab}/all/users', [DentalLabController::class, 'allUsers']);
+    Route::get('dental/lab/{lab}/add/user/{patient}', [DentalLabController::class, 'addEmployee']);
+});
+Route::group(['middleware' => ['auth:sanctum', 'IsAdmin']], function () {
+    // Get all users with their profiles (patients or doctors)
+    Route::get('/getUsers', [AdminController::class, 'index']);
+
+    // // Get all patients, including those without a connected user
+    // Route::get('/patients', [PatientController::class, 'index']);
+
+    // // Get all offices with their doctors, owners, or employees
+    // Route::get('/offices', [OfficeController::class, 'index']);
+
+    // // Add new user as patient
+    // Route::post('/users/patient', [UserController::class, 'storePatient']);
+
+    // // Add new user as doctor
+    // Route::post('/users/doctor', [UserController::class, 'storeDoctor']);
+
+    // // Assign roles and switch roles if needed
+    // Route::post('/users/{user}/assign-role', [UserController::class, 'assignRole']);
+    // Route::post('/users/{user}/switch-role', [UserController::class, 'switchRole']);
+
 });
