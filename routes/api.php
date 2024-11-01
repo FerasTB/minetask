@@ -248,7 +248,7 @@ Route::group(['middleware' => ['auth:sanctum', 'isDentalLab']], function () {
     Route::get('dental/lab/{lab}/all/users', [DentalLabController::class, 'allUsers']);
     Route::get('dental/lab/{lab}/add/user/{patient}', [DentalLabController::class, 'addEmployee']);
 });
-Route::group(['middleware' => ['auth:sanctum', 'IsAdmin']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'isAdmin']], function () {
     // Get all users with their profiles (patients or doctors)
     Route::get('/admin/users', [AdminController::class, 'getUsers']);
 
