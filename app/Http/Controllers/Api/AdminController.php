@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OfficeResource;
 use App\Http\Resources\PatientResource;
 use App\Http\Resources\UserResource;
+use App\Models\Office;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,5 +23,11 @@ class AdminController extends Controller
     {
         $patients = Patient::with(['user', 'info'])->get();
         return PatientResource::collection($patients);
+    }
+
+    public function getOffices()
+    {
+        $offices = Office::with(['rooms', 'owner'])->get();
+        return OfficeResource::collection($offices);
     }
 }

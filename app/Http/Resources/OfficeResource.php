@@ -27,6 +27,7 @@ class OfficeResource extends JsonResource
             'end_time' => $this->end_time,
             'rooms' => OfficeRoomResource::collection($this->whenLoaded('rooms')),
             'type' => OfficeType::getKey($this->type),
+            'owner' => $this->whenLoaded('owner'),
         ];
     }
 }
