@@ -2,12 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\OfficeType;
-use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OfficeResource extends JsonResource
+class AdminOfficeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,7 +25,7 @@ class OfficeResource extends JsonResource
             'end_time' => $this->end_time,
             'rooms' => OfficeRoomResource::collection($this->whenLoaded('rooms')),
             'type' => OfficeType::getKey($this->type),
-            // 'owner' => new UserResource($this->whenLoaded('owner')->user),
+            'owner' => new UserResource($this->whenLoaded('owner')->user),
         ];
     }
 }

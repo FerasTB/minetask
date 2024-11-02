@@ -258,8 +258,8 @@ Route::group(['middleware' => ['auth:sanctum', 'isAdmin']], function () {
     // Get all offices with their doctors, owners, or employees
     Route::get('/admin/offices', [AdminController::class, 'getOffices']);
 
-    // // Add new user as patient
-    // Route::post('/users/patient', [UserController::class, 'storePatient']);
+    // Add new user as patient
+    Route::post('/admin/users/patient', [AdminController::class, 'storePatient']);
 
     // // Add new user as doctor
     // Route::post('/users/doctor', [UserController::class, 'storeDoctor']);
