@@ -45,7 +45,7 @@ class AccountingProfileResource extends JsonResource
                 'receipts' => ReceiptResource::collection($this->whenLoaded('receipts')),
                 'invoice_receipt' => InvoiceReceiptsResource::collection($this->whenLoaded('invoiceReceipt')),
                 // 'lab_orders' => LabOrderResource::collection($this->whenLoaded('labOrders')),
-                'lab_orders' => $this->type == AccountingProfileType::PatientAccount ? LabOrderResource::collection($this->whenLoaded('patient')) : null,
+                'lab_orders' => $this->type == AccountingProfileType::PatientAccount ? $this->whenLoaded('patient.labOrders') : null,
                 'office_id' => $this->office_id,
                 'total' => $this->total_balance + $this->initial_balance,
             ],
