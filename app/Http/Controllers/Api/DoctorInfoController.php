@@ -234,6 +234,7 @@ class DoctorInfoController extends Controller
                 'patient.doctorImage',
                 'patient.labOrders',
                 'patient.labOrders.details',
+                'patient.labOrders.lab',
                 'patient.labOrders.details.teeth',
                 'invoices',
                 'invoices.items',
