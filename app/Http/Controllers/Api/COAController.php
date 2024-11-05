@@ -20,6 +20,7 @@ use App\Models\Doctor;
 use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class COAController extends Controller
@@ -30,7 +31,7 @@ class COAController extends Controller
     public function index(Request $request)
     {
         $office = Office::findOrFail($request->office);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -102,7 +103,7 @@ class COAController extends Controller
     {
         $fields = $request->validated();
         $office = Office::find($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -177,7 +178,7 @@ class COAController extends Controller
     public function update(UpdateCoaRequest $request, COA $coa)
     {
         $office = Office::findOrFail($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -229,7 +230,7 @@ class COAController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

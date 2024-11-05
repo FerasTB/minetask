@@ -22,6 +22,7 @@ use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\PatientCase;
 use App\Models\Record;
+use App\Models\Role;
 use App\Models\TeethRecord;
 use App\Models\User;
 use GuzzleHttp\Psr7\Response;
@@ -46,7 +47,7 @@ class OperationController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -147,7 +148,7 @@ class OperationController extends Controller
     public function show(Operation $operation)
     {
         $office = $operation->record->PatientCase->case->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -190,7 +191,7 @@ class OperationController extends Controller
     public function update(UpdateOperationRequest $request, Operation $operation)
     {
         $office = $operation->record->PatientCase->case->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -252,7 +253,7 @@ class OperationController extends Controller
     public function destroy(Operation $operation)
     {
         $office = $operation->record->PatientCase->case->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

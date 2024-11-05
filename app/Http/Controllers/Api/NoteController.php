@@ -12,6 +12,7 @@ use App\Models\Doctor;
 use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\Role;
 
 class NoteController extends Controller
 {
@@ -20,7 +21,7 @@ class NoteController extends Controller
      */
     public function index(Office $office)
     {
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -76,7 +77,7 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request, Office $office)
     {
         $fields = $request->validated();
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -141,7 +142,7 @@ class NoteController extends Controller
     public function update(UpdateNoteRequest $request, Office $office, Note $note)
     {
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -207,7 +208,7 @@ class NoteController extends Controller
      */
     public function destroy(Office $office, Note $note)
     {
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

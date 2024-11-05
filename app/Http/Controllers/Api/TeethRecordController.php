@@ -32,6 +32,7 @@ use App\Models\Office;
 use App\Models\Operation;
 use App\Models\Patient;
 use App\Models\PatientCase;
+use App\Models\Role;
 use App\Models\TeethComplaintList;
 use App\Models\TeethRecord;
 use App\Models\User;
@@ -103,7 +104,7 @@ class TeethRecordController extends Controller
         $case = MedicalCase::find($patientCase->case->id);
         $office = $case->office;
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

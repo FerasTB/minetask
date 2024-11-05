@@ -164,7 +164,7 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -234,7 +234,7 @@ class ReceiptController extends Controller
         $fields = $request->validated();
         abort_unless($profile->type == AccountingProfileType::DentalLabDoctorAccount, 403);
         $office = $profile->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -389,7 +389,7 @@ class ReceiptController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

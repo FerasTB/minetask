@@ -14,6 +14,7 @@ use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
 use App\Models\Office;
+use App\Models\Role;
 use App\Models\TeethComplaintList;
 use App\Models\Tooth;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class TransactionPrefixController extends Controller
      */
     public function index(Office $office)
     {
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -68,7 +69,7 @@ class TransactionPrefixController extends Controller
     public function getPrefixAndComplaintAndCasesAndTeeth(Office $office)
     {
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

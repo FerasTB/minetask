@@ -12,6 +12,7 @@ use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\Role;
 use App\Models\TeethRecord;
 use Illuminate\Support\Carbon;
 
@@ -31,7 +32,7 @@ class DoctorImageController extends Controller
     public function store(StoreDoctorImageRequest $request, Office $office)
     {
         $fields = $request->validated();
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -99,7 +100,7 @@ class DoctorImageController extends Controller
     public function show(DoctorImage $image)
     {
         $office = $image->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

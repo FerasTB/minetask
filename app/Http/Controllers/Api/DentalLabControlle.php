@@ -17,13 +17,14 @@ use App\Models\Doctor;
 use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class DentalLabControlle extends Controller
 {
     public function store(StoreDentalLabForDoctorRequest $request, Office $office)
     {
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

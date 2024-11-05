@@ -26,6 +26,7 @@ use App\Models\HasRole;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\InvoiceReceipt;
+use App\Models\Role;
 use App\Models\TeethRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -198,7 +199,7 @@ class InvoiceItemController extends Controller
     {
         $fields = $request->validated();
         $office = $invoice->office;
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)

@@ -36,6 +36,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\Role;
 use App\Models\TransactionPrefix;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -319,7 +320,7 @@ class InvoiceController extends Controller
     {
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -406,7 +407,7 @@ class InvoiceController extends Controller
         // Validate the main invoice fields
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -703,7 +704,7 @@ class InvoiceController extends Controller
         $profile = AccountingProfile::findOrFail($request->supplier_account_id);
         $office = $profile->office;
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -782,7 +783,7 @@ class InvoiceController extends Controller
         if ($request->has('items')) {
             return $request;
         }
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
@@ -868,7 +869,7 @@ class InvoiceController extends Controller
         $fields = $request->validated();
         $office = Office::findOrFail($request->office_id);
 
-        if (auth()->user()->currentRole->name == 'DentalDoctorTechnician') {
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
                 ->where('roleable_id', $office->id)
