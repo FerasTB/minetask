@@ -7,6 +7,7 @@ use App\Models\HasRole;
 use App\Models\MedicalCase;
 use App\Models\Office;
 use App\Models\Patient;
+use App\Models\Role as ModelsRole;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -18,7 +19,7 @@ class MedicalCasePolicy
     public function viewAny(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
-        $technition = boolval(($user->doctor && $user->role == Role::Doctor) || $user->currentRole->name == 'DentalDoctorTechnician');
+        $technition = boolval(($user->doctor && $user->role == Role::Doctor) || in_array(auth()->user()->currentRole->name, ModelsRole::Technicians));
         return ($technition && $role != null);
     }
 
