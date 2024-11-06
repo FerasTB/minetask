@@ -15,7 +15,7 @@ class StorePatientInfoForPatientRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user()->role == Role::Patient;
+        return auth()->user()->currentRole->name == 'Patient';
     }
 
     /**
