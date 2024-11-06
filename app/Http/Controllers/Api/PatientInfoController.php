@@ -120,7 +120,7 @@ class PatientInfoController extends Controller
                 $fields['parent_id'] = $parent->id;
             }
 
-            if (auth()->user()->currentRole->name != 'Patient') {
+            if (auth()->user()->currentRole->name == 'Patient') {
                 $patient = Patient::whereHas('info', function ($query) use ($fields) {
                     $query->where('numberPrefix', $fields['numberPrefix'])
                         ->where('phone', $fields['phone']);
