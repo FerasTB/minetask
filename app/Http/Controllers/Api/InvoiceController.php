@@ -240,7 +240,7 @@ class InvoiceController extends Controller
         $itemData['amount'] = -$originalItem->amount;
         $itemData['total_price'] = -$originalItem->total_price;
         $itemData['price_per_one'] = -$originalItem->price_per_one;
-        $itemData['coa_id'] = -$originalItem->coa_id;
+        $itemData['coa_id'] = $originalItem->coa_id;
 
         // Create the reversal invoice item
         $reversalItem = InvoiceItem::create($itemData);
