@@ -243,7 +243,7 @@ class InvoiceController extends Controller
 
         // Create the reversal invoice item
         $reversalItem = InvoiceItem::create($itemData);
-        $this->createDoubleEntry($itemData->coa_id, $reversalItem->id, $reversalItem->total_price, DoubleEntryType::Negative, $invoice->accounting_profile_id);
+        $this->createDoubleEntry($itemData['coa_id'], $reversalItem->id, $reversalItem->total_price, DoubleEntryType::Negative, $invoice->accounting_profile_id);
         // Return reversal item (if needed)
         return $reversalItem;
     }
