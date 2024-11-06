@@ -184,7 +184,8 @@ class InvoiceController extends Controller
             // Update the original invoice status
             $originalInvoice->status = TransactionStatus::Reversed;
             $originalInvoice->save();
-
+            $reversalInvoice->reversed_by_id = auth()->id();
+            $reversalInvoice->save()
             // Commit transaction
             DB::commit();
 
