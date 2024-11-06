@@ -11,7 +11,7 @@ class Invoice extends Model
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['created_by', 'teeth_record_id', 'type', 'status', 'invoice_number', 'note', 'date_of_invoice', 'total_price', 'doctor_id', 'accounting_profile_id', 'running_balance'];
+    protected $fillable = ['original_invoice_id', 'reversed_by_id', 'created_by', 'teeth_record_id', 'type', 'status', 'invoice_number', 'note', 'date_of_invoice', 'total_price', 'doctor_id', 'accounting_profile_id', 'running_balance'];
 
     protected static function boot()
     {
@@ -131,5 +131,15 @@ class Invoice extends Model
     public function getInvoiceNumberAttribute()
     {
         return str_pad($this->attributes['invoice_number'], 5, '0', STR_PAD_LEFT);
+    }
+
+    public function originalInvoice()
+    {
+        return $this->belongsTo(Invoice::class, 'original_invoice_id');
+    }
+
+    public function reversalInvoice()
+    {
+        return $this->hasOne(Invoice::class, 'original_invoice_id');
     }
 }

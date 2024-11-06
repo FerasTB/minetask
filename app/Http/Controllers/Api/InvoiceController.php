@@ -19,6 +19,7 @@ use App\Http\Requests\StoreInvoiceAndItemForPatientRequest;
 use App\Http\Requests\storeJournalInvoiceRequest;
 use App\Http\Requests\StoreLabInvoiceWithItems;
 use App\Http\Requests\StorePatientInvoiceRequest;
+use App\Http\Requests\StoreReversePatientInvoice;
 use App\Http\Requests\StoreSupplierInvoiceRequest;
 use App\Http\Requests\UpdatePatientInvoiceStatusRequest;
 use App\Http\Resources\DirectDoubleEntryResource;
@@ -120,6 +121,160 @@ class InvoiceController extends Controller
         }
         return new PatientInvoiceResource($invoice);
     }
+
+    public function reverseInvoice(StoreReversePatientInvoice $request, $invoice)
+    {
+
+        // Validate the main invoice fields
+        $fields = $request->validated();
+        $office = Office::findOrFail($request->office_id);
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+        // Begin database transaction
+        DB::beginTransaction();
+
+        try {
+            // Fetch the original invoice
+            $originalInvoice = Invoice::findOrFail($invoice);
+
+            // Perform necessary validations
+            // - Check if the invoice is already reversed
+            if ($originalInvoice->status == TransactionStatus::Reversed) {
+                return response()->json(['error' => 'Invoice already reversed.'], 400);
+            }
+            // Authorization: Ensure the user has permission to reverse invoices
+            abort_unless($originalInvoice->doctor->id == $doctor->id, 403, 'bad request');
+
+            // - Check if the invoice can be reversed (e.g., not paid)
+
+            // Create a reversal invoice
+            $reversalInvoice = $this->createReversalInvoice($originalInvoice, $doctor, $office);
+
+            // Update the original invoice status
+            $originalInvoice->status = TransactionStatus::Reversed;
+            $originalInvoice->save();
+
+            // Commit transaction
+            DB::commit();
+
+            // Return the reversal invoice
+            return new PatientInvoiceResource($reversalInvoice);
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+            Log::error('Error reversing invoice: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    protected function createReversalInvoice($originalInvoice, $doctor, $office)
+    {
+        // Clone the original invoice data
+        $invoiceData = $originalInvoice->toArray();
+
+        // Modify necessary fields
+        $invoiceData['id'] = null; // Set ID to null to create a new record
+        $invoiceData['type'] = $originalInvoice->type; // Set type to indicate reversal
+        $invoiceData['status'] = TransactionStatus::Reversed; // Set type to indicate reversal
+        $invoiceData['total_price'] = -$originalInvoice->total_price; // Invert the total price
+        $invoiceData['running_balance'] = $this->calculatePatientBalance(
+            $originalInvoice->accounting_profile_id,
+            -$originalInvoice->total_price
+        );
+        $invoiceData['note'] = 'Reversal of Invoice #' . $originalInvoice->invoice_number;
+        $invoiceData['date_of_invoice'] = now();
+        $transactionNumber = $this->getTransactionNumber($office, TransactionType::PatientInvoice, $doctor);
+
+        $invoiceData['invoice_number'] = $transactionNumber->last_transaction_number + 1;
+
+        // Create the reversal invoice
+        $reversalInvoice = Invoice::create($invoiceData);
+
+        // Link reversal to original invoice (optional but recommended)
+        $reversalInvoice->original_invoice_id = $originalInvoice->id;
+        $reversalInvoice->save();
+
+        // Reverse the invoice items
+        foreach ($originalInvoice->items as $item) {
+            $this->createReversalInvoiceItem($item, $reversalInvoice->id, $originalInvoice);
+        }
+        return $reversalInvoice;
+    }
+
+    protected function createReversalInvoiceItem($originalItem, $reversalInvoiceId, $invoice)
+    {
+        $itemData = $originalItem->toArray();
+        $itemData['id'] = null;
+        $itemData['invoice_id'] = $reversalInvoiceId;
+        $itemData['amount'] = -$originalItem->amount;
+        $itemData['total_price'] = -$originalItem->total_price;
+        $itemData['price_per_one'] = -$originalItem->price_per_one;
+
+        // Create the reversal invoice item
+        $reversalItem = InvoiceItem::create($itemData);
+        $this->createDoubleEntry($itemData->coa_id, $reversalItem->id, $reversalItem->total_price, DoubleEntryType::Negative, $invoice->accounting_profile_id);
+        // Return reversal item (if needed)
+        return $reversalItem;
+    }
+
+    protected function createReversalAccountingEntries($originalInvoice, $reversalInvoice)
+    {
+        // Reverse Accounts Receivable and Revenue
+        $this->createDoubleEntry(
+            $coaId = $originalInvoice->accounting_profile->coa_id, // Patient's Accounts Receivable
+            $transactionId = $reversalInvoice->id,
+            $amount = -$originalInvoice->total_price,
+            $type = DoubleEntryType::Negative,
+            $accountingProfileId = $originalInvoice->accounting_profile_id
+        );
+
+        // Reverse Revenue Entries
+        foreach ($originalInvoice->items as $item) {
+            $this->createDoubleEntry(
+                $coaId = $item->coa_id, // Revenue Account
+                $transactionId = $reversalInvoice->id,
+                $amount = -$item->total_price,
+                $type = DoubleEntryType::Positive,
+                $accountingProfileId = $originalInvoice->accounting_profile_id
+            );
+        }
+    }
+
+
+
+
+
 
     public function storeInvoiceWithReceipts(StoreInvoiceWithReceiptsRequest $request, Patient $patient)
     {

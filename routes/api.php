@@ -130,6 +130,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('invoice/patient/status/{invoice}', [App\Http\Controllers\Api\InvoiceController::class, 'changePatientInvoiceStatus']);
     Route::post('invoice/patient/{invoice}/item', [App\Http\Controllers\Api\InvoiceItemController::class, 'storePatientInvoiceItem']);
     Route::post('invoice/patient/{patient}/item-binding', [App\Http\Controllers\Api\InvoiceController::class, 'storePatientInvoiceWithItems']);
+    Route::post('invoices/{invoice}/reverse', [InvoiceController::class, 'reverseInvoice']);
     Route::post('invoice/patient/{record}/binding', [App\Http\Controllers\Api\InvoiceItemController::class, 'addBindingCharge']);
     Route::delete('invoice/patient/binding/remove', [App\Http\Controllers\Api\InvoiceItemController::class, 'removeBindingCharge']);
     Route::get('invoice/patient/{record}/binding', [App\Http\Controllers\Api\TeethRecordController::class, 'getInvoiceByRecord']);

@@ -18,5 +18,6 @@ final class TransactionStatus extends Enum
     const Rejected = 3;
     const Canceled = 4;
     const Paid = 5;
+    const Reversed = 6;
     const NoStatus = null;
 }
