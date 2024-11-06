@@ -146,7 +146,7 @@ class PatientInfoController extends Controller
                 DB::commit(); // Commit the transaction
 
                 return response()->json($patientInfo);
-            } elseif ((auth()->user()->role == Role::Doctor) || (auth()->user()->currentRole->name == 'DentalDoctorTechnician')) {
+            } elseif (in_array(auth()->user()->currentRole->name, ModelsRole::AddPatient)) {
                 if ($isChild) {
                     $patient = Patient::where('parent_id', $request->parent_id)->first();
                 } else {

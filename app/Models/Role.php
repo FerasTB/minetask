@@ -23,6 +23,7 @@ class Role extends Model
     public const PhototherapyDoctor = '8';
     public const PhototherapyTechnician = '9';
     public const Technicians = ['DentalDoctorTechnician', 'PhototherapyTechnician'];
+    public const AddPatient = ['DentalDoctorTechnician', 'PhototherapyTechnician', 'PhototherapyDoctor', 'DentalDoctor'];
 
 
     public function users(): MorphToMany
