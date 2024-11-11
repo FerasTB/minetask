@@ -10,7 +10,7 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['created_by', 'is_patient_in_clinic', 'record_id', 'step', 'patientCase_id', 'taken_date', 'end_time', 'start_time', 'patient_id', 'office_id', 'status', 'note', 'color', 'doctor_id', 'office_room_id'];
+    protected $fillable = ['Reason_for_cancellation', 'created_by', 'is_patient_in_clinic', 'record_id', 'step', 'patientCase_id', 'taken_date', 'end_time', 'start_time', 'patient_id', 'office_id', 'status', 'note', 'color', 'doctor_id', 'office_room_id'];
 
     protected static function boot()
     {

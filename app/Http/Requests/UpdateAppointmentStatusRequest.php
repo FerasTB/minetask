@@ -28,6 +28,7 @@ class UpdateAppointmentStatusRequest extends FormRequest
         return [
             'status' => ['required', 'string', Rule::in(AppointmentStatus::getKeys())],
             'step' => 'nullable|integer',
+            'Reason_for_cancellation' => 'nullable|string',
             'office_id' => 'required|integer',
             'is_patient_in_clinic' => ['nullable', 'string', Rule::in(PatientInClinicStatus::getKeys())],
         ];
