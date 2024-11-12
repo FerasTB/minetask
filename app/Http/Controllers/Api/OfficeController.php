@@ -428,8 +428,9 @@ class OfficeController extends Controller
     {
         $this->authorize('inOffice', $office);
         $user = auth()->user();
-        $user->current_office_id = $office->id;
-        $user->save;
+        $user->update([
+            'current_office_id' => $office->id,
+        ]);
         return new OfficeResource($office);
     }
 }
