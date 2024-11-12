@@ -430,6 +430,6 @@ class OfficeController extends Controller
         $user = auth()->user();
         $user->current_office_id = $office->id;
         $user->save;
-        return new OfficeAnalysisResource($office);
+        return new OfficeResource($office);
     }
 }

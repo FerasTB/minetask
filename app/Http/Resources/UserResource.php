@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'role' => Role::getKey($this->role),
             'current_role' => $this->current_role_id == null ? 'noRole' : $this->currentRole->name,
+            'current_office' => $this->current_office_id == null ? 'noOffice' : $this->current_office_id,
             'roles' => RoleResource::collection($this->allRoles),
             // 'info' => auth()->user()->info ?  new UserInfoResource(auth()->user()->info) : null,
             'created_at' => $this->created_at,
