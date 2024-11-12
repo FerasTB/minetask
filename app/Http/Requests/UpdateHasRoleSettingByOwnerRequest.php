@@ -22,12 +22,12 @@ class UpdateHasRoleSettingByOwnerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rate' => 'required|decimal|max:100',
-            'salary' => 'required|integer',
+            'rate' => 'nullable|decimal|max:100',
+            'salary' => 'nullable|integer',
             // 'doctors' => 'required|array',
             // 'doctors.*' => 'exists:doctors,id',
-            'coa_id' => 'required|exists:c_o_a_s,id',
-            'target' => 'required|integer',
+            'coa_id' => 'nullable|exists:c_o_a_s,id',
+            'target' => 'nullable|integer',
         ];
     }
 }
