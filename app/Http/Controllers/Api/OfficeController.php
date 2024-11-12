@@ -378,8 +378,10 @@ class OfficeController extends Controller
         $this->authorize('officeOwner', [$office]);
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
         abort_unless($relation && $relation->id != null, 403);
-        $coa = COA::find($request->coa_id);
-        abort_unless($coa->doctor->id == auth()->user()->doctor->id, 403);
+        if ($request->has('coa_id') && $request->coa_id != null) {
+            $coa = COA::findOrFail($request->coa_id);
+            abort_unless($coa->doctor->id == auth()->user()->doctor->id, 403);
+        }
         $relation->setting->update($fields);
         return new EmployeeInOfficeResource($relation);
     }
