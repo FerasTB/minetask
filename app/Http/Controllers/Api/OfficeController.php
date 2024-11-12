@@ -423,4 +423,13 @@ class OfficeController extends Controller
         );
         return new OfficeAnalysisResource($office);
     }
+
+    public function switchOffice(Office $office)
+    {
+        $this->authorize('inOffice', $office);
+        $user = auth()->user();
+        $user->current_office_id = $office->id;
+        $user->save;
+        return new OfficeAnalysisResource($office);
+    }
 }

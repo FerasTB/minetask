@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\DentalLab\LabOrderStepController;
 use App\Http\Controllers\Api\DentalLab\ReceiptController;
 use App\Http\Controllers\Api\DentalLabControlle;
 use App\Http\Controllers\Api\DoctorInfoController;
+use App\Http\Controllers\Api\OfficeController;
 use App\Http\Controllers\LanguagesController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserInfoController;
@@ -165,6 +166,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('app/patient/doctors', [App\Http\Controllers\Api\PatientInfoController::class, 'updateDoctorsAccess']);
     Route::get('/switch-role/{role}', [RoleController::class, 'switchRole']);
     Route::get('/assign-role/{role}', [RoleController::class, 'assignRole']);
+    Route::get('/switch-office/{office}', [OfficeController::class, 'switchOffice']);
     Route::get('/role', [RoleController::class, 'index']);
     Route::get('/switch-language/{lang}', [LanguagesController::class, 'switchLanguage']);
     Route::get('/assign-language/{lang}', [LanguagesController::class, 'assignLanguage']);
