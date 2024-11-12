@@ -613,6 +613,7 @@ class InvoiceController extends Controller
             $fields['invoice_number'] = $transactionNumber->last_transaction_number + 1;
             if ($request->paid_done) {
                 $fields['running_balance'] = $this->calculatePatientBalance($profile->id, 0);
+                $fields['date_of_payment'] = $request->date_of_invoice;
                 $invoice = $profile->invoiceReceipt()->create($fields);
                 $cashCOA = COA::findOrFail($request->cash_coa);
                 $this->createPaidDoubleEntry($cashCOA, $invoice->id, $request->total_price, DoubleEntryType::Positive, $invoice->accounting_profile_id);
