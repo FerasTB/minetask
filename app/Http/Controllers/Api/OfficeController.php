@@ -375,11 +375,11 @@ class OfficeController extends Controller
     public function updateSettingByOwner(UpdateHasRoleSettingByOwnerRequest $request, Office $office, User $user)
     {
         $fields = $request->validated();
+        $this->authorize('officeOwner', [$office]);
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
         abort_unless($relation && $relation->id != null, 403);
         $coa = COA::find($request->coa_id);
         abort_unless($coa->doctor->id == auth()->user()->doctor->id, 403);
-        $this->authorize('officeOwner', [$office]);
         $relation->setting->update($fields);
         return new EmployeeInOfficeResource($relation);
     }
