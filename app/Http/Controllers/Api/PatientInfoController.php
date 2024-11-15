@@ -627,6 +627,10 @@ class PatientInfoController extends Controller
         if ($accounting->initial_balance != 0 || $accounting == null) {
             return response('the initial balance only can be set once', 403);
         }
+        $role = HasRole::where('user_id', $doctor->user->id)
+            ->where('roleable_id', $office->id)
+            ->where('roleable_type', "App\Models\Office")
+            ->first();
         abort_unless($role->revenue_coa_id != null, 403, "you should set the default revenue coa first");
         $coa = COA::findOrFail($role->revenue_coa_id);
         $this->createDoubleEntry($coa, $request->initial_balance, DoubleEntryType::Positive);
