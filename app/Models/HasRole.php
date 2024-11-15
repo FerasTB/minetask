@@ -11,7 +11,7 @@ class HasRole extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sub_role', 'roleable_type', 'roleable_id', 'user_id'];
+    protected $fillable = ['sub_role', 'roleable_type', 'roleable_id', 'user_id', 'expense_coa_id', 'revenue_coa_id'];
 
     public function roleable(): MorphTo
     {

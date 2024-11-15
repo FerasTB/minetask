@@ -92,6 +92,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('office/{office}/employee/{patient}/property', [App\Http\Controllers\Api\OfficeController::class, 'updateEmployeeProperty']);
     Route::put('office/{office}/employee/{patient}/setting', [App\Http\Controllers\Api\OfficeController::class, 'updateEmployeeSetting']);
     Route::put('office/{office}/owner/update-employee/{user}/setting', [App\Http\Controllers\Api\OfficeController::class, 'updateSettingByOwner']);
+    Route::put('office/{office}/setting/update-coa/', [App\Http\Controllers\Api\OfficeController::class, 'updateOfficeRelationCoa']);
     Route::get('office/{office}/show_employee', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOffice']);
     Route::get('office/{office}/show_employee/info', [App\Http\Controllers\Api\OfficeController::class, 'AllDoctorInOfficeInfo']);
     Route::get('secretary/office/{office}/show_employee/info', [App\Http\Controllers\Api\OfficeController::class, 'OfficeWithDoctors']);
