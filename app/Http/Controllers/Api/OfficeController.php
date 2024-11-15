@@ -390,15 +390,15 @@ class OfficeController extends Controller
     {
         $fields = $request->validated();
         $user = auth()->user();
-        $this->authorize('officeOwner', [$office]);
+        $this->authorize('inOffice', [$office]);
         $relation = HasRole::where(['roleable_type' => 'App\Models\Office', 'roleable_id' => $office->id, 'user_id' => $user->id])->first();
         abort_unless($relation && $relation->id != null && $relation->sub_role != SubRole::OfficeSecretary, 403);
         if ($request->has('expense_coa_id') && $request->expense_coa_id != null) {
-            $coa = COA::findOrFail($request->coa_id);
+            $coa = COA::findOrFail($request->expense_coa_id);
             abort_unless($coa->doctor->id == auth()->user()->doctor->id && $coa->general_type == COAGeneralType::Expenses, 403);
         }
         if ($request->has('revenue_coa_id') && $request->revenue_coa_id != null) {
-            $coa = COA::findOrFail($request->coa_id);
+            $coa = COA::findOrFail($request->revenue_coa_id);
             abort_unless($coa->doctor->id == auth()->user()->doctor->id && $coa->general_type == COAGeneralType::Revenue, 403);
         }
         $relation->update($fields);
