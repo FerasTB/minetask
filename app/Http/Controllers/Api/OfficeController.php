@@ -17,6 +17,7 @@ use App\Http\Requests\StoreOfficeRequest;
 use App\Http\Requests\UpdateHasRolePropertyRequest;
 use App\Http\Requests\UpdateHasRoleSettingByOwnerRequest;
 use App\Http\Requests\UpdateHasRoleSettingRequest;
+use App\Http\Requests\UpdateOfficeRelationCoaRequest;
 use App\Http\Requests\UpdateOfficeRequest;
 use App\Http\Resources\DoctorInOfficeResource;
 use App\Http\Resources\EmployeeInOfficeInfoResource;
@@ -386,7 +387,7 @@ class OfficeController extends Controller
         return new EmployeeInOfficeResource($relation);
     }
 
-    public function updateOfficeRelationCoa(UpdateHasRoleSettingByOwnerRequest $request, Office $office)
+    public function updateOfficeRelationCoa(UpdateOfficeRelationCoaRequest $request, Office $office)
     {
         $fields = $request->validated();
         $user = auth()->user();

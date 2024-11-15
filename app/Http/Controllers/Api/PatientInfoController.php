@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\AccountingProfileType;
 use App\Enums\DoctorRoleForPatient;
+use App\Enums\DoubleEntryType;
 use App\Enums\Gender;
 use App\Enums\MaritalStatus;
 use App\Enums\OfficeType;
@@ -23,7 +24,10 @@ use App\Http\Resources\MyDoctorThroughAccountingProfileResource;
 use App\Http\Resources\MyPatientsResource;
 use App\Http\Resources\TeethRecordResource;
 use App\Models\AccountingProfile;
+use App\Models\COA;
+use App\Models\DirectDoubleEntry;
 use App\Models\Doctor;
+use App\Models\DoubleEntry;
 use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\MedicalCase;
@@ -623,7 +627,38 @@ class PatientInfoController extends Controller
         if ($accounting->initial_balance != 0 || $accounting == null) {
             return response('the initial balance only can be set once', 403);
         }
+        abort_unless($role->revenue_coa_id != null, 403, "you should set the default revenue coa first");
+        $coa = COA::findOrFail($role->revenue_coa_id);
+        $this->createDoubleEntry($coa, $request->initial_balance, DoubleEntryType::Positive);
+
         $accounting->update($fields);
         return new AccountingProfileResource($accounting, $doctor->user);
+    }
+
+    private function createDoubleEntry($coa, $totalPrice, $type)
+    {
+        $runningBalance = $this->calculateCOABalance($coa->id, $totalPrice, $type);
+
+        DoubleEntry::create([
+            'COA_id' => $coa->id,
+            // 'invoice_item_id' => $itemId,
+            'total_price' => $totalPrice,
+            'type' => $type,
+            // 'accounting_profile_id' => $accountingProfileId,
+            'running_balance' => $runningBalance
+        ]);
+    }
+
+    private function calculateCOABalance(int $coaId, int $thisTransaction, string $type)
+    {
+        $doubleEntries = DoubleEntry::where('COA_id', $coaId)->get();
+        $directDoubleEntries = DirectDoubleEntry::where('COA_id', $coaId)->get();
+
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price') +
+            $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        return ($totalPositive - $totalNegative) + ($type == DoubleEntryType::Positive ? $thisTransaction : -$thisTransaction);
     }
 }
