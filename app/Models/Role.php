@@ -22,7 +22,7 @@ class Role extends Model
     // public const DentalLabTechnician = '6';
     public const PhototherapyDoctor = '8';
     public const PhototherapyTechnician = '9';
-    public const Technicians = ['DentalDoctorTechnician', 'PhototherapyTechnician'];
+    public const Technicians = ['DentalDoctorTechnician', 'PhototherapyTechnician', 'DentalLabTechnician'];
     public const AddPatient = ['DentalDoctorTechnician', 'PhototherapyTechnician', 'PhototherapyDoctor', 'DentalDoctor'];
 
 

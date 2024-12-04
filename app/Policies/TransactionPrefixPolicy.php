@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\DentalLab;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\TransactionPrefix;
@@ -69,6 +70,12 @@ class TransactionPrefixPolicy
     public function inOffice(User $user, Office $office): bool
     {
         $role = HasRole::where(['roleable_id' => $office->id, 'roleable_type' => 'App\Models\Office', 'user_id' => $user->id])->first();
+        return $role != null;
+    }
+
+    public function inLab(User $user, DentalLab $lab): bool
+    {
+        $role = HasRole::where(['roleable_id' => $lab->id, 'roleable_type' => 'App\Models\DentalLab', 'user_id' => $user->id])->first();
         return $role != null;
     }
 }
