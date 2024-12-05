@@ -114,6 +114,22 @@ class AccountingProfile extends Model
 
     public function getOpeningBalance($fromDate)
     {
-        return 999999999999;
+        $doubleEntriesBefore = $this->doubleEntries()
+            ->where('created_at', '<', $fromDate)
+            ->get();
+
+        $directDoubleEntriesBefore = $this->directDoubleEntries()
+            ->where('created_at', '<', $fromDate)
+            ->get();
+
+        $totalPositive = $doubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price')
+            + $directDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+        $totalNegative = $doubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price')
+            + $directDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        $openingBalance = $this->initial_balance + $totalPositive - $totalNegative;
+
+        return $openingBalance;
     }
 }

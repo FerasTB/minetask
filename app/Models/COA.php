@@ -128,14 +128,14 @@ class COA extends Model
         // Fetch date-filtered double entries
         $doubleEntries = $this->doubleEntries()
             ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
-                $query->whereConnectedDateBetween($fromDate, $toDate);
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
             })
             ->get();
 
         // Fetch date-filtered direct double entries
         $directDoubleEntries = $this->directDoubleEntries()
             ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
-                $query->whereConnectedDateBetween($fromDate, $toDate);
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
             })
             ->get();
 
@@ -161,13 +161,13 @@ class COA extends Model
             $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate, $toDate) {
                 $profileDoubleEntries = $profile->doubleEntries()
                     ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
-                        $query->whereConnectedDateBetween($fromDate, $toDate);
+                        $query->whereBetween('created_at', [$fromDate, $toDate]);
                     })
                     ->get();
 
                 $profileDirectDoubleEntries = $profile->directDoubleEntries()
                     ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
-                        $query->whereConnectedDateBetween($fromDate, $toDate);
+                        $query->whereBetween('created_at', [$fromDate, $toDate]);
                     })
                     ->get();
 
@@ -190,14 +190,15 @@ class COA extends Model
         return $generalTotal;
     }
 
+
     public function getOpeningBalance($fromDate)
     {
         $doubleEntriesBefore = $this->doubleEntries()
-            ->whereConnectedDateBefore($fromDate)
+            ->where('created_at', '<', $fromDate)
             ->get();
 
         $directDoubleEntriesBefore = $this->directDoubleEntries()
-            ->whereConnectedDateBefore($fromDate)
+            ->where('created_at', '<', $fromDate)
             ->get();
 
         $totalPositive = $doubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price')

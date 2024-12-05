@@ -33,8 +33,7 @@ class COAWithDateResource extends JsonResource
             'type' => COAType::getKey($this->type),
             'entry' => DoubleEntryResource::collection($this->whenLoaded('doubleEntries')),
             'direct_double_entry' => DirectDoubleEntryResource::collection($this->whenLoaded('directDoubleEntries')),
-            // 'opening_balance' => $fromDate ? $this->getOpeningBalance($fromDate) : $this->initial_balance,
-            'closing_balance' => $this->calculateTotal(null, $toDate),
+            'opening_balance' => $fromDate ? $this->getOpeningBalance($fromDate) : $this->initial_balance,
             'total' => $this->calculateTotal($fromDate, $toDate),
         ];
     }

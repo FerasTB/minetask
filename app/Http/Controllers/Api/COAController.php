@@ -101,6 +101,11 @@ class COAController extends Controller
     {
         // $office = Office::findOrFail($request->office);
         $this->authorize('officeOwner', [COA::class, $office]);
+        $request->validate([
+            'office' => 'required|exists:offices,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
+        ]);
         if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
             // Find the role based on user_id and office_id (roleable_id)
             $role = HasRole::where('user_id', auth()->id())
@@ -134,31 +139,25 @@ class COAController extends Controller
         if (!$doctor) {
             return response('You have to complete your info', 404);
         }
-        $fromDate = $request->input('from_date'); // Expected format: 'Y-m-d'
-        $toDate = $request->input('to_date');     // Expected format: 'Y-m-d'
+        // Adjust dates to include time if necessary
+        $fromDate = $request->input('from_date') ? $request->input('from_date') . ' 00:00:00' : null;
+        $toDate = $request->input('to_date') ? $request->input('to_date') . ' 23:59:59' : null;
 
         return COAWithDateResource::collection(
             $doctor->COAS()
                 ->where('office_id', $office->id)
                 ->with([
                     'office',
-                    // Eager load relationships for doubleEntries
                     'doubleEntries' => function ($query) use ($fromDate, $toDate) {
                         if ($fromDate && $toDate) {
-                            $query->whereConnectedDateBetween($fromDate, $toDate);
+                            $query->whereBetween('created_at', [$fromDate, $toDate]);
                         }
                     },
-                    'doubleEntries.invoice',
-                    'doubleEntries.invoiceItem.invoice',
-                    'doubleEntries.receipt',
-                    'doubleEntries.invoiceReceipt',
-                    // Eager load relationships for directDoubleEntries
                     'directDoubleEntries' => function ($query) use ($fromDate, $toDate) {
                         if ($fromDate && $toDate) {
-                            $query->whereConnectedDateBetween($fromDate, $toDate);
+                            $query->whereBetween('created_at', [$fromDate, $toDate]);
                         }
                     },
-                    'directDoubleEntries.directDoubleEntryInvoice',
                 ])
                 ->get()
         );
