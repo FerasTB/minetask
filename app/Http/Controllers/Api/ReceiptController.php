@@ -501,6 +501,20 @@ class ReceiptController extends Controller
         $coa->doubleEntries()->create($doubleEntryFields);
     }
 
+    private function createReverseDoubleEntry($coa, $receipt, $type)
+    {
+        $doubleEntryFields = [
+            'COA_id' => $coa->id,
+            'receipt_id' => $receipt->id,
+            'total_price' => -$receipt->total_price,
+            'type' => $type,
+            // 'accounting_profile_id' => $receipt->accounting_profile_id,
+            'running_balance' => $this->calculateCOABalance($coa->id, $receipt->total_price, $type)
+        ];
+
+        $coa->doubleEntries()->create($doubleEntryFields);
+    }
+
     private function createProfileDoubleEntry($accountingProfileId, $itemId, $totalPrice, $type)
     {
         $runningBalance = $this->calculatePatientBalance($accountingProfileId, $type == DoubleEntryType::Positive ? $totalPrice : -$totalPrice);
@@ -706,11 +720,11 @@ class ReceiptController extends Controller
         $cash = COA::findOrFail($originalCashDoubleEntry->COA_id);
 
         // Create double entries
-        $this->createDoubleEntry($cash, $reversalReceipt, DoubleEntryType::Negative);
+        $this->createReverseDoubleEntry($cash, $reversalReceipt, DoubleEntryType::Negative);
         $this->createProfileDoubleEntry(
             $reversalReceipt->accounting_profile_id,
             $reversalReceipt->id,
-            $reversalReceipt->total_price,
+            -$reversalReceipt->total_price,
             DoubleEntryType::Positive
         );
 
