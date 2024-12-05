@@ -148,15 +148,50 @@ class COA extends Model
 
         $generalTotal = $initialBalance + $totalPositive - $totalNegative;
 
+        // Fetch related accounting profiles based on doctor_id and office_id
+        $relatedProfilesQuery = AccountingProfile::where('doctor_id', $this->doctor_id)
+            ->where('office_id', $this->office_id);
+
+        // Special Calculation for Receivable Accounts
+        if ($this->sub_type == COASubType::Receivable) {
+            $relatedProfiles = $relatedProfilesQuery
+                ->where('type', AccountingProfileType::PatientAccount)
+                ->get();
+
+            $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate, $toDate) {
+                // Fetch date-filtered double entries for the profile
+                $profileDoubleEntries = $profile->doubleEntries()
+                    ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                        $query->whereBetween('created_at', [$fromDate, $toDate]);
+                    })
+                    ->get();
+
+                // Fetch date-filtered direct double entries for the profile
+                $profileDirectDoubleEntries = $profile->directDoubleEntries()
+                    ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                        $query->whereBetween('created_at', [$fromDate, $toDate]);
+                    })
+                    ->get();
+
+                $profilePositive = $profileDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price')
+                    + $profileDirectDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+                $profileNegative = $profileDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price')
+                    + $profileDirectDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+                $initialBalance = $fromDate
+                    ? $profile->getOpeningBalance($fromDate)
+                    : $profile->initial_balance;
+
+                return $carry + $initialBalance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $profileTotal;
+        }
+
         // Special Calculation for Payable Accounts
         if ($this->sub_type == COASubType::Payable) {
-            $relatedProfiles = AccountingProfile::where('doctor_id', $this->doctor_id)
-                ->where('office_id', $this->office_id)
-                ->whereIn('type', [
-                    AccountingProfileType::SupplierAccount,
-                    AccountingProfileType::DentalLabDoctorAccount
-                ])
-                ->get();
+            $relatedProfiles = $relatedProfilesQuery->whereIn('type', [AccountingProfileType::SupplierAccount, AccountingProfileType::DentalLabDoctorAccount])->get();
 
             $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate, $toDate) {
                 $profileDoubleEntries = $profile->doubleEntries()
@@ -186,6 +221,7 @@ class COA extends Model
 
             return $profileTotal;
         }
+
 
         return $generalTotal;
     }

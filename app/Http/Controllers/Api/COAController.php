@@ -100,9 +100,9 @@ class COAController extends Controller
     public function indexOwnerWithDate(Request $request, Office $office)
     {
         // $office = Office::findOrFail($request->office);
-        $this->authorize('officeOwner', [COA::class, $office]);
+        $this->authorize('inOffice', [COA::class, $office]);
         $request->validate([
-            'office' => 'required|exists:offices,id',
+            // 'office' => 'required|exists:offices,id',
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
