@@ -703,7 +703,7 @@ class ReceiptController extends Controller
         if (!$originalCashDoubleEntry) {
             throw new \Exception('Original cash double entry not found.');
         }
-        $cash = COA::findOrFail($originalCashDoubleEntry->coa_id);
+        $cash = COA::findOrFail($originalCashDoubleEntry->COA_id);
 
         // Create double entries
         $this->createDoubleEntry($cash, $reversalReceipt, DoubleEntryType::Negative);
