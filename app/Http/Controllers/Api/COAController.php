@@ -13,6 +13,7 @@ use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
 use App\Http\Requests\UpdateCoaRequest;
 use App\Http\Resources\COAResource;
+use App\Http\Resources\COAWithDateResource;
 use App\Http\Resources\DoubleEntryResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -95,6 +96,41 @@ class COAController extends Controller
                 ->get()
         );
     }
+
+    public function indexOwnerWithDate(Request $request, Office $office)
+    {
+        // $office = Office::findOrFail($request->office);
+        $this->authorize('officeOwner', [COA::class, $office]);
+
+        $fromDate = $request->input('from_date'); // Expected format: 'Y-m-d'
+        $toDate = $request->input('to_date');     // Expected format: 'Y-m-d'
+
+        return COAWithDateResource::collection(
+            $office->COAS()
+                ->with([
+                    'office',
+                    // Eager load relationships for doubleEntries
+                    'doubleEntries' => function ($query) use ($fromDate, $toDate) {
+                        if ($fromDate && $toDate) {
+                            $query->whereConnectedDateBetween($fromDate, $toDate);
+                        }
+                    },
+                    'doubleEntries.invoice',
+                    'doubleEntries.invoiceItem.invoice',
+                    'doubleEntries.receipt',
+                    'doubleEntries.invoiceReceipt',
+                    // Eager load relationships for directDoubleEntries
+                    'directDoubleEntries' => function ($query) use ($fromDate, $toDate) {
+                        if ($fromDate && $toDate) {
+                            $query->whereConnectedDateBetween($fromDate, $toDate);
+                        }
+                    },
+                    'directDoubleEntries.directDoubleEntryInvoice',
+                ])
+                ->get()
+        );
+    }
+
 
     /**
      * Store a newly created resource in storage.

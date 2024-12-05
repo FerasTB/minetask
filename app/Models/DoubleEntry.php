@@ -35,4 +35,70 @@ class DoubleEntry extends Model
     {
         return $this->belongsTo(Receipt::class, 'receipt_id');
     }
+
+    public function invoiceReceipt()
+    {
+        return $this->belongsTo(InvoiceReceipt::class, 'invoice_receipt_id');
+    }
+
+    // Scopes
+    public function scopeWhereConnectedDateBetween($query, $fromDate, $toDate)
+    {
+        $query->where(function ($q) use ($fromDate, $toDate) {
+            $q->where(function ($q) use ($fromDate, $toDate) {
+                $q->whereNotNull('invoice_id')
+                    ->whereHas('invoice', function ($q) use ($fromDate, $toDate) {
+                        $q->whereBetween('date_of_invoice', [$fromDate, $toDate]);
+                    });
+            })
+                ->orWhere(function ($q) use ($fromDate, $toDate) {
+                    $q->whereNotNull('invoice_item_id')
+                        ->whereHas('invoiceItem.invoice', function ($q) use ($fromDate, $toDate) {
+                            $q->whereBetween('date_of_invoice', [$fromDate, $toDate]);
+                        });
+                })
+                ->orWhere(function ($q) use ($fromDate, $toDate) {
+                    $q->whereNotNull('receipt_id')
+                        ->whereHas('receipt', function ($q) use ($fromDate, $toDate) {
+                            $q->whereBetween('date_of_payment', [$fromDate, $toDate]);
+                        });
+                })
+                ->orWhere(function ($q) use ($fromDate, $toDate) {
+                    $q->whereNotNull('invoice_receipt_id')
+                        ->whereHas('invoiceReceipt', function ($q) use ($fromDate, $toDate) {
+                            $q->whereBetween('date_of_payment', [$fromDate, $toDate]);
+                        });
+                });
+        });
+    }
+
+    public function scopeWhereConnectedDateBefore($query, $date)
+    {
+        $query->where(function ($q) use ($date) {
+            $q->where(function ($q) use ($date) {
+                $q->whereNotNull('invoice_id')
+                    ->whereHas('invoice', function ($q) use ($date) {
+                        $q->where('date_of_invoice', '<', $date);
+                    });
+            })
+                ->orWhere(function ($q) use ($date) {
+                    $q->whereNotNull('invoice_item_id')
+                        ->whereHas('invoiceItem.invoice', function ($q) use ($date) {
+                            $q->where('date_of_invoice', '<', $date);
+                        });
+                })
+                ->orWhere(function ($q) use ($date) {
+                    $q->whereNotNull('receipt_id')
+                        ->whereHas('receipt', function ($q) use ($date) {
+                            $q->where('date_of_payment', '<', $date);
+                        });
+                })
+                ->orWhere(function ($q) use ($date) {
+                    $q->whereNotNull('invoice_receipt_id')
+                        ->whereHas('invoiceReceipt', function ($q) use ($date) {
+                            $q->where('date_of_payment', '<', $date);
+                        });
+                });
+        });
+    }
 }

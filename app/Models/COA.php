@@ -114,4 +114,100 @@ class COA extends Model
         // Return general total if no special case applies
         return $generalTotal;
     }
+
+
+    public function calculateTotal($fromDate = null, $toDate = null)
+    {
+        // Calculate Opening Balance
+        if ($fromDate) {
+            $initialBalance = $this->getOpeningBalance($fromDate);
+        } else {
+            $initialBalance = $this->initial_balance;
+        }
+
+        // Fetch date-filtered double entries
+        $doubleEntries = $this->doubleEntries()
+            ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                $query->whereConnectedDateBetween($fromDate, $toDate);
+            })
+            ->get();
+
+        // Fetch date-filtered direct double entries
+        $directDoubleEntries = $this->directDoubleEntries()
+            ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                $query->whereConnectedDateBetween($fromDate, $toDate);
+            })
+            ->get();
+
+        // Calculate totals
+        $totalPositive = $doubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price')
+            + $directDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+        $totalNegative = $doubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price')
+            + $directDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        $generalTotal = $initialBalance + $totalPositive - $totalNegative;
+
+        // Special Calculation for Payable Accounts
+        if ($this->sub_type == COASubType::Payable) {
+            $relatedProfiles = AccountingProfile::where('doctor_id', $this->doctor_id)
+                ->where('office_id', $this->office_id)
+                ->whereIn('type', [
+                    AccountingProfileType::SupplierAccount,
+                    AccountingProfileType::DentalLabDoctorAccount
+                ])
+                ->get();
+
+            $profileTotal = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate, $toDate) {
+                $profileDoubleEntries = $profile->doubleEntries()
+                    ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                        $query->whereConnectedDateBetween($fromDate, $toDate);
+                    })
+                    ->get();
+
+                $profileDirectDoubleEntries = $profile->directDoubleEntries()
+                    ->when($fromDate && $toDate, function ($query) use ($fromDate, $toDate) {
+                        $query->whereConnectedDateBetween($fromDate, $toDate);
+                    })
+                    ->get();
+
+                $profilePositive = $profileDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price')
+                    + $profileDirectDoubleEntries->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+                $profileNegative = $profileDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price')
+                    + $profileDirectDoubleEntries->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+                $initialBalance = $fromDate
+                    ? $profile->getOpeningBalance($fromDate)
+                    : $profile->initial_balance;
+
+                return $carry + $initialBalance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $profileTotal;
+        }
+
+        return $generalTotal;
+    }
+
+    public function getOpeningBalance($fromDate)
+    {
+        $doubleEntriesBefore = $this->doubleEntries()
+            ->whereConnectedDateBefore($fromDate)
+            ->get();
+
+        $directDoubleEntriesBefore = $this->directDoubleEntries()
+            ->whereConnectedDateBefore($fromDate)
+            ->get();
+
+        $totalPositive = $doubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price')
+            + $directDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+        $totalNegative = $doubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price')
+            + $directDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+        $openingBalance = $this->initial_balance + $totalPositive - $totalNegative;
+
+        return $openingBalance;
+    }
 }
