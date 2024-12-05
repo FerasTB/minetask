@@ -114,6 +114,6 @@ class AccountingProfile extends Model
 
     public function getOpeningBalance($fromDate)
     {
-        return "hi";
+        return 999999999999;
     }
 }
