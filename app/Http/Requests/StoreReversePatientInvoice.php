@@ -23,7 +23,6 @@ class StoreReversePatientInvoice extends FormRequest
     {
         return [
             'office_id' => 'required|integer',
-            'office_id' => 'required|integer',
         ];
     }
 }

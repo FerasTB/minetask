@@ -11,7 +11,7 @@ class Receipt extends Model
     use HasFactory;
     use \Znck\Eloquent\Traits\BelongsToThrough;
 
-    protected $fillable = ['created_by', 'type', 'status', 'note', 'date_of_payment', 'total_price', 'invoice_id', 'doctor_id', 'accounting_profile_id', 'running_balance', 'receipt_number'];
+    protected $fillable = ['reversed_by', 'original_receipt_id', 'created_by', 'type', 'status', 'note', 'date_of_payment', 'total_price', 'invoice_id', 'doctor_id', 'accounting_profile_id', 'running_balance', 'receipt_number'];
 
     protected static function boot()
     {

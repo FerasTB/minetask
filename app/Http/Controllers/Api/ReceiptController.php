@@ -592,4 +592,128 @@ class ReceiptController extends Controller
         $total = $totalPositive - $totalNegative + $thisTransaction + $supplier->secondary_initial_balance;
         return $total;
     }
+
+    public function reverseReceipt(Request $request, $receipt)
+    {
+        // Validate the request
+        $fields = $request->validate([
+            'office_id' => 'required|exists:offices,id',
+        ]);
+        $office = Office::findOrFail($fields['office_id']);
+
+        // Determine doctor and user, handling different roles
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
+
+            if (!$role) {
+                return response()->json(['error' => 'Role not found for the given user and office.'], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                return response()->json(['error' => 'Employee setting not found for the given role.'], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
+
+        // Begin transaction
+        DB::beginTransaction();
+        try {
+            // Fetch the original receipt
+            $originalReceipt = Receipt::findOrFail($receipt);
+
+            // Check if the receipt is already reversed
+            if ($originalReceipt->status == TransactionStatus::Reversed) {
+                return response()->json(['error' => 'Receipt already reversed.'], 400);
+            }
+
+            // Authorization: Ensure the user has permission to reverse receipts
+            abort_unless($originalReceipt->doctor->id == $doctor->id, 403, 'Unauthorized action.');
+
+            // Create a reversal receipt
+            $reversalReceipt = $this->createReversalReceipt($originalReceipt, $doctor, $office);
+
+            // Update the original receipt status
+            $originalReceipt->status = TransactionStatus::Reversed;
+            $originalReceipt->save();
+
+            $reversalReceipt->reversed_by = auth()->id();
+            $reversalReceipt->save();
+
+            // Commit transaction
+            DB::commit();
+
+            // Return the reversal receipt
+            return new ReceiptResource($reversalReceipt);
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+            Log::error('Error reversing receipt: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+
+    protected function createReversalReceipt($originalReceipt, $doctor, $office)
+    {
+        // Clone the original receipt data
+        $receiptData = $originalReceipt->toArray();
+
+        // Modify necessary fields
+        $receiptData['id'] = null; // Create new record
+        $receiptData['total_price'] = -$originalReceipt->total_price; // Invert amount
+        $receiptData['running_balance'] = $this->calculatePatientBalance(
+            $originalReceipt->accounting_profile_id,
+            $originalReceipt->total_price
+        );
+        $receiptData['note'] = 'Reversal of Receipt #' . $originalReceipt->receipt_number;
+        $receiptData['date_of_payment'] = now();
+
+        $transactionNumber = $this->getTransactionNumber($office, TransactionType::PatientReceipt, $doctor);
+        $receiptData['receipt_number'] = $transactionNumber->last_transaction_number + 1;
+        $receiptData['status'] = TransactionStatus::Reversed;
+        $receiptData['created_by'] = auth()->id();
+
+        // Create the reversal receipt
+        $reversalReceipt = Receipt::create($receiptData);
+
+        // Update the transaction number
+        $transactionNumber->update(['last_transaction_number' => $receiptData['receipt_number']]);
+
+        // Link reversal to original receipt (if applicable)
+        $reversalReceipt->original_receipt_id = $originalReceipt->id; // Make sure this field exists
+        $reversalReceipt->save();
+
+        // Create accounting entries
+        // Get the cash COA from the original double entry
+        $originalCashDoubleEntry = $originalReceipt->doubleEntries()->where('type', DoubleEntryType::Positive)->first();
+        if (!$originalCashDoubleEntry) {
+            throw new \Exception('Original cash double entry not found.');
+        }
+        $cash = COA::findOrFail($originalCashDoubleEntry->coa_id);
+
+        // Create double entries
+        $this->createDoubleEntry($cash, $reversalReceipt, DoubleEntryType::Negative);
+        $this->createProfileDoubleEntry(
+            $reversalReceipt->accounting_profile_id,
+            $reversalReceipt->id,
+            $reversalReceipt->total_price,
+            DoubleEntryType::Positive
+        );
+
+        return $reversalReceipt;
+    }
 }
