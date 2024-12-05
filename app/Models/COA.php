@@ -229,6 +229,7 @@ class COA extends Model
 
     public function getOpeningBalance($fromDate)
     {
+        // General calculation for opening balance
         $doubleEntriesBefore = $this->doubleEntries()
             ->where('created_at', '<', $fromDate)
             ->get();
@@ -245,6 +246,72 @@ class COA extends Model
 
         $openingBalance = $this->initial_balance + $totalPositive - $totalNegative;
 
+        // Fetch related accounting profiles based on doctor_id and office_id
+        $relatedProfilesQuery = AccountingProfile::where('doctor_id', $this->doctor_id)
+            ->where('office_id', $this->office_id);
+
+        // Special Calculation for Receivable Accounts
+        if ($this->sub_type == COASubType::Receivable) {
+            $relatedProfiles = $relatedProfilesQuery
+                ->where('type', AccountingProfileType::PatientAccount)
+                ->get();
+
+            $profileOpeningBalance = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate) {
+                $profileDoubleEntriesBefore = $profile->doubleEntries()
+                    ->where('created_at', '<', $fromDate)
+                    ->get();
+
+                $profileDirectDoubleEntriesBefore = $profile->directDoubleEntries()
+                    ->where('created_at', '<', $fromDate)
+                    ->get();
+
+                $profilePositive = $profileDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price')
+                    + $profileDirectDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+                $profileNegative = $profileDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price')
+                    + $profileDirectDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+                $initialBalance = $profile->initial_balance;
+
+                return $carry + $initialBalance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $profileOpeningBalance;
+        }
+
+        // Special Calculation for Payable Accounts
+        if ($this->sub_type == COASubType::Payable) {
+            $relatedProfiles = $relatedProfilesQuery
+                ->whereIn('type', [
+                    AccountingProfileType::SupplierAccount,
+                    AccountingProfileType::DentalLabDoctorAccount
+                ])
+                ->get();
+
+            $profileOpeningBalance = $relatedProfiles->reduce(function ($carry, $profile) use ($fromDate) {
+                $profileDoubleEntriesBefore = $profile->doubleEntries()
+                    ->where('created_at', '<', $fromDate)
+                    ->get();
+
+                $profileDirectDoubleEntriesBefore = $profile->directDoubleEntries()
+                    ->where('created_at', '<', $fromDate)
+                    ->get();
+
+                $profilePositive = $profileDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price')
+                    + $profileDirectDoubleEntriesBefore->where('type', DoubleEntryType::Positive)->sum('total_price');
+
+                $profileNegative = $profileDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price')
+                    + $profileDirectDoubleEntriesBefore->where('type', DoubleEntryType::Negative)->sum('total_price');
+
+                $initialBalance = $profile->initial_balance;
+
+                return $carry + $initialBalance + $profilePositive - $profileNegative;
+            }, 0);
+
+            return $profileOpeningBalance;
+        }
+
+        // Return general opening balance for other account types
         return $openingBalance;
     }
 }
