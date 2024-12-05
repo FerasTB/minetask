@@ -101,12 +101,45 @@ class COAController extends Controller
     {
         // $office = Office::findOrFail($request->office);
         $this->authorize('officeOwner', [COA::class, $office]);
+        if (in_array(auth()->user()->currentRole->name, Role::Technicians)) {
+            // Find the role based on user_id and office_id (roleable_id)
+            $role = HasRole::where('user_id', auth()->id())
+                ->where('roleable_id', $office->id)
+                ->first();
 
+            if (!$role) {
+                // Return JSON response if no role is found
+                return response()->json([
+                    'error' => 'Role not found for the given user and office.',
+                ], 403);
+            }
+
+            // Find the employee setting based on the has_role_id
+            $employeeSetting = EmployeeSetting::where('has_role_id', $role->id)->first();
+
+            if (!$employeeSetting) {
+                // Return JSON response if no employee setting is found
+                return response()->json([
+                    'error' => 'Employee setting not found for the given role.',
+                ], 403);
+            }
+            $doctor = Doctor::findOrFail($employeeSetting->doctor_id);
+            $user = $doctor->user;
+        } else {
+            // Ensure a valid doctor is authenticated
+            $doctor = auth()->user()->doctor;
+            $user = auth()->user();
+        }
+
+        if (!$doctor) {
+            return response('You have to complete your info', 404);
+        }
         $fromDate = $request->input('from_date'); // Expected format: 'Y-m-d'
         $toDate = $request->input('to_date');     // Expected format: 'Y-m-d'
 
         return COAWithDateResource::collection(
-            $office->COAS()
+            $doctor->COAS()
+                ->where('office_id', $office->id)
                 ->with([
                     'office',
                     // Eager load relationships for doubleEntries
