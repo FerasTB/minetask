@@ -25,4 +25,9 @@ class InvoiceItem extends Model
     {
         return $this->belongsTo(InvoiceReceipt::class, 'invoice_receipt_id');
     }
+
+    public function teethRecord()
+    {
+        return $this->belongsTo(TeethRecord::class, 'teeth_record_id');
+    }
 }
