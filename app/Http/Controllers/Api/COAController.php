@@ -83,6 +83,38 @@ class COAController extends Controller
         }
     }
 
+    public function indexForEmployee(Request $request)
+    {
+        $office = Office::findOrFail($request->office);
+        abort_unless($request->doctor_id != null, 403, 'missing info');
+        $doctor = Doctor::findOrFail($request->doctor_id);
+        $role = HasRole::where('user_id', $doctor->user->id)
+            ->where('roleable_id', $office->id)
+            ->first();
+
+        if (!$role) {
+            // Return JSON response if no role is found
+            return response()->json([
+                'error' => 'Role not found for the given user and office.',
+            ], 403);
+        }
+        $this->authorize('officeOwner', [COA::class, $office]);
+        if ($office->type == OfficeType::Separate) {
+            return COAResource::collection(
+                COA::where(['office_id' => $office->id, "doctor_id" => $request->doctor_id])
+                    ->with([
+                        'doctor',
+                        'office',
+                        'doubleEntries',
+                        'directDoubleEntries'
+                    ])
+                    ->get()
+            );
+        } else {
+            return COAResource::collection($office->COAS()->with(['office', 'doubleEntries', 'directDoubleEntries'])->get());
+        }
+    }
+
     public function indexOwner(Request $request)
     {
         $office = Office::findOrFail($request->office);
