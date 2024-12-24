@@ -10,6 +10,21 @@ class TeethRecord extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Check the last record to get its "unique_number"
+            $lastRecord = TeethRecord::orderBy('id', 'desc')->first();
+
+            $lastNumber = $lastRecord?->unique_number ?? 0;
+
+            // Increment by 1 for the new record
+            $model->unique_number = $lastNumber + 1;
+        });
+    }
+
     protected $fillable = ['is_closed', 'description', 'appointment_id', 'patientCase_id', 'report_id', 'number_of_teeth', 'after_treatment_instruction', 'anesthesia_type'];
 
     public function report()

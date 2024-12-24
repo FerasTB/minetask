@@ -38,6 +38,7 @@ use App\Models\InvoiceItem;
 use App\Models\Office;
 use App\Models\Patient;
 use App\Models\Role;
+use App\Models\TeethRecord;
 use App\Models\TransactionPrefix;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -637,7 +638,9 @@ class InvoiceController extends Controller
             if ($request->has('items')) {
                 foreach ($request->items as $itemData) {
                     $checkCOA = COA::findOrFail($itemData['coa_id']);
+                    $teethRecordId = TeethRecord::findOrFail($itemData['teeth_record_id']);
                     abort_if($checkCOA->doctor_id != $doctor->id, 403, 'the coa have conflict');
+                    abort_if($teethRecordId->PatientCase->case->doctor_id != $doctor->id, 403, 'the teeth record id have conflict');
                     $this->processInvoiceItem($itemData, $invoice, $request->paid_done);
                 }
             }
