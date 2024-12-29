@@ -135,6 +135,8 @@ class InvoiceItemController extends Controller
             'total_price' => $fields['total_price'],
             'price_per_one' => $fields['price_per_one'],
             'coa_id' => $fields['service_coa'],
+            'teeth_record_id' => $record->id,
+
         ]);
 
         // Save the invoice item to the invoice
