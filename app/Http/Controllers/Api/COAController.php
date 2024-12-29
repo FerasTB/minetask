@@ -14,6 +14,7 @@ use App\Http\Requests\StoreCOARequest;
 use App\Http\Requests\UpdateCoaRequest;
 use App\Http\Resources\COAResource;
 use App\Http\Resources\COAWithDateResource;
+use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Http\Resources\DoubleEntryResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
@@ -85,22 +86,34 @@ class COAController extends Controller
 
     public function indexForEmployee(Request $request)
     {
+        // Find the office by ID
         $office = Office::findOrFail($request->office);
+
+        // Ensure the doctor_id is provided
         abort_unless($request->doctor_id != null, 403, 'missing info');
+
+        // Find the doctor by ID
         $doctor = Doctor::findOrFail($request->doctor_id);
+
+        // Retrieve the role for the doctor in the specified office
         $role = HasRole::where('user_id', $doctor->user->id)
             ->where('roleable_id', $office->id)
             ->first();
 
+        // If no role is found, return a 403 response
         if (!$role) {
-            // Return JSON response if no role is found
             return response()->json([
                 'error' => 'Role not found for the given user and office.',
             ], 403);
         }
+
+        // Check if the user has the necessary authorization
         $this->authorize('officeOwner', [COA::class, $office]);
+
+        // Get the COA data based on the office type
+        $coaData = [];
         if ($office->type == OfficeType::Separate) {
-            return COAResource::collection(
+            $coaData = COAResource::collection(
                 COA::where(['office_id' => $office->id, "doctor_id" => $request->doctor_id])
                     ->with([
                         'doctor',
@@ -111,8 +124,29 @@ class COAController extends Controller
                     ->get()
             );
         } else {
-            return COAResource::collection($office->COAS()->with(['office', 'doubleEntries', 'directDoubleEntries'])->get());
+            $coaData = COAResource::collection($office->COAS()->with(['office', 'doubleEntries', 'directDoubleEntries'])->get());
         }
+
+        // Get the doctor's accounting profiles (DentalLabDoctorAccount)
+        $accounts = $doctor->accountingProfiles()->where('type', AccountingProfileType::DentalLabDoctorAccount)->get();
+        $accounts->load([
+            'invoices',
+            'invoices.items',
+            'receipts',
+            'lab',
+            'labOrders',
+            'labOrders.details',
+            'labOrders.details.teeth',
+            'labOrders.orderSteps',
+            'directDoubleEntries',
+            'doubleEntries'
+        ]);
+
+        // Return a combined response with both COA data and accounting profile data
+        return response()->json([
+            'coa' => $coaData,
+            'accounts' => DentalLabAccountingProfileResource::collection($accounts)
+        ]);
     }
 
     public function indexOwner(Request $request)
