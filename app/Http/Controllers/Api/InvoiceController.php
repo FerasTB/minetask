@@ -639,6 +639,9 @@ class InvoiceController extends Controller
                 foreach ($request->items as $itemData) {
                     $checkCOA = COA::findOrFail($itemData['coa_id']);
                     if (array_key_exists('teeth_record_id', $itemData)) {
+                        // if($itemData['teeth_record_id'] == 0){
+
+                        // }
                         $teethRecordId = TeethRecord::findOrFail($itemData['teeth_record_id']);
                         abort_if($teethRecordId->PatientCase->case->doctor_id != $doctor->id, 403, 'the teeth record id have conflict');
                     } else {

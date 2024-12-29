@@ -22,7 +22,7 @@ class InvoiceItemsResource extends JsonResource
             'amount' => $this->amount,
             'total_price' => $this->total_price,
             'price_per_one' => $this->price_per_one,
-            'teeth_record_number' => $this->teeth_record_id ? $this->teethRecord->unique_number : 0,
+            'teeth_record_number' => $this->teeth_record_id ? $this->teethRecord->unique_number : null,
             'invoice' => new InvoiceResource($this->whenLoaded('invoice')),
         ];
     }
