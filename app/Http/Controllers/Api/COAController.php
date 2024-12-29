@@ -12,10 +12,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SetInitialBalanceRequest;
 use App\Http\Requests\StoreCOARequest;
 use App\Http\Requests\UpdateCoaRequest;
+use App\Http\Resources\AccountingProfileResource;
 use App\Http\Resources\COAResource;
 use App\Http\Resources\COAWithDateResource;
 use App\Http\Resources\DentalLabAccountingProfileResource;
 use App\Http\Resources\DoubleEntryResource;
+use App\Http\Resources\patientDefaultCaseResource;
 use App\Models\AccountingProfile;
 use App\Models\COA;
 use App\Models\Doctor;
@@ -23,6 +25,7 @@ use App\Models\EmployeeSetting;
 use App\Models\HasRole;
 use App\Models\Office;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class COAController extends Controller
@@ -141,11 +144,133 @@ class COAController extends Controller
             'directDoubleEntries',
             'doubleEntries'
         ]);
+        $user = $doctor->user;
+        $response = [];
+        // Authorization and data retrieval for Combined office type
+        if ($office->type == OfficeType::Combined) {
+            $this->authorize('inOffice', [Doctor::class, $office]);
+
+            $ownerUser = User::find($office->owner->user_id);
+            $ownerDoctor = $ownerUser->doctor;
+
+            $accountsCombined = AccountingProfile::where([
+                'doctor_id' => $ownerDoctor->id,
+                'office_id' => $office->id,
+                'type' => AccountingProfileType::PatientAccount
+            ])->with([
+                'office',
+                'office.owner',
+                'office.owner.user',
+                'patient',
+                'patient.info',
+                'patient.doctorImage',
+                'patient.labOrders',
+                'patient.labOrders.details',
+                'patient.labOrders.details.teeth',
+                'invoices',
+                'invoices.items',
+                'receipts',
+                'invoices.receipts',
+                'invoiceReceipt',
+                'invoiceReceipt.items',
+                'doubleEntries',
+                'directDoubleEntries',
+                'patient.notes' => function ($query) use ($doctor, $office) {
+                    $query->where('doctor_id', $doctor->id)
+                        ->where('office_id', $office->id)
+                        ->where('primary', true);
+                },
+                'patient.cases' => function ($query) use ($doctor, $office) {
+                    $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
+                        $query->where([
+                            'case_name' => Doctor::DefaultCase,
+                            'doctor_id' => $doctor->id,
+                            'office_id' => $office->id
+                        ]);
+                    })->with([
+                        'teethRecords',
+                        'teethRecords.operations',
+                        'teethRecords.diagnosis',
+                        'teethRecords.operations.teeth',
+                        'teethRecords.diagnosis.teeth'
+                    ]);
+                }
+            ])->get();
+
+            // $response['combined'] = MyPatientCombinedThroughAccountingProfileResource::collection($accountsCombined);
+            $response['profile'] = AccountingProfileResource::collection($accountsCombined)->map(function ($accountProfile) use ($ownerUser) {
+                return new AccountingProfileResource($accountProfile, $ownerUser);
+            });
+        } else {
+            // return AccountingProfileResource::collection($doctor->accountingProfiles)->where(['office_id' => $office->id, 'type' => AccountingProfileType::PatientAccount]);
+            // Authorization and data retrieval for Separate office type
+            $this->authorize('inOffice', [AccountingProfile::class, $office]);
+
+            $accountsSeparate = AccountingProfile::where([
+                'doctor_id' => $doctor->id,
+                'office_id' => $office->id,
+                'type' => AccountingProfileType::PatientAccount
+            ])->with([
+                'office',
+                'patient',
+                'patient.info',
+                'patient.doctorImage',
+                'patient.labOrders',
+                'patient.labOrders.details',
+                'patient.labOrders.lab',
+                'patient.labOrders.details.teeth',
+                'invoices',
+                'invoices.items',
+                'receipts',
+                'invoices.receipts',
+                'invoiceReceipt',
+                'invoiceReceipt.items',
+                'doubleEntries',
+                'directDoubleEntries',
+                'patient.notes' => function ($query) use ($doctor, $office) {
+                    $query->where('doctor_id', $doctor->id)
+                        ->where('office_id', $office->id)
+                        ->where('primary', true);
+                },
+                'patient.cases' => function ($query) use ($doctor, $office) {
+                    $query->whereHas('medicalCase', function ($query) use ($doctor, $office) {
+                        $query->where([
+                            'case_name' => Doctor::DefaultCase,
+                            'doctor_id' => $doctor->id,
+                            'office_id' => $office->id
+                        ]);
+                    })->with([
+                        'teethRecords',
+                        'teethRecords.operations',
+                        'teethRecords.diagnosis',
+                        'teethRecords.operations.teeth',
+                        'teethRecords.diagnosis.teeth'
+                    ]);
+                },
+            ])->get();
+            // $response['separate'] = MyPatientSeparateThroughAccountingProfileResource::collection($accountsSeparate);
+            $response['profile'] = AccountingProfileResource::collection($accountsSeparate)->map(function ($accountProfile) use ($user) {
+                return new AccountingProfileResource($accountProfile, $user);
+            });
+        }
+        // Process each profile to include the default case
+        foreach ($response['profile'] as $accountProfile) {
+            $patient = $accountProfile->patient;
+            if ($patient) {
+                $defaultCase = $patient->cases->first();
+                if ($defaultCase) {
+                    $accountProfile->default_case = new patientDefaultCaseResource($defaultCase);
+                }
+            } else {
+                return $accountProfile->id;
+            }
+        }
 
         // Return a combined response with both COA data and accounting profile data
         return response()->json([
             'coa' => $coaData,
-            'accounts' => DentalLabAccountingProfileResource::collection($accounts)
+            'labs' => DentalLabAccountingProfileResource::collection($accounts),
+            'patient' => $response['profile']
         ]);
     }
 
